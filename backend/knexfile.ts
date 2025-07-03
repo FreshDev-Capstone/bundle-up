@@ -1,76 +1,51 @@
-import { Knex } from 'knex';
-import dotenv from 'dotenv';
-import path from 'path';
+/**
+ * @fileoverview Knex.js configuration file
+ * @description Configuration file for Knex.js database migrations and seeds.
+ * Defines database connection settings for different environments (development, production, test).
+ */
+
+import { Knex } from "knex";
+import dotenv from "dotenv";
+import path from "path";
+import { knexConfig } from "./src/config/database";
 
 // Load environment variables from the src directory
-dotenv.config({ path: path.join(__dirname, 'src', '.env') });
+dotenv.config({ path: path.join(__dirname, "src", ".env") });
 
-const config: { [key: string]: Knex.Config } = {
-  development: {
-    client: 'postgresql',
+/**
+ * Knex configuration object
+ * @type {Object}
+ * @description Configuration for all environments using the centralized database config
+ *
+ * @example
+ * // Run migrations
+ * npx knex migrate:latest
+ *
+ * // Run seeds
+ * npx knex seed:run
+ *
+ * // Rollback migrations
+ * npx knex migrate:rollback
+ *
+ * // Create new migration
+ * npx knex migrate:make create_users_table
+ *
+ * // Create new seed
+ * npx knex seed:make 001_users
+ */
+export default {
+  /** Development environment configuration */
+  development: knexConfig,
+
+  /** Production environment configuration */
+  production: knexConfig,
+
+  /** Test environment configuration */
+  test: {
+    ...knexConfig,
     connection: {
-      host: process.env.PG_HOST || 'localhost',
-      port: parseInt(process.env.PG_PORT || '5432'),
-      database: process.env.PG_DB || 'bundleup',
-      user: process.env.PG_USER || 'postgres',
-      password: process.env.PG_PASS || 'postgres'
+      ...knexConfig.connection,
+      database: process.env.PG_DB_TEST || "bundleup_test",
     },
-    pool: {
-      min: 2,
-      max: 10
-    },
-    migrations: {
-      tableName: 'knex_migrations',
-      directory: '../db/migrations'
-    },
-    seeds: {
-      directory: '../db/seeds'
-    }
   },
-
-  staging: {
-    client: 'postgresql',
-    connection: {
-      host: process.env.PG_HOST,
-      port: parseInt(process.env.PG_PORT || '5432'),
-      database: process.env.PG_DB,
-      user: process.env.PG_USER,
-      password: process.env.PG_PASS
-    },
-    pool: {
-      min: 2,
-      max: 10
-    },
-    migrations: {
-      tableName: 'knex_migrations',
-      directory: '../db/migrations'
-    },
-    seeds: {
-      directory: '../db/seeds'
-    }
-  },
-
-  production: {
-    client: 'postgresql',
-    connection: {
-      host: process.env.PG_HOST,
-      port: parseInt(process.env.PG_PORT || '5432'),
-      database: process.env.PG_DB,
-      user: process.env.PG_USER,
-      password: process.env.PG_PASS
-    },
-    pool: {
-      min: 2,
-      max: 10
-    },
-    migrations: {
-      tableName: 'knex_migrations',
-      directory: '../db/migrations'
-    },
-    seeds: {
-      directory: '../db/seeds'
-    }
-  }
 };
-
-export default config; 
