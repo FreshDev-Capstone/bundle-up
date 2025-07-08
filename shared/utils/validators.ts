@@ -1,0 +1,61 @@
+import { AuthFormValues } from "../types";
+
+export interface ValidationResult {
+  isValid: boolean;
+  errors: Record<string, string>;
+}
+
+export const validateAuthForm = (
+  values: AuthFormValues,
+  mode: "login" | "signup"
+): ValidationResult => {
+  const errors: Record<string, string> = {};
+
+  // Email validation
+  if (!values.email) {
+    errors.email = "Email is required";
+  } else if (!/\S+@\S+\.\S+/.test(values.email)) {
+    errors.email = "Please enter a valid email address";
+  }
+
+  // Password validation
+  if (!values.password) {
+    errors.password = "Password is required";
+  } else if (values.password.length < 6) {
+    errors.password = "Password must be at least 6 characters long";
+  }
+
+  // Signup specific validations
+  if (mode === "signup") {
+    if (!values.firstName?.trim()) {
+      errors.firstName = "First name is required";
+    }
+
+    if (!values.lastName?.trim()) {
+      errors.lastName = "Last name is required";
+    }
+
+    if (!values.confirmPassword) {
+      errors.confirmPassword = "Please confirm your password";
+    } else if (values.password !== values.confirmPassword) {
+      errors.confirmPassword = "Passwords do not match";
+    }
+  }
+
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors,
+  };
+};
+
+export const validateEmail = (email: string): boolean => {
+  return /\S+@\S+\.\S+/.test(email);
+};
+
+export const validatePassword = (password: string): boolean => {
+  return password.length >= 6;
+};
+
+export const validateRequired = (value: string | undefined): boolean => {
+  return Boolean(value?.trim());
+};

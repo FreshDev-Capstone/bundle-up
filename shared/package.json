@@ -1,0 +1,22 @@
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "description": "Shared utilities, types, and hooks for Bundle Up",
+  "main": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": "19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.0.10",
+    "typescript": "^5.8.3"
+  },
+  "private": true,
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
