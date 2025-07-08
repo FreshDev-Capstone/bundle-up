@@ -1,32 +1,31 @@
-import { View, Text, TextInput, Button } from "react-native";
-import { Link } from "@react-navigation/native";
-import GoogleSignInButton from "../OAuth/GoogleSignInButton";
-import styles from "./LoginForm.styles";
+import React from "react";
+import { Alert } from "react-native";
+import AuthForm from "../AuthForm/AuthForm";
+import { AuthFormValues } from "../../../../shared/types";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function LoginForm() {
+  const { login, loading, error } = useAuth();
+
+  const handleLogin = async (values: AuthFormValues) => {
+    if (!values.email || !values.password) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+
+    const success = await login(values.email, values.password);
+
+    if (!success) {
+      Alert.alert("Login Failed", error || "Please check your credentials");
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.googleButtonContainer}>
-        <GoogleSignInButton title="Continue with Google" />
-      </View>
-      <Text style={styles.or}>OR</Text>
-      <Text style={styles.loginTitle}>Login</Text>
-      <TextInput style={styles.input} placeholder="Email" />
-      <TextInput style={styles.input} placeholder="Password" secureTextEntry />
-      <View style={styles.buttonContainer}>
-        <Button title="Login" onPress={() => {}} />
-      </View>
-      <Text style={styles.forgotPassword}>
-        <Link href="/forgot-password" action={{ type: "navigate" }}>
-          Forgot Password?
-        </Link>
-      </Text>
-      <Text>
-        Don't have an account?{" "}
-        <Link href="/signup" action={{ type: "navigate" }} style={styles.link}>
-          Sign Up
-        </Link>
-      </Text>
-    </View>
+    <AuthForm
+      mode="login"
+      onSubmit={handleLogin}
+      loading={loading}
+      error={error}
+    />
   );
 }

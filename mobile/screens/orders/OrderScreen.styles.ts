@@ -1,22 +1,22 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "../../../shared/constants/Colors";
+import { Colors } from "../../constants/Colors";
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.light.background,
     padding: 16,
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 20,
-    color: Colors.text.primary,
+    color: Colors.light.text,
   },
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: Colors.text.secondary,
+    color: Colors.light.icon,
   },
   errorText: {
     fontSize: 16,
@@ -31,18 +31,18 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Colors.text.primary,
+    color: Colors.light.text,
     marginBottom: 8,
   },
   emptySubtext: {
     fontSize: 14,
-    color: Colors.text.secondary,
+    color: Colors.light.icon,
   },
   ordersList: {
     paddingBottom: 20,
   },
   orderCard: {
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.light.background,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
@@ -52,44 +52,61 @@ const styles = StyleSheet.create({
       height: 2,
     },
     shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowRadius: 4,
+    elevation: 2,
   },
   orderHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 8,
   },
-  orderId: {
+  orderNumber: {
     fontSize: 16,
     fontWeight: "bold",
-    color: Colors.text.primary,
+    color: Colors.light.text,
   },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  statusText: {
-    fontSize: 10,
-    fontWeight: "bold",
-    color: "white",
+  orderStatus: {
+    fontSize: 14,
+    fontWeight: "600",
+    textTransform: "capitalize",
   },
   orderDetails: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    marginTop: 8,
   },
   orderDate: {
     fontSize: 14,
-    color: Colors.text.secondary,
+    color: Colors.light.icon,
+    marginBottom: 4,
   },
   orderTotal: {
     fontSize: 16,
     fontWeight: "bold",
-    color: Colors.primary,
+    color: Colors.light.tint,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  retryButton: {
+    backgroundColor: Colors.light.tint,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+    marginTop: 16,
+  },
+  retryButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 
-export default styles;
+export { styles as default };

@@ -1,28 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   ActivityIndicator,
+  Modal,
+  TouchableOpacity,
 } from "react-native";
-// import { useProducts } from '../hooks/useProducts';
+import { useProducts } from "../../hooks/useProducts";
 import ProductCard from "../../components/product/ProductCard/ProductCard";
+import ProductDetails from "../../components/product/ProductDetails/ProductDetails";
 import { Product } from "../../../shared/types/product";
-// import { Colors } from "../../shared/constants/Colors";
+import { Colors } from "../../constants/Colors";
 import styles from "./ProductsScreen.styles";
+import { X } from "lucide-react-native";
 
 export default function ProductsScreen() {
   const { products, loading, error } = useProducts();
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const handleProductPress = (product: Product) => {
-    // Product press handler - can be extended for navigation later
+    setSelectedProduct(product);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedProduct(null);
   };
 
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color={Colors.primary} />
+        <ActivityIndicator size="large" color={Colors.light.tint} />
         <Text style={styles.loadingText}>Loading products...</Text>
       </View>
     );
@@ -43,14 +51,35 @@ export default function ProductsScreen() {
 
       <FlatList
         data={products}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
+        keyExtractor={(item: any) => item.id.toString()}
+        renderItem={({ item }: { item: any }) => (
           <ProductCard product={item} onPress={handleProductPress} />
         )}
         numColumns={2}
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
       />
+
+      {/* Product Details Modal */}
+      <Modal
+        visible={!!selectedProduct}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={handleCloseModal}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity
+              onPress={handleCloseModal}
+              style={styles.closeButton}
+            >
+              <X />
+            </TouchableOpacity>
+          </View>
+
+          {selectedProduct && <ProductDetails product={selectedProduct} />}
+        </View>
+      </Modal>
     </View>
   );
 }

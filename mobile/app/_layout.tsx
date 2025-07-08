@@ -1,17 +1,22 @@
 import React from "react";
 import { Stack } from "expo-router";
-import { StatusBar } from "react-native";
+import { StatusBar } from "expo-status-bar";
+import { AuthProvider } from "../context/AuthContext";
 import { CartProvider } from "../context/CartContext";
-import { Colors } from "../constants/colors";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 
 export default function RootLayout() {
   return (
-    <CartProvider>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar backgroundColor={Colors.background} barStyle="dark-content" />
-    </CartProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <CartProvider>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="dark" />
+        </CartProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

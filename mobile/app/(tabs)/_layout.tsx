@@ -1,14 +1,11 @@
 import React from "react";
 import { Tabs } from "expo-router";
 import { useCart } from "../../context/CartContext";
-import { Egg, Repeat, ShoppingBasket, UserRound } from "lucide-react-native";
+import { Package, RefreshCw, ShoppingCart, User } from "lucide-react-native";
 
 export default function TabLayout() {
-  const { state } = useCart();
-  const itemCount = state.items.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
+  const { items } = useCart();
+  const itemCount = items.reduce((total, item) => total + item.quantity, 0);
 
   return (
     <Tabs>
@@ -17,9 +14,10 @@ export default function TabLayout() {
         options={{
           title: "Products",
           tabBarLabel: "Products",
-          tabBarIcon: ({ color, size }: { color: string; size: number }) => (
-            <Egg size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }: { color: string; size: number }) => {
+            const Icon = Package as any;
+            return <Icon size={size} color={color} />;
+          },
         }}
       />
       <Tabs.Screen
@@ -28,9 +26,10 @@ export default function TabLayout() {
           title: "Cart",
           tabBarLabel: "Cart",
           tabBarBadge: itemCount > 0 ? itemCount : undefined,
-          tabBarIcon: ({ color, size }: { color: string; size: number }) => (
-            <ShoppingBasket size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }: { color: string; size: number }) => {
+            const Icon = ShoppingCart as any;
+            return <Icon size={size} color={color} />;
+          },
         }}
       />
       <Tabs.Screen
@@ -38,9 +37,10 @@ export default function TabLayout() {
         options={{
           title: "Reorder",
           tabBarLabel: "Reorder",
-          tabBarIcon: ({ color, size }: { color: string; size: number }) => (
-            <Repeat size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }: { color: string; size: number }) => {
+            const Icon = RefreshCw as any;
+            return <Icon size={size} color={color} />;
+          },
         }}
       />
       <Tabs.Screen
@@ -48,9 +48,10 @@ export default function TabLayout() {
         options={{
           title: "Profile",
           tabBarLabel: "Profile",
-          tabBarIcon: ({ color, size }: { color: string; size: number }) => (
-            <UserRound size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }: { color: string; size: number }) => {
+            const Icon = User as any;
+            return <Icon size={size} color={color} />;
+          },
         }}
       />
     </Tabs>

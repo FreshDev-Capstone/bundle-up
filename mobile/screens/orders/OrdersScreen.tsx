@@ -2,15 +2,13 @@ import React from "react";
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
-  TouchableOpacity,
   ActivityIndicator,
+  StyleSheet,
 } from "react-native";
-// import { Colors } from "../../constants/colors";
-// import { useOrders } from "../../hooks/useOrders";
-import { Order } from "../../../shared/types/order";
-import styles from "./OrderScreen.styles";
+import { Colors } from "../../constants/Colors";
+import { useOrders } from "../../hooks/useOrders";
+import OrderCard from "./OrderCard";
 
 export default function OrdersScreen() {
   const { orders, loading, error } = useOrders();
@@ -18,7 +16,7 @@ export default function OrdersScreen() {
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color={Colors.primary} />
+        <ActivityIndicator size="large" color={Colors.light.tint} />
         <Text style={styles.loadingText}>Loading orders...</Text>
       </View>
     );
@@ -43,8 +41,10 @@ export default function OrdersScreen() {
       ) : (
         <FlatList
           data={orders}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <OrderCard order={item} />}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          keyExtractor={(item: any) => item.id.toString()}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          renderItem={({ item }: { item: any }) => <OrderCard order={item} />}
           contentContainerStyle={styles.ordersList}
           showsVerticalScrollIndicator={false}
         />
@@ -52,3 +52,45 @@ export default function OrdersScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.light.background,
+    padding: 16,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: Colors.light.text,
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: Colors.light.icon,
+  },
+  errorText: {
+    fontSize: 16,
+    color: "#F44336",
+    textAlign: "center",
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: Colors.light.text,
+    marginBottom: 8,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: Colors.light.icon,
+  },
+  ordersList: {
+    paddingBottom: 20,
+  },
+});

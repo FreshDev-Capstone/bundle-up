@@ -1,34 +1,46 @@
-import { Button, Text, TextInput, View } from "react-native";
-import GoogleSignInButton from "../OAuth/GoogleSignInButton";
-import { Link } from "@react-navigation/native";
-import styles from "./SignupForm.styles";
+import React from "react";
+import { Alert } from "react-native";
+import AuthForm from "../AuthForm/AuthForm";
+import { AuthFormValues } from "../../../../shared/types";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function SignupForm() {
+  const { register, loading, error } = useAuth();
+
+  const handleSignup = async (values: AuthFormValues) => {
+    if (
+      !values.email ||
+      !values.password ||
+      !values.firstName ||
+      !values.lastName
+    ) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+
+    if (values.password !== values.confirmPassword) {
+      Alert.alert("Error", "Passwords do not match");
+      return;
+    }
+
+    const success = await register({
+      email: values.email,
+      password: values.password,
+      firstName: values.firstName,
+      lastName: values.lastName,
+    });
+
+    if (!success) {
+      Alert.alert("Registration Failed", error || "Please try again");
+    }
+  };
+
   return (
-    <View>
-      <View style={styles.googleButtonContainer}>
-        <GoogleSignInButton title="Sign up with Google" />
-      </View>
-      <Text style={styles.or}>OR</Text>
-      <Text style={styles.signupTitle}>Sign Up</Text>
-      <TextInput style={styles.input} placeholder="First Name" />
-      <TextInput style={styles.input} placeholder="Last Name" />
-      <TextInput style={styles.input} placeholder="Email" />
-      <TextInput style={styles.input} placeholder="Password" secureTextEntry />
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm Password"
-        secureTextEntry
-      />
-      <View style={styles.buttonContainer}>
-        <Button title="Sign Up" />
-      </View>
-      <Text>
-        Already have an account?{" "}
-        <Link href="/login" action={{ type: "navigate" }} style={styles.link}>
-          Login
-        </Link>
-      </Text>
-    </View>
+    <AuthForm
+      mode="signup"
+      onSubmit={handleSignup}
+      loading={loading}
+      error={error}
+    />
   );
 }
