@@ -1,47 +1,7 @@
-/**
- * @fileoverview Products seed data
- * @description Seeds the products table with comprehensive product data including
- * various egg types with role-based pricing and inventory tracking for both B2C and B2B customers.
- */
-
 import { Knex } from "knex";
 import { Product } from "../../../shared/types/product";
 
-/**
- * Product data interface for seeding
- * @interface ProductSeedData
- * @description Defines the structure for product seed data
- */
-
-/**
- * Seed function to populate products table
- * @function seed
- * @description Seeds the products table with comprehensive product data including:
- * - Commodity eggs (white and brown)
- * - Organic eggs (white and brown)
- * - Cage-free eggs (white and brown)
- * - Specialty eggs (duck, quail, hard-boiled)
- * - Pasture-raised eggs
- * - Heirloom eggs (blue and brown)
- *
- * Each product includes:
- * - Role-based pricing (B2C and B2B)
- * - Separate inventory tracking (by carton and by box)
- * - Detailed product information
- * - Proper image URLs matching asset structure
- *
- * @param {Knex} knex - Knex instance
- * @returns {Promise<void>}
- *
- * @example
- * // Run this seed
- * npx knex seed:run
- *
- * // Run specific seed
- * npx knex seed:run --specific=001_products.ts
- */
 export async function seed(knex: Knex): Promise<void> {
-  // Clear existing data
   await knex("products").del();
 
   const products: Product[] = [

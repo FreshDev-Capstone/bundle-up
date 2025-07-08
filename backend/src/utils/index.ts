@@ -1,16 +1,16 @@
-/**
- * @fileoverview Utils index file
- * @description Exports all utility functions and helpers
- */
-
 // Response helpers
-export * from './responseHelpers';
+export * from "./responseHelpers";
 
-// Validation helpers
-export * from './validationHelpers';
+// Validation helpers - only export what actually exists
+export {
+  validateRequiredFields,
+  validateEmail,
+  validatePassword,
+  validateNumber,
+  validateStringLength,
+  validateEnum,
+  sanitizeRequestBody,
+} from "./validationHelpers";
 
 // General helpers
-export * from './helpers';
-
-// Validation utilities
-export * from './validation'; 
+export * from "./helpers";

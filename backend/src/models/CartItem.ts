@@ -1,18 +1,27 @@
-import {Product, CartItem} from '../../shared/types';
+import { Product, CartItem as CartItemType } from "../../../shared/types";
 
-class CartItem: CartItem {
-    constructor(product: Product, quantity: number) {
-        this.product = product;
-        this.quantity = quantity;
-    }
+export class CartItemModel implements CartItemType {
+  id: string;
+  productId: string;
+  quantity: number;
+  price: number;
+  product?: Product;
 
-    getProduct(): Product {
-        return this.product;
-    }
+  constructor(product: Product, quantity: number) {
+    this.id = `${Date.now()}-${Math.random()}`;
+    this.productId = product.id.toString();
+    this.quantity = quantity;
+    this.price = product.b2cPrice;
+    this.product = product;
+  }
 
-    getQuantity(): number {
-        return this.quantity;
-    }
+  getProduct(): Product | undefined {
+    return this.product;
+  }
+
+  getQuantity(): number {
+    return this.quantity;
+  }
 }
 
-export default CartItem;
+export default CartItemModel;
