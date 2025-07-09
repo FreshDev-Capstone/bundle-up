@@ -12,8 +12,11 @@ import {
   Image,
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
+import { useBrand } from "../../context/BrandContext";
 import SignupForm from "../../components/auth/SignupForm/SignupForm";
 import LoginForm from "../../components/auth/LoginForm/LoginForm";
+import { AuthFormConfig } from "../../../shared/types";
+import { BRANDS } from "../../../shared/config/brands";
 
 // Lazy load ProfileScreen to reduce initial bundle size
 const ProfileScreen = React.lazy(
@@ -22,8 +25,31 @@ const ProfileScreen = React.lazy(
 
 export default function ProfileTab() {
   const { isAuthenticated, user } = useAuth();
+  const { setBrand } = useBrand();
   const [showLogin, setShowLogin] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [isB2B, setIsB2B] = useState(false);
+
+  // Initialize brand based on toggle
+  useEffect(() => {
+    if (isB2B) {
+      setBrand(BRANDS.NATURAL_FOODS as any);
+    } else {
+      setBrand(BRANDS.SUNSHINE_FARM as any);
+    }
+  }, [isB2B, setBrand]);
+
+  // Create auth config based on brand or default to B2C
+  const authConfig: AuthFormConfig = {
+    brandType: isB2B ? "B2B" : "B2C",
+    logo: isB2B
+      ? require("../../../shared/assets/images/NFI-Logo.png")
+      : require("../../../shared/assets/images/SFI-Logo.png"),
+    subtitle: isB2B
+      ? "Professional food service solutions for your business needs."
+      : "Farm-fresh products delivered with the same love and care we'd give our own family.",
+    showCompanyName: isB2B, // Only show company name for B2B signup
+  };
 
   // Keyboard event listeners
   useEffect(() => {
@@ -66,20 +92,43 @@ export default function ProfileTab() {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.authContainer}>
+          {/* Business Account Toggle Button */}
+          <TouchableOpacity
+            style={[
+              styles.businessAccountButton,
+              isB2B && styles.businessAccountButtonActive,
+            ]}
+            onPress={() => setIsB2B(!isB2B)}
+          >
+            <Text
+              style={[
+                styles.businessAccountText,
+                isB2B && styles.businessAccountTextActive,
+              ]}
+            >
+              {isB2B ? "Individual" : "Business"}
+            </Text>
+            <Text
+              style={[
+                styles.businessAccountText,
+                isB2B && styles.businessAccountTextActive,
+              ]}
+            >
+              Account
+            </Text>
+          </TouchableOpacity>
+
           <Image
-            source={require("../../../shared/assets/images/SFI-Logo.png")}
+            source={authConfig.logo}
             style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={styles.subtitleText}>
-            Farm-fresh products delivered with the same love and care we&apos;d
-            give our own family.
-          </Text>
+          <Text style={styles.subtitleText}>{authConfig.subtitle}</Text>
 
           {showLogin ? (
-            <LoginForm keyboardVisible={keyboardVisible} />
+            <LoginForm keyboardVisible={keyboardVisible} config={authConfig} />
           ) : (
-            <SignupForm keyboardVisible={keyboardVisible} />
+            <SignupForm keyboardVisible={keyboardVisible} config={authConfig} />
           )}
 
           <View style={styles.switchContainer}>
@@ -112,6 +161,44 @@ const styles = StyleSheet.create({
     flex: 1, // Takes full height of container
     justifyContent: "center", // Centers all content vertically on screen
     paddingHorizontal: 20, // Clean horizontal padding for breathing room
+    position: "relative", // Enable absolute positioning for business button
+  },
+
+  // Business Account button in top right corner
+  businessAccountButton: {
+    position: "absolute",
+    top: 40,
+    right: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 16,
+    backgroundColor: "#f0f0f0",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    zIndex: 10,
+    alignItems: "center", // Center the text vertically
+    justifyContent: "center", // Center the text horizontally
+    minWidth: 80, // Minimum width to ensure button isn't too small
+  },
+
+  // Active state for business account button
+  businessAccountButtonActive: {
+    backgroundColor: "#007AFF",
+    borderColor: "#007AFF",
+  },
+
+  // Business account button text
+  businessAccountText: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: "#666",
+    textAlign: "center",
+    lineHeight: 14, // Tighter line height for 2-line text
+  },
+
+  // Active state for business account button text
+  businessAccountTextActive: {
+    color: "#fff",
   },
 
   // SFI Logo image styling

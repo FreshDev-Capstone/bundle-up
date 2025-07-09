@@ -5,6 +5,7 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { AuthProvider } from "../context/AuthContext";
 import { CartProvider } from "../context/CartContext";
+import { BrandProvider } from "../context/BrandContext";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -30,15 +31,17 @@ export default function RootLayout() {
 
   return (
     <ErrorBoundary>
-      <AuthProvider>
-        <CartProvider>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-          <StatusBar style="dark" />
-        </CartProvider>
-      </AuthProvider>
+      <BrandProvider>
+        <AuthProvider>
+          <CartProvider>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+            <StatusBar style="dark" />
+          </CartProvider>
+        </AuthProvider>
+      </BrandProvider>
     </ErrorBoundary>
   );
 }

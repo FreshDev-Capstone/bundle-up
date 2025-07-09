@@ -21,6 +21,7 @@ interface ExtendedAuthState extends AuthState {
     password: string;
     firstName: string;
     lastName: string;
+    companyName?: string; // Optional company name for B2B
   }) => Promise<boolean>;
   clearError: () => void;
 }

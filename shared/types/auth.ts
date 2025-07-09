@@ -9,6 +9,7 @@ export interface RegisterData {
   password: string;
   firstName: string;
   lastName: string;
+  companyName?: string; // Optional company name for B2B registration
 }
 
 export interface GoogleAuthData {
@@ -58,6 +59,14 @@ export interface AuthFormValues {
   firstName?: string;
   lastName?: string;
   confirmPassword?: string;
+  companyName?: string; // For B2B registration
+}
+
+export interface AuthFormConfig {
+  brandType: "B2B" | "B2C";
+  logo: any; // Image source (require() or { uri: string })
+  subtitle: string;
+  showCompanyName?: boolean; // Whether to show company name field
 }
 
 export interface AuthFormProps {
@@ -67,6 +76,7 @@ export interface AuthFormProps {
   loading?: boolean;
   error?: string | null;
   keyboardVisible?: boolean;
+  config?: AuthFormConfig; // Optional config for branding
 }
 
 export interface PasswordChangeData {

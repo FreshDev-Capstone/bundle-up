@@ -5,9 +5,10 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  role: "admin" | "b2c" | "b2b";
+  companyName?: string; // Optional for B2C users
   googleId?: string;
   passwordHash?: string;
+  role: "admin" | "b2c" | "b2b";
   isEmailVerified: boolean;
   emailVerifiedAt?: Date;
   lastLoginAt?: Date;
@@ -19,6 +20,7 @@ export interface CreateUserData {
   email: string;
   firstName: string;
   lastName: string;
+  companyName?: string; // Optional for B2C users
   role?: "admin" | "b2c" | "b2b";
   googleId?: string;
   passwordHash?: string;

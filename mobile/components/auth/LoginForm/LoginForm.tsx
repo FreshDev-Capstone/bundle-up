@@ -1,14 +1,18 @@
 import React from "react";
 import { Alert } from "react-native";
 import AuthForm from "../AuthForm/AuthForm";
-import { AuthFormValues } from "../../../../shared/types";
+import { AuthFormValues, AuthFormConfig } from "../../../../shared/types";
 import { useAuth } from "../../../context/AuthContext";
 
 interface LoginFormProps {
   keyboardVisible?: boolean;
+  config?: AuthFormConfig;
 }
 
-export default function LoginForm({ keyboardVisible = false }: LoginFormProps) {
+export default function LoginForm({
+  keyboardVisible = false,
+  config,
+}: LoginFormProps) {
   const { login, loading, error } = useAuth();
 
   const handleLogin = async (values: AuthFormValues) => {
@@ -31,6 +35,7 @@ export default function LoginForm({ keyboardVisible = false }: LoginFormProps) {
       loading={loading}
       error={error}
       keyboardVisible={keyboardVisible}
+      config={config}
     />
   );
 }

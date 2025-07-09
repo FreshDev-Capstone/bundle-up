@@ -1,4 +1,4 @@
-import { AuthFormValues } from "../types";
+import { AuthFormValues, AuthFormConfig } from "../types";
 
 export interface ValidationResult {
   isValid: boolean;
@@ -7,7 +7,8 @@ export interface ValidationResult {
 
 export const validateAuthForm = (
   values: AuthFormValues,
-  mode: "login" | "signup"
+  mode: "login" | "signup",
+  config?: AuthFormConfig
 ): ValidationResult => {
   const errors: Record<string, string> = {};
 
@@ -33,6 +34,15 @@ export const validateAuthForm = (
 
     if (!values.lastName?.trim()) {
       errors.lastName = "Last name is required";
+    }
+
+    // Company name validation for B2B signup only
+    if (
+      mode === "signup" &&
+      config?.showCompanyName &&
+      !values.companyName?.trim()
+    ) {
+      errors.companyName = "Company name is required";
     }
 
     if (!values.confirmPassword) {

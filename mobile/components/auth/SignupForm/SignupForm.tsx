@@ -1,15 +1,17 @@
 import React from "react";
 import { Alert } from "react-native";
 import AuthForm from "../AuthForm/AuthForm";
-import { AuthFormValues } from "../../../../shared/types";
+import { AuthFormValues, AuthFormConfig } from "../../../../shared/types";
 import { useAuth } from "../../../context/AuthContext";
 
 interface SignupFormProps {
   keyboardVisible?: boolean;
+  config?: AuthFormConfig;
 }
 
 export default function SignupForm({
   keyboardVisible = false,
+  config,
 }: SignupFormProps) {
   const { register, loading, error } = useAuth();
 
@@ -24,6 +26,12 @@ export default function SignupForm({
       return;
     }
 
+    // For B2B, check if company name is required
+    if (config?.showCompanyName && !values.companyName) {
+      Alert.alert("Error", "Company name is required for business accounts");
+      return;
+    }
+
     if (values.password !== values.confirmPassword) {
       Alert.alert("Error", "Passwords do not match");
       return;
@@ -34,6 +42,7 @@ export default function SignupForm({
       password: values.password,
       firstName: values.firstName,
       lastName: values.lastName,
+      companyName: values.companyName, // Include company name for B2B
     });
 
     if (!success) {
@@ -48,6 +57,7 @@ export default function SignupForm({
       loading={loading}
       error={error}
       keyboardVisible={keyboardVisible}
+      config={config}
     />
   );
 }

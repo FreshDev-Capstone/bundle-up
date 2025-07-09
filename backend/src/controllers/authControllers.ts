@@ -29,7 +29,7 @@ interface AuthenticatedRequest extends Request {
 export class AuthController {
   static async register(req: Request, res: Response) {
     try {
-      const { email, password, firstName, lastName } = req.body;
+      const { email, password, firstName, lastName, companyName } = req.body;
 
       // Validate required fields
       if (!email || !password || !firstName || !lastName) {
@@ -59,15 +59,20 @@ export class AuthController {
       const saltRounds = 12;
       const passwordHash = await bcrypt.hash(password, saltRounds);
 
-      // Determine user role based on email
+      // Determine user role based on email and company name
       const isAdmin = await User.isAdminEmail(email);
-      const role: "admin" | "b2c" | "b2b" = isAdmin ? "admin" : "b2c";
+      const role: "admin" | "b2c" | "b2b" = isAdmin
+        ? "admin"
+        : companyName
+        ? "b2b"
+        : "b2c";
 
       // Create user
       const userData: CreateUserData = {
         email,
         firstName,
         lastName,
+        companyName, // Include company name if provided
         passwordHash,
         role,
         isEmailVerified: false,

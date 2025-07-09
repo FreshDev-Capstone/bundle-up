@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AuthFormValues } from "../types";
+import { AuthFormValues, AuthFormConfig } from "../types";
 import { validateAuthForm } from "../utils/validators";
 
 export interface UseAuthFormOptions {
@@ -8,6 +8,7 @@ export interface UseAuthFormOptions {
   initialValues?: Partial<AuthFormValues>;
   loading?: boolean;
   error?: string | null;
+  config?: AuthFormConfig;
 }
 
 export const useAuthForm = ({
@@ -16,6 +17,7 @@ export const useAuthForm = ({
   initialValues = {},
   loading = false,
   error = null,
+  config,
 }: UseAuthFormOptions) => {
   const [values, setValues] = useState<AuthFormValues>({
     email: "",
@@ -23,6 +25,7 @@ export const useAuthForm = ({
     firstName: "",
     lastName: "",
     confirmPassword: "",
+    companyName: "", // Add company name field
     ...initialValues,
   });
 
@@ -44,7 +47,7 @@ export const useAuthForm = ({
   };
 
   const handleSubmit = () => {
-    const validation = validateAuthForm(values, mode);
+    const validation = validateAuthForm(values, mode, config);
 
     if (!validation.isValid) {
       setValidationErrors(validation.errors);

@@ -10,7 +10,13 @@ export * from "./ui";
 export * from "./brand";
 
 // Re-export commonly used types for convenience
-export type { User, AuthState, AuthFormValues, AuthFormProps } from "./auth";
+export type {
+  User,
+  AuthState,
+  AuthFormValues,
+  AuthFormProps,
+  AuthFormConfig,
+} from "./auth";
 export type { Product } from "./product";
 export type { Cart, CartItem, CartState } from "./cart";
 export type { Order, OrderItem } from "./order";
