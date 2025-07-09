@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
     color: "#666", // Medium gray text color
     lineHeight: 20, // Adjusted line height for smaller font
     paddingHorizontal: 18, // Added horizontal padding for more breathing room
+    fontStyle: "italic", // Italic style for emphasis
   },
 
   // Container for "Already have an account?" / "Don't have an account?" section
