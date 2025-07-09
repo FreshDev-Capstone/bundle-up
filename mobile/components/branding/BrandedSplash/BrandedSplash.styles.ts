@@ -20,5 +20,7 @@ export default StyleSheet.create({
   type: {
     fontSize: 18,
     color: "#666",
+    paddingHorizontal: 24, // Added horizontal padding for more breathing room
+    textAlign: "center", // Center the subtitle text
   },
 });

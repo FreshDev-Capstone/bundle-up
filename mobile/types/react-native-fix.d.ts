@@ -27,16 +27,20 @@ declare module "react-native" {
   export const ScrollView: ComponentType<BaseProps>;
   export const FlatList: ComponentType<BaseProps>;
   export const TouchableOpacity: ComponentType<BaseProps>;
+  export const TouchableWithoutFeedback: ComponentType<BaseProps>;
   export const SafeAreaView: ComponentType<BaseProps>;
   export const ActivityIndicator: ComponentType<BaseProps>;
   export const Modal: ComponentType<BaseProps>;
   export const RefreshControl: ComponentType<BaseProps>;
+  export const KeyboardAvoidingView: ComponentType<BaseProps>;
   export const Dimensions: any;
   export const StyleSheet: any;
   export const TextInput: ComponentType<BaseProps>;
   export const Button: ComponentType<BaseProps>;
   export const Alert: any;
   export const Switch: ComponentType<BaseProps>;
+  export const Platform: any;
+  export const Keyboard: any;
   export const useColorScheme: any;
 }
 

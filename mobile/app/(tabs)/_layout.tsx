@@ -1,10 +1,12 @@
 import React from "react";
 import { Tabs } from "expo-router";
 import { useCart } from "../../context/CartContext";
+import { useAuth } from "../../context/AuthContext";
 import { Package, RefreshCw, ShoppingCart, User } from "lucide-react-native";
 
 export default function TabLayout() {
   const { items } = useCart();
+  const { isAuthenticated } = useAuth();
   const itemCount = items.reduce((total, item) => total + item.quantity, 0);
 
   return (
@@ -46,7 +48,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profile",
+          title: isAuthenticated ? "Profile" : "",
+          headerShown: isAuthenticated,
           tabBarLabel: "Profile",
           tabBarIcon: ({ color, size }: { color: string; size: number }) => {
             const Icon = User as any;

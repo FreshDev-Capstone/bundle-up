@@ -66,6 +66,7 @@ export interface AuthFormProps {
   initialValues?: Partial<AuthFormValues>;
   loading?: boolean;
   error?: string | null;
+  keyboardVisible?: boolean;
 }
 
 export interface PasswordChangeData {

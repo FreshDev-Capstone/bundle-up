@@ -1,7 +1,14 @@
-import React, { createContext, useContext, ReactNode, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  ReactNode,
+  useEffect,
+  useRef,
+} from "react";
 import { create } from "zustand";
-import type { User, AuthState } from "../../shared/types";
+import type { AuthState } from "../../shared/types";
 import { AuthService } from "../services/auth";
+import { PerformanceMonitor } from "../utils/performance";
 
 // Enhanced AuthState with loading and error states
 interface ExtendedAuthState extends AuthState {
@@ -40,12 +47,14 @@ export const useAuthStore = create<ExtendedAuthState>((set, get) => ({
   initialize: async () => {
     set({ loading: true, error: null });
     try {
+      PerformanceMonitor.startTimer("auth-initialization");
       const storedUser = await AuthService.getStoredUser();
       if (storedUser) {
         set({ user: storedUser, isAuthenticated: true, loading: false });
       } else {
         set({ user: null, isAuthenticated: false, loading: false });
       }
+      PerformanceMonitor.endTimer("auth-initialization");
     } catch (error) {
       console.error("Auth initialization error:", error);
       set({
@@ -54,6 +63,7 @@ export const useAuthStore = create<ExtendedAuthState>((set, get) => ({
         loading: false,
         error: "Failed to initialize auth",
       });
+      PerformanceMonitor.endTimer("auth-initialization");
     }
   },
 
@@ -118,10 +128,14 @@ const AuthContext = createContext<ExtendedAuthState | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const store = useAuthStore();
+  const initialized = useRef(false);
 
-  // Initialize auth state when app starts
+  // Initialize auth state when app starts - prevent re-initialization
   useEffect(() => {
-    store.initialize();
+    if (!initialized.current) {
+      initialized.current = true;
+      store.initialize();
+    }
   }, [store]);
 
   return <AuthContext.Provider value={store}>{children}</AuthContext.Provider>;

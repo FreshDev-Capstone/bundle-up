@@ -1,51 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   FlatList,
   TouchableOpacity,
-  ActivityIndicator,
   Alert,
   Image,
 } from "react-native";
-import {
-  getCart,
-  updateCartItem,
-  removeFromCart,
-  clearCart,
-} from "../../services/cartAdapter";
 import { useCart } from "../../context/CartContext";
 import { CartItem } from "../../../shared/types";
 import styles from "./CartScreen.styles";
 
 export default function CartScreen() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
-  const { refreshCart } = useCart();
+  const { items: cartItems, removeFromCart, addToCart, clearCart } = useCart();
 
-  const fetchCart = async () => {
-    try {
-      const [data, error] = await getCart();
-
-      if (error) {
-        console.error("Failed to fetch cart:", error);
-        return;
-      }
-
-      setCartItems(data?.items || []);
-    } catch (error) {
-      console.error("Cart fetch error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchCart();
-  }, []);
-
-  const handleUpdateQuantity = async (itemId: string, newQuantity: number) => {
+  const handleUpdateQuantity = (itemId: string, newQuantity: number) => {
     if (newQuantity < 1) {
       handleRemoveItem(itemId);
       return;
@@ -53,30 +23,22 @@ export default function CartScreen() {
 
     setUpdating(itemId);
     try {
-      const [, error] = await updateCartItem(itemId, newQuantity);
-
-      if (error) {
-        Alert.alert("Error", "Failed to update item quantity");
-        return;
+      // Find the cart item
+      const item = cartItems.find((i) => i.id === itemId);
+      if (item && item.product) {
+        // Remove the old item and add with new quantity
+        removeFromCart(parseInt(item.productId));
+        addToCart(item.product, newQuantity);
       }
-
-      // Update local state
-      setCartItems((prev) =>
-        prev.map((item) =>
-          item.id === itemId ? { ...item, quantity: newQuantity } : item
-        )
-      );
-
-      refreshCart();
-    } catch (err) {
-      console.error("Update quantity error:", err);
-      Alert.alert("Error", "An unexpected error occurred");
+    } catch (error) {
+      console.error("Update quantity error:", error);
+      Alert.alert("Error", "Failed to update quantity");
     } finally {
       setUpdating(null);
     }
   };
 
-  const handleRemoveItem = async (itemId: string) => {
+  const handleRemoveItem = (itemId: string) => {
     Alert.alert(
       "Remove Item",
       "Are you sure you want to remove this item from your cart?",
@@ -85,20 +47,15 @@ export default function CartScreen() {
         {
           text: "Remove",
           style: "destructive",
-          onPress: async () => {
+          onPress: () => {
             try {
-              const [, error] = await removeFromCart(itemId);
-
-              if (error) {
-                Alert.alert("Error", "Failed to remove item");
-                return;
+              const item = cartItems.find((i) => i.id === itemId);
+              if (item) {
+                removeFromCart(parseInt(item.productId));
               }
-
-              setCartItems((prev) => prev.filter((item) => item.id !== itemId));
-              refreshCart();
-            } catch (err) {
-              console.error("Remove item error:", err);
-              Alert.alert("Error", "An unexpected error occurred");
+            } catch (error) {
+              console.error("Remove item error:", error);
+              Alert.alert("Error", "Failed to remove item");
             }
           },
         },
@@ -106,34 +63,17 @@ export default function CartScreen() {
     );
   };
 
-  const handleClearCart = async () => {
-    Alert.alert(
-      "Clear Cart",
-      "Are you sure you want to remove all items from your cart?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Clear",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              const [, error] = await clearCart();
-
-              if (error) {
-                Alert.alert("Error", "Failed to clear cart");
-                return;
-              }
-
-              setCartItems([]);
-              refreshCart();
-            } catch (err) {
-              console.error("Clear cart error:", err);
-              Alert.alert("Error", "An unexpected error occurred");
-            }
-          },
+  const handleClearCart = () => {
+    Alert.alert("Clear Cart", "Are you sure you want to clear your cart?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Clear",
+        style: "destructive",
+        onPress: () => {
+          clearCart();
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const calculateTotal = () => {
@@ -193,15 +133,6 @@ export default function CartScreen() {
     </View>
   );
 
-  if (loading) {
-    return (
-      <View style={[styles.container, styles.centered]}>
-        <ActivityIndicator size="large" color="#3498db" />
-        <Text style={styles.loadingText}>Loading cart...</Text>
-      </View>
-    );
-  }
-
   if (cartItems.length === 0) {
     return (
       <View style={[styles.container, styles.centered]}>
@@ -225,7 +156,7 @@ export default function CartScreen() {
       <FlatList
         data={cartItems}
         renderItem={renderCartItem}
-        keyExtractor={(item: any) => item.id}
+        keyExtractor={(item: CartItem) => item.id}
         style={styles.cartList}
         showsVerticalScrollIndicator={false}
       />
@@ -236,15 +167,7 @@ export default function CartScreen() {
           <Text style={styles.totalAmount}>${calculateTotal().toFixed(2)}</Text>
         </View>
 
-        <TouchableOpacity
-          style={styles.checkoutButton}
-          onPress={() =>
-            Alert.alert(
-              "Coming Soon",
-              "Payment functionality will be added soon!"
-            )
-          }
-        >
+        <TouchableOpacity style={styles.checkoutButton}>
           <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
         </TouchableOpacity>
       </View>
