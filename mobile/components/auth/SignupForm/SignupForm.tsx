@@ -4,7 +4,13 @@ import AuthForm from "../AuthForm/AuthForm";
 import { AuthFormValues } from "../../../../shared/types";
 import { useAuth } from "../../../context/AuthContext";
 
-export default function SignupForm() {
+interface SignupFormProps {
+  keyboardVisible?: boolean;
+}
+
+export default function SignupForm({
+  keyboardVisible = false,
+}: SignupFormProps) {
   const { register, loading, error } = useAuth();
 
   const handleSignup = async (values: AuthFormValues) => {
@@ -41,6 +47,7 @@ export default function SignupForm() {
       onSubmit={handleSignup}
       loading={loading}
       error={error}
+      keyboardVisible={keyboardVisible}
     />
   );
 }

@@ -4,7 +4,11 @@ import AuthForm from "../AuthForm/AuthForm";
 import { AuthFormValues } from "../../../../shared/types";
 import { useAuth } from "../../../context/AuthContext";
 
-export default function LoginForm() {
+interface LoginFormProps {
+  keyboardVisible?: boolean;
+}
+
+export default function LoginForm({ keyboardVisible = false }: LoginFormProps) {
   const { login, loading, error } = useAuth();
 
   const handleLogin = async (values: AuthFormValues) => {
@@ -26,6 +30,7 @@ export default function LoginForm() {
       onSubmit={handleLogin}
       loading={loading}
       error={error}
+      keyboardVisible={keyboardVisible}
     />
   );
 }

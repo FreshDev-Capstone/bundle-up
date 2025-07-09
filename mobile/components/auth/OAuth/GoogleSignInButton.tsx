@@ -8,7 +8,13 @@ import styles from "./GoogleSignInButton.styles";
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function GoogleSignInButton() {
+interface GoogleSignInButtonProps {
+  title?: string;
+}
+
+export default function GoogleSignInButton({
+  title = "Sign in with Google",
+}: GoogleSignInButtonProps) {
   const [request, response, promptAsync] = Google.useAuthRequest({
     clientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
     androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
@@ -61,11 +67,7 @@ export default function GoogleSignInButton() {
 
   return (
     <View style={styles.container}>
-      <Button
-        disabled={!request}
-        title="Sign in with Google"
-        onPress={() => promptAsync()}
-      />
+      <Button disabled={!request} title={title} onPress={() => promptAsync()} />
     </View>
   );
 }

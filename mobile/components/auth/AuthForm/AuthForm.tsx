@@ -1,89 +1,262 @@
-import React from "react";
-import { View, Text, TextInput, Button } from "react-native";
+import React, { useRef, useEffect } from "react";
+import { View, Text, TextInput, Button, ScrollView } from "react-native";
 import { AuthFormProps } from "../../../../shared/types";
 import { useAuthForm } from "../../../../shared/hooks";
+import GoogleSignInButton from "../OAuth/GoogleSignInButton";
 import styles from "./AuthForm.styles";
 
-export default function AuthForm({
-  mode,
-  onSubmit,
-  initialValues = {},
-  loading,
-  error,
-}: AuthFormProps) {
-  const { values, handleChange, handleSubmit, validationErrors } = useAuthForm({
+const AuthForm = React.memo(
+  ({
     mode,
     onSubmit,
-    initialValues,
+    initialValues = {},
     loading,
     error,
-  });
+    keyboardVisible = false,
+  }: AuthFormProps) => {
+    const { values, handleChange, handleSubmit, validationErrors } =
+      useAuthForm({
+        mode,
+        onSubmit,
+        initialValues,
+        loading,
+        error,
+      });
 
-  return (
-    <View style={styles.container}>
-      {mode === "signup" && (
-        <>
-          <TextInput
-            style={styles.input}
-            placeholder="First Name"
-            value={values.firstName}
-            onChangeText={(v: string) => handleChange("firstName", v)}
+    // Create refs for text inputs to enable focus navigation
+    const scrollViewRef = useRef<any>(null);
+    const firstNameRef = useRef<any>(null);
+    const lastNameRef = useRef<any>(null);
+    const emailRef = useRef<any>(null);
+    const passwordRef = useRef<any>(null);
+    const confirmPasswordRef = useRef<any>(null);
+
+    // Function to scroll to a specific input field
+    const scrollToInput = (inputRef: React.RefObject<any>) => {
+      if (inputRef.current && scrollViewRef.current) {
+        // Use setTimeout to ensure the keyboard animation has started
+        setTimeout(() => {
+          inputRef.current.measureLayout(
+            scrollViewRef.current,
+            (x: number, y: number, width: number, height: number) => {
+              // Calculate scroll position to show input right below logo/subtitle
+              const isFirstName = inputRef === firstNameRef;
+              const isLastName = inputRef === lastNameRef;
+              const isEmail = inputRef === emailRef;
+              const isPassword = inputRef === passwordRef;
+              const isConfirmPassword = inputRef === confirmPasswordRef;
+
+              let extraOffset;
+              if (isFirstName) {
+                extraOffset = 120; // Position First Name right below logo/subtitle
+              } else if (isLastName) {
+                extraOffset = 100; // Position Last Name appropriately
+              } else if (isEmail) {
+                extraOffset = 80; // Position Email appropriately
+              } else if (isPassword || isConfirmPassword) {
+                extraOffset = 60; // Standard for password fields
+              } else {
+                extraOffset = 50; // Default
+              }
+
+              scrollViewRef.current?.scrollTo({
+                y: Math.max(0, y - extraOffset),
+                animated: true,
+              });
+            },
+            () => {
+              // Enhanced fallback - position First Name right below logo/subtitle
+              const fieldIndex =
+                inputRef === firstNameRef
+                  ? 0
+                  : inputRef === lastNameRef
+                  ? 1
+                  : inputRef === emailRef
+                  ? 2
+                  : inputRef === passwordRef
+                  ? 3
+                  : 4; // confirmPassword is 4
+
+              // Calculate scroll position to show First Name right below logo/subtitle
+              const logoSubtitleHeight = 150; // Approximate height of logo + subtitle + spacing
+              const scrollY = logoSubtitleHeight + fieldIndex * 60;
+
+              scrollViewRef.current?.scrollTo({
+                y: Math.max(0, scrollY - 50),
+                animated: true,
+              });
+            }
+          );
+        }, 100); // Slightly longer delay to ensure proper measurement
+      }
+    };
+
+    // Function to return form to centered position when keyboard is dismissed
+    const returnToCenter = () => {
+      if (scrollViewRef.current) {
+        scrollViewRef.current.scrollTo({ y: 0, animated: true });
+      }
+    };
+
+    // Add listener for when keyboard state changes
+    useEffect(() => {
+      if (!keyboardVisible) {
+        // Keyboard was dismissed, return to center with a slight delay
+        setTimeout(returnToCenter, 200);
+      }
+    }, [keyboardVisible]);
+
+    // Dynamic content container style based on keyboard visibility
+    const dynamicContentStyle = {
+      ...styles.contentContainer,
+      justifyContent: keyboardVisible ? "flex-start" : "center", // Center when keyboard hidden, top when visible
+      paddingTop: keyboardVisible ? 20 : 0, // Add top padding when keyboard is visible
+    };
+
+    return (
+      <ScrollView
+        ref={scrollViewRef}
+        style={styles.scrollContainer}
+        contentContainerStyle={dynamicContentStyle}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        scrollEnabled={keyboardVisible} // Only enable scrolling when keyboard is visible
+        bounces={false} // Disable bouncing to prevent unwanted scrolling
+        overScrollMode="never" // Android: prevent over-scroll effects
+      >
+        <View style={styles.formContainer}>
+          {/* Google OAuth Button */}
+          <GoogleSignInButton
+            title={
+              mode === "signup" ? "Sign Up with Google" : "Continue with Google"
+            }
           />
-          {validationErrors.firstName && (
-            <Text style={styles.error}>{validationErrors.firstName}</Text>
+
+          {/* Divider */}
+          <View style={styles.dividerContainer}>
+            <View style={styles.divider} />
+            <Text style={styles.dividerText}>OR</Text>
+            <View style={styles.divider} />
+          </View>
+
+          {mode === "signup" && (
+            <>
+              <TextInput
+                ref={firstNameRef}
+                style={styles.input}
+                placeholder="First Name"
+                value={values.firstName}
+                onChangeText={(v: string) => handleChange("firstName", v)}
+                onFocus={() => scrollToInput(firstNameRef)}
+                returnKeyType="next"
+                autoCapitalize="words"
+                autoCorrect={false}
+                blurOnSubmit={false}
+                onSubmitEditing={() => lastNameRef.current?.focus()}
+              />
+              {validationErrors.firstName && (
+                <Text style={styles.error}>{validationErrors.firstName}</Text>
+              )}
+              <TextInput
+                ref={lastNameRef}
+                style={styles.input}
+                placeholder="Last Name"
+                value={values.lastName}
+                onChangeText={(v: string) => handleChange("lastName", v)}
+                onFocus={() => scrollToInput(lastNameRef)}
+                returnKeyType="next"
+                autoCapitalize="words"
+                autoCorrect={false}
+                blurOnSubmit={false}
+                onSubmitEditing={() => emailRef.current?.focus()}
+              />
+              {validationErrors.lastName && (
+                <Text style={styles.error}>{validationErrors.lastName}</Text>
+              )}
+            </>
           )}
           <TextInput
+            ref={emailRef}
             style={styles.input}
-            placeholder="Last Name"
-            value={values.lastName}
-            onChangeText={(v: string) => handleChange("lastName", v)}
+            placeholder="Email"
+            value={values.email}
+            onChangeText={(v: string) => handleChange("email", v)}
+            onFocus={() => scrollToInput(emailRef)}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            returnKeyType="next"
+            autoComplete="email"
+            autoCorrect={false}
+            blurOnSubmit={false}
+            onSubmitEditing={() => passwordRef.current?.focus()}
           />
-          {validationErrors.lastName && (
-            <Text style={styles.error}>{validationErrors.lastName}</Text>
+          {validationErrors.email && (
+            <Text style={styles.error}>{validationErrors.email}</Text>
           )}
-        </>
-      )}
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={values.email}
-        onChangeText={(v: string) => handleChange("email", v)}
-        autoCapitalize="none"
-        keyboardType="email-address"
-      />
-      {validationErrors.email && (
-        <Text style={styles.error}>{validationErrors.email}</Text>
-      )}
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={values.password}
-        onChangeText={(v: string) => handleChange("password", v)}
-        secureTextEntry
-      />
-      {validationErrors.password && (
-        <Text style={styles.error}>{validationErrors.password}</Text>
-      )}
-      {mode === "signup" && (
-        <>
           <TextInput
+            ref={passwordRef}
             style={styles.input}
-            placeholder="Confirm Password"
-            value={values.confirmPassword}
-            onChangeText={(v: string) => handleChange("confirmPassword", v)}
+            placeholder="Password"
+            value={values.password}
+            onChangeText={(v: string) => handleChange("password", v)}
+            onFocus={() => scrollToInput(passwordRef)}
             secureTextEntry
+            returnKeyType={mode === "signup" ? "next" : "done"}
+            autoComplete="password"
+            autoCorrect={false}
+            blurOnSubmit={false}
+            onSubmitEditing={
+              mode === "login"
+                ? handleSubmit
+                : () => confirmPasswordRef.current?.focus()
+            }
           />
-          {validationErrors.confirmPassword && (
-            <Text style={styles.error}>{validationErrors.confirmPassword}</Text>
+          {validationErrors.password && (
+            <Text style={styles.error}>{validationErrors.password}</Text>
           )}
-        </>
-      )}
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-      <Button
-        title={mode === "login" ? "Login" : "Sign Up"}
-        onPress={handleSubmit}
-        disabled={loading}
-      />
-    </View>
-  );
-}
+          {mode === "signup" && (
+            <>
+              <TextInput
+                ref={confirmPasswordRef}
+                style={styles.input}
+                placeholder="Confirm Password"
+                value={values.confirmPassword}
+                onChangeText={(v: string) => handleChange("confirmPassword", v)}
+                onFocus={() => scrollToInput(confirmPasswordRef)}
+                secureTextEntry
+                returnKeyType="done"
+                onSubmitEditing={handleSubmit}
+                autoComplete="password"
+                autoCorrect={false}
+                blurOnSubmit={false}
+              />
+              {validationErrors.confirmPassword && (
+                <Text style={styles.error}>
+                  {validationErrors.confirmPassword}
+                </Text>
+              )}
+            </>
+          )}
+          {error ? <Text style={styles.error}>{error}</Text> : null}
+
+          <View
+            style={[
+              styles.buttonContainer,
+              keyboardVisible && styles.buttonContainerKeyboard,
+            ]}
+          >
+            <Button
+              title={mode === "login" ? "Login" : "Sign Up"}
+              onPress={handleSubmit}
+              disabled={loading}
+            />
+          </View>
+        </View>
+      </ScrollView>
+    );
+  }
+);
+
+AuthForm.displayName = "AuthForm";
+
+export default AuthForm;
