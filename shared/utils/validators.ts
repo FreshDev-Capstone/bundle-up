@@ -22,8 +22,8 @@ export const validateAuthForm = (
   // Password validation
   if (!values.password) {
     errors.password = "Password is required";
-  } else if (values.password.length < 6) {
-    errors.password = "Password must be at least 6 characters long";
+  } else if (values.password.length < 8) {
+    errors.password = "Password must be at least 8 characters long";
   }
 
   // Signup specific validations
@@ -63,7 +63,7 @@ export const validateEmail = (email: string): boolean => {
 };
 
 export const validatePassword = (password: string): boolean => {
-  return password.length >= 6;
+  return password.length >= 8;
 };
 
 export const validateRequired = (value: string | undefined): boolean => {

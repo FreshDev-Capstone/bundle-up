@@ -19,7 +19,7 @@
 ### 3. **Types & Interfaces** (`/shared/types/`)
 
 - All TypeScript types are fully shared
-- `AuthFormProps`, `AuthFormValues`, `Product`, `CartItem`, `OrderSummary`
+- `AuthFormProps`, `RegisterData`, `Product`, `CartItem`, `OrderSummary`
 
 ### 4. **API Layer** (`/shared/api/`)
 

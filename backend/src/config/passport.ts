@@ -5,6 +5,9 @@ import {
   VerifyCallback,
 } from "passport-google-oauth20";
 import { User } from "../models/User";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const GOOGLE_CLIENT_ID =
   process.env.GOOGLE_CLIENT_ID || process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;

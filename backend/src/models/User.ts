@@ -74,7 +74,7 @@ export class User implements User {
   static async updateLastLogin(id: string): Promise<void> {
     await knex("users").where({ id }).update({
       lastLoginAt: new Date(),
-      updatedAt: new Date(),
+      updated_at: new Date(),
     });
   }
 
@@ -90,7 +90,7 @@ export class User implements User {
       .where({ id })
       .update({
         ...data,
-        updatedAt: new Date(),
+        updated_at: new Date(),
       })
       .returning("*");
 

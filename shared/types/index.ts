@@ -13,7 +13,7 @@ export * from "./brand";
 export type {
   User,
   AuthState,
-  AuthFormValues,
+  RegisterData,
   AuthFormProps,
   AuthFormConfig,
 } from "./auth";

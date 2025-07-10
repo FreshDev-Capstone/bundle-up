@@ -52,10 +52,15 @@ export class AuthService {
    */
   static async register(userData: RegisterData): Promise<AuthResult> {
     try {
-      const [data, error] = await fetchHandler(
-        `${API_BASE_URL}/auth/register`,
-        getPostOptions(userData)
+      const url = `${API_BASE_URL}/auth/register`;
+      console.log(`[AuthService] Registering user at URL: ${url}`);
+      console.log(
+        `[AuthService] User data:`,
+        JSON.stringify(userData, null, 2)
       );
+      console.log(`[AuthService] API_BASE_URL: ${API_BASE_URL}`);
+
+      const [data, error] = await fetchHandler(url, getPostOptions(userData));
 
       if (error) {
         return {

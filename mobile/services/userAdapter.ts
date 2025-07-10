@@ -6,15 +6,13 @@ import {
 } from "../utils/fetchingUtils";
 import { ProfileUpdateData } from "../../shared/types";
 
-const baseUrl = "http://localhost:3001/api/auth";
-
 export interface PasswordChangeData {
   currentPassword: string;
   newPassword: string;
 }
 
 export const getUserProfile = async () => {
-  return await fetchHandler(`${baseUrl}/profile`);
+  return await fetchHandler("/auth/profile");
 };
 
 export const updateProfile = async (profileData: ProfileUpdateData) => {
@@ -25,7 +23,7 @@ export const updateProfile = async (profileData: ProfileUpdateData) => {
 
   try {
     const result = await fetchHandler(
-      `${baseUrl}/profile`,
+      "/auth/profile",
       getPatchOptions(profileData)
     );
     return result;
@@ -43,7 +41,7 @@ export const changePassword = async (passwordData: PasswordChangeData) => {
 
   try {
     const result = await fetchHandler(
-      `${baseUrl}/change-password`,
+      "/auth/change-password",
       getPostOptions(passwordData)
     );
     return result;
@@ -55,10 +53,7 @@ export const changePassword = async (passwordData: PasswordChangeData) => {
 
 export const deleteAccount = async () => {
   try {
-    const result = await fetchHandler(
-      `${baseUrl}/delete-account`,
-      deleteOptions
-    );
+    const result = await fetchHandler("/auth/delete-account", deleteOptions);
     return result;
   } catch (error) {
     console.error("Delete account error:", error);

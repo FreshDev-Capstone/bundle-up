@@ -32,6 +32,7 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
+  companyName?: string; // For B2B users
   accountType: "B2B" | "B2C" | "ADMIN";
   brand?: string;
   token?: string;
@@ -56,8 +57,8 @@ export interface ProfileUpdateData {
 export interface AuthFormValues {
   email: string;
   password: string;
-  firstName?: string;
-  lastName?: string;
+  firstName: string;
+  lastName: string;
   confirmPassword?: string;
   companyName?: string; // For B2B registration
 }

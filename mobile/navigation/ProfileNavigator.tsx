@@ -4,7 +4,7 @@ import ProfileScreen from "../screens/dashboard/B2C-B2B/profile/ProfileScreen";
 import EditProfileScreen from "../screens/dashboard/B2C-B2B/profile/EditProfileScreen";
 import OrderHistoryScreen from "../screens/dashboard/B2C-B2B/profile/OrderHistoryScreen";
 import PaymentMethodsScreen from "../screens/dashboard/B2C-B2B/profile/PaymentMethodsScreen";
-import DeliveryAddressesScreen from "../screens/dashboard/B2C-B2B/profile/DeliveryAddressesScreen";
+import DeliveryAddressesScreen from "../screens/dashboard/B2C-B2B/DeliveryAddressesScreen";
 import SettingsScreen from "../screens/dashboard/B2C-B2B/profile/SettingsScreen";
 
 const Stack = createNativeStackNavigator();

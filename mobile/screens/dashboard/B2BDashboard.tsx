@@ -25,9 +25,7 @@ export default function B2BDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const [data, error] = await fetchHandler(
-        "http://localhost:3001/api/dashboard/b2b"
-      );
+      const [data, error] = await fetchHandler("/dashboard/b2b");
 
       if (error) {
         console.error("Failed to fetch dashboard data:", error);

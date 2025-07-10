@@ -27,10 +27,8 @@ import {
 import { sendError } from "./utils/responseHelpers";
 
 // Load environment variables
-dotenv.config({ path: path.join(__dirname, ".env") });
-
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 // Security middleware
 app.use(
@@ -49,7 +47,23 @@ app.use(
 // CORS configuration
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps) or from allowed origins
+      if (!origin) return callback(null, true);
+
+      // Allow localhost and ngrok tunnels for development
+      if (
+        origin.includes("localhost") ||
+        origin.includes("ngrok.io") ||
+        origin.includes("expo.dev") ||
+        origin === process.env.FRONTEND_URL
+      ) {
+        return callback(null, true);
+      }
+
+      // For production, you might want to be more restrictive
+      callback(null, true);
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],

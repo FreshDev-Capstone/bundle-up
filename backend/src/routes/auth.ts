@@ -6,7 +6,6 @@ import { checkAuthentication } from "../middleware/auth";
 const router = express.Router();
 
 router.post("/register", AuthController.register);
-
 router.post("/login", AuthController.login);
 
 router.get(
@@ -22,10 +21,10 @@ router.get(
   AuthController.googleAuth
 );
 
+// Mobile Google OAuth route
+router.post("/google", AuthController.googleAuth);
 router.get("/profile", checkAuthentication, AuthController.getProfile);
-
 router.put("/profile", checkAuthentication, AuthController.updateProfile);
-
 router.post("/refresh", AuthController.refreshToken);
 
 router.post("/logout", checkAuthentication, (req, res) => {

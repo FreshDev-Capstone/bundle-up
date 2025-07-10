@@ -93,6 +93,7 @@ export default StyleSheet.create({
     fontSize: 14, // Slightly smaller text than input fields
     width: "100%", // Full width for alignment
     textAlign: "left", // Left-aligned error text
+    minHeight: 20, // Fixed minimum height to prevent layout jumping
   },
 
   // Container for the "OR" divider between Google button and email/password form

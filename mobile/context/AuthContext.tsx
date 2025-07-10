@@ -117,7 +117,27 @@ export const useAuthStore = create<ExtendedAuthState>((set, get) => ({
       }
     } catch (error) {
       console.error("Registration error:", error);
-      set({ loading: false, error: "Network error. Please try again." });
+      console.error("Error details:", {
+        message: error instanceof Error ? error.message : "Unknown error",
+        stack: error instanceof Error ? error.stack : "No stack trace",
+        name: error instanceof Error ? error.name : "Unknown error type",
+      });
+
+      // Show more specific error message based on the error
+      let errorMessage = "Please check your internet connection and try again.";
+      if (error instanceof Error) {
+        if (error.message.includes("fetch")) {
+          errorMessage = "Unable to connect to server. Please try again.";
+        } else if (error.message.includes("timeout")) {
+          errorMessage = "Request timed out. Please try again.";
+        } else if (error.message.includes("Network request failed")) {
+          errorMessage =
+            "Network connection failed. Please check your internet connection.";
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      set({ loading: false, error: errorMessage });
       return false;
     }
   },

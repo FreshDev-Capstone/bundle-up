@@ -8,45 +8,27 @@ import {
 
 interface Product {
   id: number;
-
   name: string;
-
   description: string;
-
   category: string;
-
   eggColor?: string;
-
   eggCount: number;
-
   imageUrl: string;
-
   b2cPrice: number;
-
   b2bPrice: number;
-
   inventoryByCarton: number;
-
   inventoryByBox: number;
-
   isAvailable: boolean;
-
   isActive: boolean;
-
   createdAt: Date;
-
   updatedAt: Date;
 }
 
 interface ProductFilters {
   category?: string;
-
   eggColor?: string;
-
   eggCount?: number;
-
   available?: boolean;
-
   search?: string;
 }
 

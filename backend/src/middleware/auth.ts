@@ -1,16 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
 import { User } from "../models/User";
-
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
-
-interface JWTPayload {
-  userId: string;
-  email: string;
-  role: string;
-  iat?: number;
-  exp?: number;
-}
+import { verifyAccessToken, JWTPayload } from "../config/jwt";
 
 export interface AuthenticatedRequest extends Request {
   user?: {
@@ -40,7 +30,14 @@ export const authenticateToken = async (
       return;
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET) as JWTPayload;
+    // Use the proper JWT verification from config
+    const decoded = verifyAccessToken(token);
+
+    // Verify the token is an access token
+    if (decoded.type !== "access") {
+      res.status(401).json({ error: "Invalid token type" });
+      return;
+    }
 
     const user = await User.findById(decoded.userId);
     if (!user) {

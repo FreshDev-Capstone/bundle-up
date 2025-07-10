@@ -299,7 +299,6 @@ const AuthForm = React.memo(
               )}
             </>
           )}
-          {error ? <Text style={styles.error}>{error}</Text> : null}
 
           <View
             style={[

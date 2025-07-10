@@ -5,6 +5,7 @@ import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import { fetchHandler, getPostOptions } from "../../../utils/fetchingUtils";
 import { useAuthStore } from "../../../context/AuthContext";
+import { API_BASE_URL } from "../../../utils/constants";
 import styles from "./GoogleSignInButton.styles";
 
 WebBrowser.maybeCompleteAuthSession();
@@ -40,7 +41,7 @@ export default function GoogleSignInButton({
         const userInfo = await userInfoRes.json();
         // Send to backend for JWT
         const [data, error] = await fetchHandler(
-          "http://localhost:3001/api/auth/google",
+          `${API_BASE_URL}/auth/google`,
           getPostOptions({
             googleId: userInfo.id,
             email: userInfo.email,

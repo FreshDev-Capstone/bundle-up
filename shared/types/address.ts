@@ -1,7 +1,6 @@
 // Address related types
 export interface Address {
   id: string;
-  nickname: string;
   fullName: string;
   street: string;
   city: string;
@@ -15,7 +14,6 @@ export interface Address {
 }
 
 export interface CreateAddressData {
-  nickname: string;
   fullName: string;
   street: string;
   city: string;

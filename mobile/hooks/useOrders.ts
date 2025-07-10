@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Order } from "../../shared/types/order";
+import { fetchHandler } from "@/utils/fetchingUtils";
 
 export const useOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -10,14 +11,13 @@ export const useOrders = () => {
     const fetchOrders = async () => {
       try {
         setLoading(true);
-        // TODO: Replace with actual API call
-        // const response = await fetch('/api/orders');
-        // const data = await response.json();
-        // setOrders(data);
+        const response = await fetchHandler(`/orders`);
+        const data = await response.json();
+        setOrders(data);
 
         // Mock data for now
-        const mockOrders: Order[] = [];
-        setOrders(mockOrders);
+        // const mockOrders: Order[] = [];
+        // setOrders(mockOrders);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch orders");
       } finally {

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Product } from "../../shared/types/product";
+import { API_BASE_URL } from "../utils/constants";
 
 export const useProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -10,46 +11,39 @@ export const useProducts = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        // TODO: Replace with actual API call
-        // const response = await fetch('/api/products');
-        // const data = await response.json();
-        // setProducts(data);
+        setError(null);
 
-        // Mock data for now
-        const mockProducts: Product[] = [
-          {
-            id: 1,
-            name: "Sample Product 1",
-            description: "This is a sample product",
-            category: "Electronics",
-            eggColor: "brown",
-            eggCount: 12,
-            imageUrl: "https://picsum.photos/300/200?random=1",
-            b2cPrice: 29.99,
-            b2bPrice: 24.99,
-            inventoryByCarton: 100,
-            inventoryByBox: 50,
-            isAvailable: true,
-            isActive: true,
-          },
-          {
-            id: 2,
-            name: "Sample Product 2",
-            description: "This is another sample product",
-            category: "Clothing",
-            eggColor: "white",
-            eggCount: 24,
-            imageUrl: "https://picsum.photos/300/200?random=2",
-            b2cPrice: 39.99,
-            b2bPrice: 34.99,
-            inventoryByCarton: 50,
-            inventoryByBox: 25,
-            isAvailable: true,
-            isActive: true,
-          },
-        ];
-        setProducts(mockProducts);
+        console.log(
+          `[useProducts] Fetching products from: ${API_BASE_URL}/products`
+        );
+
+        const response = await fetch(`${API_BASE_URL}/products?limit=50`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log(
+          `[useProducts] Received ${data.data?.products?.length || 0} products`
+        );
+
+        if (data.success && data.data?.products) {
+          // Convert string prices back to numbers for the frontend
+          const productsWithNumericPrices = data.data.products.map(
+            (product: any) => ({
+              ...product,
+              b2cPrice: parseFloat(product.b2cPrice),
+              b2bPrice: parseFloat(product.b2bPrice),
+            })
+          );
+
+          setProducts(productsWithNumericPrices);
+        } else {
+          throw new Error("Invalid response format");
+        }
       } catch (err) {
+        console.error("[useProducts] Error fetching products:", err);
         setError(
           err instanceof Error ? err.message : "Failed to fetch products"
         );
@@ -61,10 +55,46 @@ export const useProducts = () => {
     fetchProducts();
   }, []);
 
-  const refetch = () => {
+  const refetch = async () => {
     setError(null);
-    setLoading(true);
-    // Re-fetch products
+    // Re-fetch products by calling the same logic
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await fetch(`${API_BASE_URL}/products?limit=50`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        if (data.success && data.data?.products) {
+          const productsWithNumericPrices = data.data.products.map(
+            (product: any) => ({
+              ...product,
+              b2cPrice: parseFloat(product.b2cPrice),
+              b2bPrice: parseFloat(product.b2bPrice),
+            })
+          );
+
+          setProducts(productsWithNumericPrices);
+        } else {
+          throw new Error("Invalid response format");
+        }
+      } catch (err) {
+        console.error("[useProducts] Error refetching products:", err);
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch products"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    await fetchProducts();
   };
 
   return { products, loading, error, refetch };

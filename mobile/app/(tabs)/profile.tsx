@@ -10,6 +10,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Image,
+  Alert,
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { useBrand } from "../../context/BrandContext";
@@ -20,7 +21,7 @@ import { BRANDS } from "../../../shared/config/brands";
 
 // Lazy load ProfileScreen to reduce initial bundle size
 const ProfileScreen = React.lazy(
-  () => import("../../screens/profile/ProfileScreen")
+  () => import("../../screens/dashboard/B2C-B2B/profile/ProfileScreen")
 );
 
 export default function ProfileTab() {
@@ -49,6 +50,22 @@ export default function ProfileTab() {
       ? "Professional food service solutions for your business needs."
       : "Farm-fresh products delivered with the same love and care we'd give our own family.",
     showCompanyName: isB2B, // Only show company name for B2B signup
+  };
+
+  // Handle successful authentication with welcome message
+  const handleAuthSuccess = () => {
+    // The user will automatically be redirected to ProfileScreen
+    // due to the isAuthenticated check above
+    console.log(
+      "User successfully authenticated, redirecting to profile dashboard"
+    );
+
+    // Show a brief success message tailored to account type
+    const welcomeMessage = isB2B
+      ? "Welcome to your business dashboard! You can now manage your professional account and access business features."
+      : "Welcome to your profile dashboard! You can now manage your account and start shopping.";
+
+    Alert.alert("Welcome!", welcomeMessage, [{ text: "OK", style: "default" }]);
   };
 
   // Keyboard event listeners
@@ -126,9 +143,17 @@ export default function ProfileTab() {
           <Text style={styles.subtitleText}>{authConfig.subtitle}</Text>
 
           {showLogin ? (
-            <LoginForm keyboardVisible={keyboardVisible} config={authConfig} />
+            <LoginForm
+              keyboardVisible={keyboardVisible}
+              config={authConfig}
+              onSuccess={handleAuthSuccess}
+            />
           ) : (
-            <SignupForm keyboardVisible={keyboardVisible} config={authConfig} />
+            <SignupForm
+              keyboardVisible={keyboardVisible}
+              config={authConfig}
+              onSuccess={handleAuthSuccess}
+            />
           )}
 
           <View style={styles.switchContainer}>

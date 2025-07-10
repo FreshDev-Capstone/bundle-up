@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { login, register, getUserProfile } from "../api/endpoints";
-import { User, AuthFormValues } from "../types";
+import { User, RegisterData } from "../types";
 
 export interface UseAuthReturn {
   user: User | null;
   loading: boolean;
   error: string | null;
   login: (credentials: { email: string; password: string }) => Promise<boolean>;
-  register: (userData: AuthFormValues) => Promise<boolean>;
+  register: (userData: RegisterData) => Promise<boolean>;
   logout: () => void;
   refreshProfile: () => Promise<void>;
   isAuthenticated: boolean;
@@ -56,7 +56,7 @@ export const useAuth = (
     }
   };
 
-  const handleRegister = async (userData: AuthFormValues): Promise<boolean> => {
+  const handleRegister = async (userData: RegisterData): Promise<boolean> => {
     setLoading(true);
     setError(null);
 

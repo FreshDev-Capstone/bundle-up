@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Text, Image, TouchableOpacity, View } from "react-native";
 import { Product } from "../../../../shared/types/product";
 import { CirclePlus } from "lucide-react-native";
@@ -12,9 +12,31 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, onPress }: ProductCardProps) {
   const { user } = useAuth();
+  const [imageError, setImageError] = useState(false);
 
   const handlePress = () => {
     onPress?.(product);
+  };
+
+  // Generate a placeholder image URL based on product category and color
+  const getPlaceholderImage = () => {
+    const colors = ['#8B4513', '#DEB887', '#F5DEB3', '#CD853F']; // Brown tones for eggs
+    const colorIndex = (product.id || 0) % colors.length;
+    return `https://via.placeholder.com/200x150/${colors[colorIndex].substring(1)}/FFFFFF?text=${encodeURIComponent(product.eggColor || 'Egg')}`;
+  };
+
+  const getImageSource = () => {
+    if (imageError || !product.imageUrl) {
+      return { uri: getPlaceholderImage() };
+    }
+    
+    // Handle relative URLs by making them absolute
+    if (product.imageUrl.startsWith('/')) {
+      // For now, use placeholder since we don't have actual egg images
+      return { uri: getPlaceholderImage() };
+    }
+    
+    return { uri: product.imageUrl };
   };
 
   // Determine which price to show based on user account type
@@ -47,9 +69,13 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
 
   return (
     <TouchableOpacity style={styles.container} onPress={handlePress}>
-      <Image source={{ uri: product.imageUrl }} style={styles.image} />
+      <Image 
+        source={getImageSource()} 
+        style={styles.image} 
+        onError={() => setImageError(true)}
+      />
       <CirclePlus style={styles.addButton} />
-      <Text style={styles.name}>{product.name}</Text>
+      <Text style={styles.name} numberOfLines={2}>{product.name}</Text>
 
       {/* Admin users see both prices */}
       {user?.accountType === "ADMIN" ? (
