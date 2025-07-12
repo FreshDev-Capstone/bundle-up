@@ -24,7 +24,7 @@ export const updateProfile = async (profileData: ProfileUpdateData) => {
   try {
     const result = await fetchHandler(
       "/auth/profile",
-      getPatchOptions(profileData)
+      getPatchOptions({ ...profileData })
     );
     return result;
   } catch (error) {
@@ -42,7 +42,10 @@ export const changePassword = async (passwordData: PasswordChangeData) => {
   try {
     const result = await fetchHandler(
       "/auth/change-password",
-      getPostOptions(passwordData)
+      getPostOptions({
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      })
     );
     return result;
   } catch (error) {

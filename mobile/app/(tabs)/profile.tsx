@@ -10,18 +10,18 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Image,
-  Alert,
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { useBrand } from "../../context/BrandContext";
-import SignupForm from "../../components/auth/SignupForm/SignupForm";
-import LoginForm from "../../components/auth/LoginForm/LoginForm";
 import { AuthFormConfig } from "../../../shared/types";
 import { BRANDS } from "../../../shared/config/brands";
+import LoginForm from "../../components/auth/LoginForm/LoginForm";
+import SignupForm from "../../components/auth/SignupForm/SignupForm";
+import { useNavigation } from "@react-navigation/native";
 
 // Lazy load ProfileScreen to reduce initial bundle size
 const ProfileScreen = React.lazy(
-  () => import("../../screens/dashboard/B2C-B2B/profile/ProfileScreen")
+  () => import("../../screens/dashboard/B2C-B2B/ProfileScreen")
 );
 
 export default function ProfileTab() {
@@ -30,6 +30,8 @@ export default function ProfileTab() {
   const [showLogin, setShowLogin] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [isB2B, setIsB2B] = useState(false);
+
+  const navigate = useNavigation<any>();
 
   // Initialize brand based on toggle
   useEffect(() => {
@@ -54,18 +56,7 @@ export default function ProfileTab() {
 
   // Handle successful authentication with welcome message
   const handleAuthSuccess = () => {
-    // The user will automatically be redirected to ProfileScreen
-    // due to the isAuthenticated check above
-    console.log(
-      "User successfully authenticated, redirecting to profile dashboard"
-    );
-
-    // Show a brief success message tailored to account type
-    const welcomeMessage = isB2B
-      ? "Welcome to your business dashboard! You can now manage your professional account and access business features."
-      : "Welcome to your profile dashboard! You can now manage your account and start shopping.";
-
-    Alert.alert("Welcome!", welcomeMessage, [{ text: "OK", style: "default" }]);
+    navigate.navigate("ProfileScreen");
   };
 
   // Keyboard event listeners

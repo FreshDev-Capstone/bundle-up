@@ -3,7 +3,10 @@ import { TouchableOpacity, View, Text, Alert } from "react-native";
 import { Svg, Path } from "react-native-svg";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
-import { fetchHandler, getPostOptions } from "../../../utils/fetchingUtils";
+import {
+  fetchHandler,
+  getPostOptions,
+} from "../../../../shared/utils/fetchingUtils";
 import { useAuthStore } from "../../../context/AuthContext";
 import { API_BASE_URL } from "../../../utils/constants";
 import styles from "./GoogleSignInButton.styles";

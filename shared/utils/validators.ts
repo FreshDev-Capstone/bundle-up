@@ -1,4 +1,4 @@
-import { AuthFormValues, AuthFormConfig } from "../types";
+import { RegisterData, AuthFormConfig, LoginCredentials } from "../types";
 
 export interface ValidationResult {
   isValid: boolean;
@@ -6,11 +6,22 @@ export interface ValidationResult {
 }
 
 export const validateAuthForm = (
-  values: AuthFormValues,
-  mode: "login" | "signup",
+  values: RegisterData | LoginCredentials,
+  mode: "signup" | "login",
   config?: AuthFormConfig
 ): ValidationResult => {
   const errors: Record<string, string> = {};
+
+  // Form validation logic
+  if (
+    !values.email ||
+    !values.password ||
+    (mode === "signup" && (!values.firstName || !values.lastName)) ||
+    (mode === "signup" && config?.showCompanyName && !values.companyName) ||
+    (mode === "signup" && !values.confirmPassword)
+  ) {
+    errors.form = "Please fill in all fields";
+  }
 
   // Email validation
   if (!values.email) {
@@ -42,7 +53,7 @@ export const validateAuthForm = (
       config?.showCompanyName &&
       !values.companyName?.trim()
     ) {
-      errors.companyName = "Company name is required";
+      errors.companyName = "Company name is required for business accounts.";
     }
 
     if (!values.confirmPassword) {

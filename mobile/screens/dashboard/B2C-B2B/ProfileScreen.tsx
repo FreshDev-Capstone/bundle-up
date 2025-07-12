@@ -57,7 +57,7 @@ export default function ProfileScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.welcome}>
-          Welcome{user?.firstName ? `, ${user.firstName}` : ""}!
+          Welcome{user?.firstName ? `, ${user.firstName}` : `, ${user.email}`}!
         </Text>
         <Text style={styles.accountType}>
           {user?.accountType === "ADMIN"

@@ -1,26 +1,26 @@
 import React from "react";
 import { Alert } from "react-native";
-import AuthForm;
-import { RegisterData } from "../../../shared/types";
+import AuthForm from "@/components/auth/AuthForm/AuthForm";
+import { AuthFormConfig, RegisterData } from "../../../../shared/types";
 import { useAuth } from "@/context/AuthContext";
-import { validateAuthForm } from "../../../shared/utils/validators";
+import { validateAuthForm } from "../../../../shared/utils/validators";
 
-export default function SignupForm({ keyboardVisible, config, onSuccess }) {
+interface AuthFormProps {
+  keyboardVisible: boolean;
+  config: AuthFormConfig;
+  onSuccess: () => void;
+}
+
+export default function SignupForm({
+  keyboardVisible,
+  config,
+  onSuccess,
+}: AuthFormProps) {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const { register } = useAuth();
 
   const handleSignup = async (values: RegisterData) => {
-    const validationResult = validateAuthForm(values, "signup", config);
-    if (!validationResult.isValid) {
-      const firstError = Object.values(validationResult.errors)[0];
-      Alert.alert(
-        "Validation Error",
-        firstError || "Please fix the errors in the form."
-      );
-      return;
-    }
-
     setLoading(true);
     setError(null);
 
@@ -29,7 +29,7 @@ export default function SignupForm({ keyboardVisible, config, onSuccess }) {
       if (success) {
         onSuccess();
       } else {
-        Alert.alert("Sign Up Failed", error || "Please check your credentials");
+        Alert.alert("Sign Up Failed", "Please check your credentials");
       }
     } catch (err) {
       console.error("Sign Up error:", err);

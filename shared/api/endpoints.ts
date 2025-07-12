@@ -12,6 +12,7 @@ import {
   RegisterData,
   LoginCredentials,
 } from "../types";
+import { CreateOrderData } from "../types/order";
 
 // Product Endpoints
 export const createProduct = async (productData: Partial<Product>) => {
@@ -63,17 +64,13 @@ export const deleteProduct = async (id: number) => {
 // Auth Endpoints
 export const login = async (credentials: LoginCredentials) => {
   try {
-    const response = await fetchHandler(
+    const [data, error] = await fetchHandler(
       `/auth/login`,
       getPostOptions(credentials)
     );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "Login failed");
+    if (error) {
+      throw new Error(error.message || "Login failed");
     }
-
     return data;
   } catch (error) {
     console.error("Login error:", error);
@@ -82,19 +79,14 @@ export const login = async (credentials: LoginCredentials) => {
 };
 
 export const register = async (userData: RegisterData) => {
-  // return await fetchHandler(`/auth/register`, getPostOptions(userData));
   try {
-    const response = await fetchHandler(
+    const [data, error] = await fetchHandler(
       `/auth/register`,
       getPostOptions(userData)
     );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "Registration failed");
+    if (error) {
+      throw new Error(error.message || "Registration failed");
     }
-
     return data;
   } catch (error) {
     console.error("Registration error:", error);

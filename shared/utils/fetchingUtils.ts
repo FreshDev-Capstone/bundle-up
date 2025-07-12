@@ -9,7 +9,7 @@ export const deleteOptions = {
   credentials: "include" as RequestCredentials,
 };
 
-export const getPostOptions = (body: any) => ({
+export const getPostOptions = (body: Record<string, any>) => ({
   method: "POST",
   credentials: "include" as RequestCredentials,
   headers: { "Content-Type": "application/json" },

@@ -8,14 +8,14 @@ export const deleteOptions = {
   credentials: "include",
 };
 
-export const getPostOptions = (body: string) => ({
+export const getPostOptions = (body: Record<string, any>) => ({
   method: "POST",
   credentials: "include",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify(body),
 });
 
-export const getPatchOptions = (body: string) => ({
+export const getPatchOptions = (body: Record<string, any>) => ({
   method: "PATCH",
   credentials: "include",
   headers: { "Content-Type": "application/json" },

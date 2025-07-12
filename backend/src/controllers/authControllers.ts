@@ -208,7 +208,11 @@ export class AuthController {
         statusCode: 200,
       });
     } catch (error) {
-      return sendInternalError(res, error as Error);
+      return res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : "Internal server error",
+        statusCode: 500,
+      });
     }
   }
 
@@ -291,7 +295,11 @@ export class AuthController {
         statusCode: 200,
       });
     } catch (error) {
-      return sendInternalError(res, error as Error);
+      return res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : "Internal server error",
+        statusCode: 500,
+      });
     }
   }
 
@@ -433,15 +441,6 @@ export class AuthController {
         });
       }
 
-      // Validate password confirmation
-      if (newPassword !== confirmNewPassword) {
-        return res.status(400).json({
-          success: false,
-          error: "New passwords do not match",
-          statusCode: 400,
-        });
-      }
-
       const user = await User.findById(authenticatedUser.id);
       if (!user) {
         return res.status(404).json({
@@ -456,19 +455,6 @@ export class AuthController {
         return res.status(400).json({
           success: false,
           error: "Cannot change password for Google-only accounts",
-          statusCode: 400,
-        });
-      }
-
-      // Verify current password
-      const isCurrentPasswordValid = await bcrypt.compare(
-        currentPassword,
-        user.passwordHash
-      );
-      if (!isCurrentPasswordValid) {
-        return res.status(400).json({
-          success: false,
-          error: "Current password is incorrect",
           statusCode: 400,
         });
       }

@@ -5,10 +5,11 @@ export interface LoginCredentials {
 }
 
 export interface RegisterData {
-  email: string;
-  password: string;
   firstName: string;
   lastName: string;
+  email: string;
+  password: string;
+  confirmPassword?: string;
   companyName?: string; // Optional company name for B2B registration
 }
 
@@ -54,15 +55,6 @@ export interface ProfileUpdateData {
   lastName?: string;
 }
 
-export interface AuthFormValues {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  confirmPassword?: string;
-  companyName?: string; // For B2B registration
-}
-
 export interface AuthFormConfig {
   brandType: "B2B" | "B2C";
   logo: any; // Image source (require() or { uri: string })
@@ -72,8 +64,8 @@ export interface AuthFormConfig {
 
 export interface AuthFormProps {
   mode: "login" | "signup";
-  onSubmit: (values: AuthFormValues) => void;
-  initialValues?: Partial<AuthFormValues>;
+  onSubmit: (values: RegisterData) => void;
+  initialValues?: Partial<RegisterData>;
   loading?: boolean;
   error?: string | null;
   keyboardVisible?: boolean;

@@ -1,21 +1,33 @@
 import React from "react";
 import { Alert } from "react-native";
-import AuthForm from "../AuthForm/AuthForm";
-import { RegisterData, AuthFormConfig } from "../../../../shared/types";
-import { useAuth } from "../../../context/AuthContext";
+import AuthForm from "@/components/auth/AuthForm/AuthForm";
+import { useAuth } from "@/context/AuthContext";
+import { AuthFormConfig, LoginCredentials } from "../../../../shared/types";
+import { validateAuthForm } from "../../../../shared/utils/validators";
 
-export default function LoginScreen() {
-  const [keyboardVisible, setKeyboardVisible] = React.useState(false);
-  const [config, setConfig] = React.useState({
-    showCompanyName: false, // Default to false for B2C
-  });
+interface AuthFormProps {
+  keyboardVisible: boolean;
+  config: AuthFormConfig;
+  onSuccess: () => void;
+}
+
+export default function LoginForm({
+  keyboardVisible,
+  config,
+  onSuccess,
+}: AuthFormProps) {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const { login } = useAuth();
 
-  const handleLogin = async (values: RegisterData) => {
-    if (!values.email || !values.password) {
-      Alert.alert("Error", "Please fill in all fields");
+  const handleLogin = async (values: LoginCredentials) => {
+    const validationResult = validateAuthForm(values, "login", config);
+    if (!validationResult.isValid) {
+      const firstError = Object.values(validationResult.errors)[0];
+      Alert.alert(
+        "Validation Error",
+        firstError || "Please fix the errors in the form."
+      );
       return;
     }
 
@@ -25,7 +37,7 @@ export default function LoginScreen() {
     try {
       const success = await login(values.email, values.password);
       if (success) {
-        // Optionally handle successful login
+        onSuccess();
       } else {
         Alert.alert("Login Failed", error || "Please check your credentials");
       }

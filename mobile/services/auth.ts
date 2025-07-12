@@ -1,6 +1,5 @@
 import { fetchHandler, getPostOptions } from "../utils/fetchingUtils";
 import { TokenStorage } from "../utils/tokenStorage";
-import { API_BASE_URL } from "../utils/constants";
 import { LoginCredentials, RegisterData, User } from "../../shared/types";
 
 export interface AuthResult {
@@ -9,22 +8,19 @@ export interface AuthResult {
   error?: string;
 }
 
-/**
- * Authentication service with token management
- */
 export class AuthService {
-  /**
-   * Login with email and password
-   */
   static async login(credentials: LoginCredentials): Promise<AuthResult> {
     try {
       const [data, error] = await fetchHandler(
-        `${API_BASE_URL}/auth/login`,
+        `/auth/login`,
         getPostOptions(credentials)
       );
 
       if (error) {
-        return { success: false, error: error.message || "Login failed" };
+        const msg = error.message?.toLowerCase().includes("credential")
+          ? "Email or password is incorrect"
+          : error.message || "Login failed";
+        return { success: false, error: msg };
       }
 
       if (data?.user && data?.tokens) {
@@ -47,20 +43,12 @@ export class AuthService {
     }
   }
 
-  /**
-   * Register new user
-   */
   static async register(userData: RegisterData): Promise<AuthResult> {
     try {
-      const url = `${API_BASE_URL}/auth/register`;
-      console.log(`[AuthService] Registering user at URL: ${url}`);
-      console.log(
-        `[AuthService] User data:`,
-        JSON.stringify(userData, null, 2)
+      const [data, error] = await fetchHandler(
+        `/auth/register`,
+        getPostOptions(userData)
       );
-      console.log(`[AuthService] API_BASE_URL: ${API_BASE_URL}`);
-
-      const [data, error] = await fetchHandler(url, getPostOptions(userData));
 
       if (error) {
         return {
@@ -101,7 +89,7 @@ export class AuthService {
       }
 
       const [data, error] = await fetchHandler(
-        `${API_BASE_URL}/auth/refresh`,
+        `/auth/refresh`,
         getPostOptions({ refreshToken })
       );
 
@@ -149,7 +137,7 @@ export class AuthService {
 
       if (accessToken) {
         // Call logout endpoint (optional)
-        await fetchHandler(`${API_BASE_URL}/auth/logout`, {
+        await fetchHandler(`/auth/logout`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -181,6 +169,6 @@ export class AuthService {
   }
 }
 
-// Legacy exports for backwards compatibility
-export const login = AuthService.login;
-export const signup = AuthService.register;
+// If you need legacy exports, you can re-enable them below:
+// export const login = AuthService.login;
+// export const signup = AuthService.register;
