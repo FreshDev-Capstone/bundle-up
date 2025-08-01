@@ -1,13 +1,18 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
+import { Platform } from "react-native";
 
 const ACCESS_TOKEN_KEY = "access_token";
 const REFRESH_TOKEN_KEY = "refresh_token";
 const USER_DATA_KEY = "user_data";
 
+// Check if we're running on web
+const isWeb = Platform.OS === "web";
+
 /**
  * Secure token storage utility
- * Uses SecureStore for sensitive tokens and AsyncStorage for user data
+ * Uses SecureStore for native platforms and localStorage for web
+ * Uses AsyncStorage for user data on all platforms
  */
 export class TokenStorage {
   /**
@@ -18,10 +23,17 @@ export class TokenStorage {
     refreshToken: string
   ): Promise<void> {
     try {
-      await Promise.all([
-        SecureStore.setItemAsync(ACCESS_TOKEN_KEY, accessToken),
-        SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshToken),
-      ]);
+      if (isWeb) {
+        // Use localStorage on web
+        localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+        localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+      } else {
+        // Use SecureStore on native
+        await Promise.all([
+          SecureStore.setItemAsync(ACCESS_TOKEN_KEY, accessToken),
+          SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshToken),
+        ]);
+      }
     } catch (error) {
       console.error("Failed to store tokens:", error);
       throw error;
@@ -33,7 +45,11 @@ export class TokenStorage {
    */
   static async getAccessToken(): Promise<string | null> {
     try {
-      return await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
+      if (isWeb) {
+        return localStorage.getItem(ACCESS_TOKEN_KEY);
+      } else {
+        return await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
+      }
     } catch (error) {
       console.error("Failed to get access token:", error);
       return null;
@@ -45,7 +61,11 @@ export class TokenStorage {
    */
   static async getRefreshToken(): Promise<string | null> {
     try {
-      return await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
+      if (isWeb) {
+        return localStorage.getItem(REFRESH_TOKEN_KEY);
+      } else {
+        return await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
+      }
     } catch (error) {
       console.error("Failed to get refresh token:", error);
       return null;
@@ -82,11 +102,17 @@ export class TokenStorage {
    */
   static async clearAll(): Promise<void> {
     try {
-      await Promise.all([
-        SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY),
-        SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY),
-        AsyncStorage.removeItem(USER_DATA_KEY),
-      ]);
+      if (isWeb) {
+        localStorage.removeItem(ACCESS_TOKEN_KEY);
+        localStorage.removeItem(REFRESH_TOKEN_KEY);
+        await AsyncStorage.removeItem(USER_DATA_KEY);
+      } else {
+        await Promise.all([
+          SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY),
+          SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY),
+          AsyncStorage.removeItem(USER_DATA_KEY),
+        ]);
+      }
     } catch (error) {
       console.error("Failed to clear auth data:", error);
       throw error;
@@ -98,8 +124,13 @@ export class TokenStorage {
    */
   static async hasTokens(): Promise<boolean> {
     try {
-      const accessToken = await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
-      return !!accessToken;
+      if (isWeb) {
+        const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
+        return !!accessToken;
+      } else {
+        const accessToken = await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
+        return !!accessToken;
+      }
     } catch (error) {
       console.error("Failed to check tokens:", error);
       return false;

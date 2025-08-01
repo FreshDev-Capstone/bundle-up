@@ -26,4 +26,4 @@ yarn-error.log*
 *.log
 
 # Folder
-old/
+OLD/

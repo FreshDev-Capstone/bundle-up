@@ -3,13 +3,28 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { AuthProvider } from "../context/AuthContext";
+import { AuthProvider, useAuth } from "../context/AuthContext";
 import { CartProvider } from "../context/CartContext";
 import { BrandProvider } from "../context/BrandContext";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+function AppContent() {
+  const { loading } = useAuth();
+
+  if (loading) {
+    return null; // Show loading state
+  }
+
+  return (
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="+not-found" />
+    </Stack>
+  );
+}
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -34,10 +49,7 @@ export default function RootLayout() {
       <BrandProvider>
         <AuthProvider>
           <CartProvider>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
+            <AppContent />
             <StatusBar style="dark" />
           </CartProvider>
         </AuthProvider>

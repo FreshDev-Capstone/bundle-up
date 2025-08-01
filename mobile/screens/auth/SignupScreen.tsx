@@ -1,18 +1,34 @@
 import React from "react";
 import { Alert } from "react-native";
-import AuthForm;
+import AuthForm from "../../components/auth/AuthForm/AuthForm";
 import { RegisterData } from "../../../shared/types";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { validateAuthForm } from "../../../shared/utils/validators";
 
-export default function SignupForm({ keyboardVisible, config, onSuccess }) {
+interface SignupScreenProps {
+  keyboardVisible: boolean;
+  config?: any;
+  onSuccess?: () => void;
+}
+
+export default function SignupScreen({
+  keyboardVisible,
+  config,
+  onSuccess,
+}: SignupScreenProps) {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-  const { register } = useAuth();
+  const { register, error: authError } = useAuth();
 
   const handleSignup = async (values: RegisterData) => {
+    console.log("Signup attempt with values:", {
+      ...values,
+      password: "[HIDDEN]",
+    });
+
     const validationResult = validateAuthForm(values, "signup", config);
     if (!validationResult.isValid) {
+      console.log("Validation failed:", validationResult.errors);
       const firstError = Object.values(validationResult.errors)[0];
       Alert.alert(
         "Validation Error",
@@ -21,15 +37,22 @@ export default function SignupForm({ keyboardVisible, config, onSuccess }) {
       return;
     }
 
+    console.log("Validation passed, attempting registration...");
     setLoading(true);
     setError(null);
 
     try {
       const success = await register(values);
+      console.log("Registration result:", success);
       if (success) {
-        onSuccess();
+        console.log("Registration successful!");
+        onSuccess?.();
       } else {
-        Alert.alert("Sign Up Failed", error || "Please check your credentials");
+        console.log("Registration failed, auth error:", authError);
+        Alert.alert(
+          "Sign Up Failed",
+          authError || "Please check your credentials"
+        );
       }
     } catch (err) {
       console.error("Sign Up error:", err);

@@ -14,10 +14,10 @@ export const useProducts = () => {
         setError(null);
 
         console.log(
-          `[useProducts] Fetching products from: ${API_BASE_URL}/products`
+          `[useProducts] Fetching products from: ${API_BASE_URL}/api/products`
         );
 
-        const response = await fetch(`${API_BASE_URL}/products?limit=50`);
+        const response = await fetch(`${API_BASE_URL}/api/products?limit=50`);
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -33,8 +33,8 @@ export const useProducts = () => {
           const productsWithNumericPrices = data.data.products.map(
             (product: any) => ({
               ...product,
-              b2cPrice: parseFloat(product.b2cPrice),
-              b2bPrice: parseFloat(product.b2bPrice),
+              b2cPrice: parseFloat(product.b2c_price),
+              b2bPrice: parseFloat(product.b2b_price),
             })
           );
 
@@ -44,6 +44,7 @@ export const useProducts = () => {
         }
       } catch (err) {
         console.error("[useProducts] Error fetching products:", err);
+        console.log(err);
         setError(
           err instanceof Error ? err.message : "Failed to fetch products"
         );
@@ -63,7 +64,7 @@ export const useProducts = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(`${API_BASE_URL}/products?limit=50`);
+        const response = await fetch(`${API_BASE_URL}/api/products?limit=50`);
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -75,8 +76,8 @@ export const useProducts = () => {
           const productsWithNumericPrices = data.data.products.map(
             (product: any) => ({
               ...product,
-              b2cPrice: parseFloat(product.b2cPrice),
-              b2bPrice: parseFloat(product.b2bPrice),
+              b2cPrice: parseFloat(product.b2c_price),
+              b2bPrice: parseFloat(product.b2b_price),
             })
           );
 

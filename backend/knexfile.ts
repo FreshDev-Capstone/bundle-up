@@ -1,18 +1,57 @@
-import { Knex } from "knex";
-import dotenv from "dotenv";
-import path from "path";
-import { knexConfig } from "./src/config/database";
+require("dotenv").config();
+const path = require("path");
 
-dotenv.config({ path: path.join(__dirname, "src", ".env") });
+const migrationsDirectory = path.join(__dirname, "db/migrations");
+const seedsDirectory = path.join(__dirname, "db/seeds");
 
-export default {
-  development: knexConfig,
-  production: knexConfig,
+/*
+We'll use environment variables to set the Postgres username and password
+so we don't share that information online.
+When we deploy in "production", we'll provide a PG_CONNECTION_STRING
+*/
+console.log("PG_PASS loaded as:", process.env.PG_PASS);
+
+module.exports = {
+  development: {
+    client: "pg",
+    connection: process.env.PG_CONNECTION_STRING || {
+      host: process.env.PG_HOST || "localhost",
+      port: process.env.PG_PORT || 5432,
+      user: process.env.PG_USER || "postgres",
+      password: process.env.PG_PASS || "postgres",
+      database: process.env.PG_DB || "bundleup",
+    },
+    migrations: {
+      directory: migrationsDirectory,
+    },
+    seeds: {
+      directory: seedsDirectory,
+    },
+  },
+  production: {
+    client: "pg",
+    connection: process.env.PG_CONNECTION_STRING,
+    migrations: {
+      directory: migrationsDirectory,
+    },
+    seeds: {
+      directory: seedsDirectory,
+    },
+  },
   test: {
-    ...knexConfig,
-    connection: {
-      ...knexConfig.connection,
+    client: "pg",
+    connection: process.env.PG_CONNECTION_STRING || {
+      host: process.env.PG_HOST || "localhost",
+      port: process.env.PG_PORT || 5432,
+      user: process.env.PG_USER || "postgres",
+      password: process.env.PG_PASS || "postgres",
       database: process.env.PG_DB_TEST || "bundleup_test",
+    },
+    migrations: {
+      directory: migrationsDirectory,
+    },
+    seeds: {
+      directory: seedsDirectory,
     },
   },
 };

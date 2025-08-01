@@ -44,16 +44,56 @@ export const useAuthForm = ({
         return newErrors;
       });
     }
+
+    // Real-time validation for password length
+    if (field === "password" && value.length > 0 && value.length < 8) {
+      setValidationErrors((prev) => ({
+        ...prev,
+        password: "Password must be at least 8 characters long",
+      }));
+    } else if (field === "password" && value.length >= 8) {
+      setValidationErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.password;
+        return newErrors;
+      });
+    }
+
+    // Real-time validation for confirm password
+    if (field === "confirmPassword" && value.length > 0) {
+      const currentPassword = values.password;
+      if (value !== currentPassword) {
+        setValidationErrors((prev) => ({
+          ...prev,
+          confirmPassword: "Passwords do not match",
+        }));
+      } else {
+        setValidationErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors.confirmPassword;
+          return newErrors;
+        });
+      }
+    }
   };
 
   const handleSubmit = () => {
+    console.log("useAuthForm handleSubmit called with mode:", mode);
+    console.log("Form values:", {
+      ...values,
+      password: "[HIDDEN]",
+      confirmPassword: "[HIDDEN]",
+    });
+
     const validation = validateAuthForm(values, mode, config);
 
     if (!validation.isValid) {
+      console.log("Form validation failed:", validation.errors);
       setValidationErrors(validation.errors);
-      return;
+      return; // Make sure we return early and don't call onSubmit
     }
 
+    console.log("Form validation passed, calling onSubmit");
     setValidationErrors({});
     onSubmit(values);
   };

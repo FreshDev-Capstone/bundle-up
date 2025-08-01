@@ -3,32 +3,57 @@ import { Text, Image, TouchableOpacity, View } from "react-native";
 import { Product } from "../../../../shared/types/product";
 import { CirclePlus } from "lucide-react-native";
 import { useAuth } from "../../../context/AuthContext";
+import { getImageUrl } from "../../../utils/imageUtils";
 import styles from "./ProductCard.styles";
 
 interface ProductCardProps {
   product: Product;
   onPress?: (product: Product) => void;
+  onAddToCart?: (product: Product) => void;
 }
 
-export default function ProductCard({ product, onPress }: ProductCardProps) {
+export default function ProductCard({
+  product,
+  onPress,
+  onAddToCart,
+}: ProductCardProps) {
   const { user } = useAuth();
 
   const handlePress = () => {
     onPress?.(product);
   };
 
+  const handleAddPress = (e: any) => {
+    e.stopPropagation();
+    onAddToCart?.(product);
+  };
+
   // Determine which price to show based on user account type
   const getDisplayPrice = () => {
+    // Debug logging
+    console.log("[ProductCard] Product data:", {
+      name: product.name,
+      b2cPrice: product.b2cPrice,
+      b2c_price: product.b2c_price,
+      b2bPrice: product.b2bPrice,
+      b2b_price: product.b2b_price,
+    });
+
     // If user is not logged in, show B2C price by default
-    if (!user) return product.b2cPrice.toFixed(2);
+    if (!user) {
+      const price = Number(product.b2cPrice || product.b2c_price || 0);
+      return price.toFixed(2);
+    }
 
     // Show price based on user account type
     switch (user.accountType) {
       case "B2B":
-        return product.b2bPrice.toFixed(2);
+        const b2bPrice = Number(product.b2bPrice || product.b2b_price || 0);
+        return b2bPrice.toFixed(2);
       case "B2C":
       default:
-        return product.b2cPrice.toFixed(2);
+        const b2cPrice = Number(product.b2cPrice || product.b2c_price || 0);
+        return b2cPrice.toFixed(2);
     }
   };
 
@@ -45,28 +70,49 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
     }
   };
 
+  const imageUrl = getImageUrl(product.image_url);
+  console.log(`[ProductCard] Loading image for ${product.name}: ${imageUrl}`);
+
   return (
     <TouchableOpacity style={styles.container} onPress={handlePress}>
-      <Image source={{ uri: product.imageUrl }} style={styles.image} />
-      <CirclePlus style={styles.addButton} />
-      <Text style={styles.name}>{product.name}</Text>
+      <Image
+        source={{ uri: imageUrl }}
+        style={styles.image}
+        onError={(error: any) => {
+          console.error(
+            `[ProductCard] Failed to load image for ${product.name}:`,
+            error
+          );
+        }}
+      />
+      <TouchableOpacity style={styles.addButton} onPress={handleAddPress}>
+        <CirclePlus size={20} color="#FFFFFF" />
+      </TouchableOpacity>
 
-      {/* Admin users see both prices */}
-      {user?.accountType === "ADMIN" ? (
-        <View style={styles.adminPriceContainer}>
-          <Text style={styles.adminPrice}>
-            Retail: ${product.b2cPrice.toFixed(2)} | Wholesale: $
-            {product.b2bPrice.toFixed(2)}
-          </Text>
-        </View>
-      ) : (
-        <View style={styles.priceContainer}>
-          {getPriceLabel() && (
-            <Text style={styles.priceLabel}>{getPriceLabel()}</Text>
-          )}
-          <Text style={styles.price}>${getDisplayPrice()}</Text>
-        </View>
-      )}
+      <View style={styles.content}>
+        <Text style={styles.name} numberOfLines={2}>
+          {product.name}
+        </Text>
+
+        {/* Admin users see both prices */}
+        {user?.accountType === "ADMIN" ? (
+          <View style={styles.adminPriceContainer}>
+            <Text style={styles.adminPrice}>
+              Retail: $
+              {Number(product.b2cPrice || product.b2c_price || 0).toFixed(2)} |
+              Wholesale: $
+              {Number(product.b2bPrice || product.b2b_price || 0).toFixed(2)}
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.priceContainer}>
+            {getPriceLabel() && (
+              <Text style={styles.priceLabel}>{getPriceLabel()}</Text>
+            )}
+            <Text style={styles.price}>${getDisplayPrice()}</Text>
+          </View>
+        )}
+      </View>
     </TouchableOpacity>
   );
 }

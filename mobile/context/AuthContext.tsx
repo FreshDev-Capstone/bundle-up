@@ -6,7 +6,7 @@ import React, {
   useRef,
 } from "react";
 import { create } from "zustand";
-import type { AuthState } from "../../shared/types";
+import type { AuthState, User } from "../../shared/types";
 import { AuthService } from "../services/auth";
 import { PerformanceMonitor } from "../utils/performance";
 
@@ -23,6 +23,7 @@ interface ExtendedAuthState extends AuthState {
     lastName: string;
     companyName?: string; // Optional company name for B2B
   }) => Promise<boolean>;
+  updateProfile: (updates: Partial<User>) => Promise<boolean>;
   clearError: () => void;
 }
 
@@ -96,11 +97,17 @@ export const useAuthStore = create<ExtendedAuthState>((set, get) => ({
   },
 
   register: async (userData) => {
+    console.log("AuthContext.register called with:", {
+      ...userData,
+      password: "[HIDDEN]",
+    });
     set({ loading: true, error: null });
     try {
       const result = await AuthService.register(userData);
+      console.log("AuthContext.register result:", result);
 
       if (result.success && result.user) {
+        console.log("AuthContext.register success, setting user");
         set({
           user: result.user,
           isAuthenticated: true,
@@ -109,6 +116,7 @@ export const useAuthStore = create<ExtendedAuthState>((set, get) => ({
         });
         return true;
       } else {
+        console.log("AuthContext.register failed, error:", result.error);
         set({
           loading: false,
           error: result.error || "Registration failed",
@@ -142,6 +150,28 @@ export const useAuthStore = create<ExtendedAuthState>((set, get) => ({
     }
   },
 
+  updateProfile: async (updates: Partial<User>) => {
+    set({ loading: true, error: null });
+    try {
+      // TODO: Implement API call to update profile
+      // For now, just update the local state
+      const currentUser = get().user;
+      if (currentUser) {
+        const updatedUser: User = { ...currentUser, ...updates };
+        set({
+          user: updatedUser,
+          loading: false,
+          error: null,
+        });
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Profile update error:", error);
+      set({ loading: false, error: "Failed to update profile" });
+      return false;
+    }
+  },
   clearError: () => set({ error: null }),
 }));
 

@@ -39,6 +39,7 @@ export default StyleSheet.create({
     paddingRight: 28, // Extra right padding to make room for asterisk
     fontSize: 16, // Text size inside inputs
     backgroundColor: "#fff", // White background for input fields
+    color: "#333", // Dark text color for input text
   },
 
   // Red asterisk for required fields

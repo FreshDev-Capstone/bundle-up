@@ -16,16 +16,16 @@ export const databaseConfig: DatabaseConfig = {
 
 export const knexConfig = {
   client: "postgresql",
-  connection: databaseConfig,
+  connection: process.env.DATABASE_URL || databaseConfig,
   pool: {
     min: 2,
     max: 10,
   },
   migrations: {
     tableName: "knex_migrations",
-    directory: "../db/migrations",
+    directory: "./db/migrations",
   },
   seeds: {
-    directory: "../db/seeds",
+    directory: "./db/seeds",
   },
 };

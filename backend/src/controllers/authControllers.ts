@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import { User, CreateUserData } from "../models/User";
+import { UserModel, CreateUserData } from "../models/User";
+import { User as UserType } from "../../../shared/types/user";
 import {
   generateTokens,
   verifyAccessToken,
@@ -11,14 +12,6 @@ import {
   validateEmail,
   validatePassword,
 } from "../utils/validationHelpers";
-
-interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    email: string;
-    role: "admin" | "b2c" | "b2b";
-  };
-}
 
 export class AuthController {
   static async register(req: Request, res: Response) {
@@ -69,7 +62,7 @@ export class AuthController {
       }
 
       // Check if user already exists
-      const existingUser = await User.findByEmail(email);
+      const existingUser = await UserModel.findByEmail(email);
       if (existingUser) {
         return res.status(409).json({
           success: false,
@@ -83,7 +76,7 @@ export class AuthController {
       const passwordHash = await bcrypt.hash(password, saltRounds);
 
       // Determine user role based on email and company name
-      const isAdmin = await User.isAdminEmail(email);
+      const isAdmin = UserModel.isAdminEmail(email);
       const role: "admin" | "b2c" | "b2b" = isAdmin
         ? "admin"
         : companyName
@@ -101,7 +94,7 @@ export class AuthController {
         isEmailVerified: false,
       };
 
-      const user = await User.create(userData);
+      const user = await UserModel.create(userData);
 
       // Generate JWT tokens using the proper config
       const tokens = generateTokens({
@@ -151,7 +144,7 @@ export class AuthController {
       }
 
       // Find user by email
-      const user = await User.findByEmail(email);
+      const user = await UserModel.findByEmail(email);
       if (!user) {
         return res.status(401).json({
           success: false,
@@ -180,7 +173,7 @@ export class AuthController {
       }
 
       // Update last login
-      await User.updateLastLogin(user.id);
+      await UserModel.updateLastLogin(user.id);
 
       // Generate JWT tokens using the proper config
       const tokens = generateTokens({
@@ -239,18 +232,18 @@ export class AuthController {
       }
 
       // Check if user exists by Google ID
-      let user = await User.findByGoogleId(googleId);
+      let user = await UserModel.findByGoogleId(googleId);
 
       if (!user) {
         // Check if user exists by email
-        user = await User.findByEmail(email);
+        user = await UserModel.findByEmail(email);
 
         if (user) {
           // Update existing user with Google ID
-          user = await User.updateProfile(user.id, { googleId });
+          user = await UserModel.updateProfile(user.id, { googleId });
         } else {
           // Create new user
-          const isAdmin = await User.isAdminEmail(email);
+          const isAdmin = UserModel.isAdminEmail(email);
           const role: "admin" | "b2c" | "b2b" = isAdmin ? "admin" : "b2c";
 
           const userData: CreateUserData = {
@@ -262,22 +255,24 @@ export class AuthController {
             isEmailVerified: true, // Google emails are pre-verified
           };
 
-          user = await User.create(userData);
+          user = await UserModel.create(userData);
         }
       }
 
       // Update last login
-      await User.updateLastLogin(user.id);
+      if (user) {
+        await UserModel.updateLastLogin(user.id);
+      }
 
       // Generate JWT tokens using the proper config
       const tokens = generateTokens({
-        userId: user.id,
-        email: user.email,
-        role: user.role,
+        userId: user!.id,
+        email: user!.email,
+        role: user!.role,
       });
 
       // Remove sensitive data from response
-      const { passwordHash: _, role: userRole, ...userResponse } = user;
+      const { passwordHash: _, role: userRole, ...userResponse } = user!;
 
       // Transform role to accountType for frontend compatibility
       const accountType =
@@ -318,7 +313,7 @@ export class AuthController {
       // Verify refresh token using the proper config
       const decoded = verifyRefreshToken(refreshToken);
 
-      const user = await User.findById(decoded.userId);
+      const user = await UserModel.findById(decoded.userId);
       if (!user) {
         return res.status(404).json({
           success: false,
@@ -362,7 +357,7 @@ export class AuthController {
         });
       }
 
-      const fullUser = await User.findById(user.id);
+      const fullUser = await UserModel.findById(user.id);
       if (!fullUser) {
         return res.status(404).json({
           success: false,
@@ -387,6 +382,72 @@ export class AuthController {
           },
         },
         statusCode: 200,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        error: "Internal server error",
+        statusCode: 500,
+      });
+    }
+  }
+
+  static async updateProfile(req: Request, res: Response) {
+    try {
+      const authenticatedUser = req.user as
+        | { id: string; email: string; role: string }
+        | undefined;
+
+      if (!authenticatedUser) {
+        return res.status(401).json({
+          success: false,
+          error: "User not authenticated",
+          statusCode: 401,
+        });
+      }
+
+      const { firstName, lastName, companyName } = req.body;
+
+      // Validate required fields
+      if (!firstName || !lastName) {
+        return res.status(400).json({
+          success: false,
+          error: "First name and last name are required",
+          statusCode: 400,
+        });
+      }
+
+      const user = await UserModel.findById(authenticatedUser.id);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          error: "User not found",
+          statusCode: 404,
+        });
+      }
+
+      // Update profile
+      const updateData: any = {
+        firstName,
+        lastName,
+      };
+
+      // Only update company name if provided and user is B2B
+      if (companyName && user.role === "b2b") {
+        updateData.companyName = companyName;
+      }
+
+      await UserModel.updateProfile(authenticatedUser.id, updateData);
+
+      // Get updated user
+      const updatedUser = await UserModel.findById(authenticatedUser.id);
+
+      return res.status(200).json({
+        success: true,
+        message: "Profile updated successfully",
+        data: {
+          user: updatedUser,
+        },
       });
     } catch (error) {
       return res.status(500).json({
@@ -441,7 +502,7 @@ export class AuthController {
         });
       }
 
-      const user = await User.findById(authenticatedUser.id);
+      const user = await UserModel.findById(authenticatedUser.id);
       if (!user) {
         return res.status(404).json({
           success: false,
@@ -477,7 +538,7 @@ export class AuthController {
       const newPasswordHash = await bcrypt.hash(newPassword, saltRounds);
 
       // Update password
-      await User.updateProfile(authenticatedUser.id, {
+      await UserModel.updateProfile(authenticatedUser.id, {
         passwordHash: newPasswordHash,
       });
 

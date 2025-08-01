@@ -1,4 +1,7 @@
-const apiUrl = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000/api";
+// Import the API configuration from the config file
+import { API_BASE_URL as configApiUrl } from "../config/apiConfig";
+
+const apiUrl = configApiUrl;
 console.log(`[Constants] API_BASE_URL loaded: ${apiUrl}`);
 console.log(
   `[Constants] Environment variable EXPO_PUBLIC_API_URL: ${process.env.EXPO_PUBLIC_API_URL}`

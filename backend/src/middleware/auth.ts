@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { User } from "../models/User";
+import { UserModel } from "../models/User";
 import { verifyAccessToken, JWTPayload } from "../config/jwt";
 
 export interface AuthenticatedRequest extends Request {
@@ -39,7 +39,7 @@ export const authenticateToken = async (
       return;
     }
 
-    const user = await User.findById(decoded.userId);
+    const user = await UserModel.findById(decoded.userId);
     if (!user) {
       res.status(401).json({ error: "User not found" });
       return;

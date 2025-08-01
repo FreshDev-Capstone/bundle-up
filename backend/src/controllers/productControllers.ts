@@ -7,27 +7,26 @@ import {
 } from "../utils/responseHelpers";
 
 interface Product {
-  id: number;
+  id: string;
   name: string;
   description: string;
   category: string;
-  eggColor?: string;
-  eggCount: number;
-  imageUrl: string;
-  b2cPrice: number;
-  b2bPrice: number;
-  inventoryByCarton: number;
-  inventoryByBox: number;
-  isAvailable: boolean;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  product_color?: string;
+  product_count: number;
+  image_url: string;
+  b2c_price: number;
+  b2b_price: number;
+  inventory_by_carton: number;
+  inventory_by_box: number;
+  is_available: boolean;
+  is_active: boolean;
+  created_at: Date;
 }
 
 interface ProductFilters {
   category?: string;
-  eggColor?: string;
-  eggCount?: number;
+  product_color?: string;
+  product_count?: number;
   available?: boolean;
   search?: string;
 }
@@ -35,35 +34,43 @@ interface ProductFilters {
 export class ProductController {
   static async getAllProducts(req: Request, res: Response) {
     try {
+      console.log("before pulling query values");
       const {
         category,
-        eggColor,
-        eggCount,
+        product_color,
+        product_count,
         available,
         search,
         role,
         page = 1,
         limit = 10,
       } = req.query;
+      console.log(2);
 
-      let query = knex("products").where("isActive", true);
+      // console.log(req);
+
+      let query = knex("products").where("is_active", true);
+
+      console.log(3);
 
       // Apply filters
       if (category) {
         query = query.where("category", category as string);
       }
 
-      if (eggColor) {
-        query = query.where("eggColor", eggColor as string);
+      if (product_color) {
+        query = query.where("product_color", product_color as string);
       }
 
-      if (eggCount) {
-        query = query.where("eggCount", Number(eggCount));
+      if (product_count) {
+        query = query.where("product_count", Number(product_count));
       }
 
       if (available !== undefined) {
-        query = query.where("isAvailable", available === "true");
+        query = query.where("is_available", available === "true");
       }
+
+      console.log(4);
 
       // Apply search
       if (search && typeof search === "string") {
@@ -76,10 +83,25 @@ export class ProductController {
         });
       }
 
+      console.log(5);
+
       // Get total count for pagination
+      console.log("About to execute count query...");
       const countQuery = query.clone();
-      const totalCount = await countQuery.count("* as total").first();
-      const total = Number(totalCount?.total || 0);
+      console.log("Count query SQL:", countQuery.toSQL().sql);
+
+      let total = 0;
+      try {
+        const totalCount = await countQuery.count("* as total").first();
+        console.log("Count query result:", totalCount);
+        total = Number(totalCount?.total || 0);
+        console.log("Total count:", total);
+      } catch (countError) {
+        console.error("Count query failed:", countError);
+        throw countError;
+      }
+
+      console.log(6);
 
       // Apply pagination
       const pageNum = Number(page);
@@ -93,12 +115,14 @@ export class ProductController {
 
       const products = await query;
 
+      console.log(7);
+
       // Apply role-based pricing if specified
       let processedProducts = products;
       if (role && (role === "b2c" || role === "b2b")) {
         processedProducts = products.map((product) => ({
           ...product,
-          price: role === "b2c" ? product.b2cPrice : product.b2bPrice,
+          price: role === "b2c" ? product.b2c_price : product.b2b_price,
         }));
       }
 
@@ -116,8 +140,8 @@ export class ProductController {
       // Prepare filters metadata
       const filters = {
         ...(category && { category }),
-        ...(eggColor && { eggColor }),
-        ...(eggCount && { eggCount }),
+        ...(product_color && { product_color }),
+        ...(product_count && { product_count }),
         ...(available !== undefined && { available }),
         ...(search && { search }),
         ...(role && { role }),
@@ -129,7 +153,10 @@ export class ProductController {
         filters,
       });
     } catch (error) {
-      return sendInternalError(res, error as Error);
+      return sendInternalError(
+        res,
+        error instanceof Error ? error.message : "Unknown error"
+      );
     }
   }
 
@@ -139,7 +166,7 @@ export class ProductController {
 
       const [product] = await knex("products")
         .where("id", id)
-        .where("isActive", true);
+        .where("is_active", true);
 
       if (!product) {
         return sendNotFoundError(res, "Product not found");
@@ -149,7 +176,10 @@ export class ProductController {
         product,
       });
     } catch (error) {
-      return sendInternalError(res, error as Error);
+      return sendInternalError(
+        res,
+        error instanceof Error ? error.message : "Unknown error"
+      );
     }
   }
 
@@ -158,21 +188,24 @@ export class ProductController {
       const lowInventoryThreshold = 10; // Products with less than 10 cartons
 
       const products = await knex("products")
-        .where("isActive", true)
+        .where("is_active", true)
         .andWhere(function () {
-          this.where("inventoryByCarton", "<", lowInventoryThreshold).orWhere(
-            "inventoryByBox",
+          this.where("inventory_by_carton", "<", lowInventoryThreshold).orWhere(
+            "inventory_by_box",
             "<",
             lowInventoryThreshold
           );
         })
-        .orderBy("inventoryByCarton", "asc");
+        .orderBy("inventory_by_carton", "asc");
 
       return sendSuccess(res, {
         products,
       });
     } catch (error) {
-      return sendInternalError(res, error as Error);
+      return sendInternalError(
+        res,
+        error instanceof Error ? error.message : "Unknown error"
+      );
     }
   }
 
@@ -189,10 +222,14 @@ export class ProductController {
         {
           product: newProduct,
         },
+        "Product created successfully",
         201
       );
     } catch (error) {
-      return sendInternalError(res, error as Error);
+      return sendInternalError(
+        res,
+        error instanceof Error ? error.message : "Unknown error"
+      );
     }
   }
 
@@ -214,7 +251,10 @@ export class ProductController {
         product: updatedProduct,
       });
     } catch (error) {
-      return sendInternalError(res, error as Error);
+      return sendInternalError(
+        res,
+        error instanceof Error ? error.message : "Unknown error"
+      );
     }
   }
 
@@ -224,7 +264,7 @@ export class ProductController {
 
       const [deletedProduct] = await knex("products")
         .where("id", id)
-        .update({ isActive: false })
+        .update({ is_active: false })
         .returning("*");
 
       if (!deletedProduct) {
@@ -235,7 +275,10 @@ export class ProductController {
         message: "Product deleted successfully",
       });
     } catch (error) {
-      return sendInternalError(res, error as Error);
+      return sendInternalError(
+        res,
+        error instanceof Error ? error.message : "Unknown error"
+      );
     }
   }
 
@@ -246,10 +289,10 @@ export class ProductController {
 
       const updateData: any = {};
       if (inventoryByCarton !== undefined) {
-        updateData.inventoryByCarton = inventoryByCarton;
+        updateData.inventory_by_carton = inventoryByCarton;
       }
       if (inventoryByBox !== undefined) {
-        updateData.inventoryByBox = inventoryByBox;
+        updateData.inventory_by_box = inventoryByBox;
       }
 
       const [updatedProduct] = await knex("products")
@@ -265,7 +308,10 @@ export class ProductController {
         product: updatedProduct,
       });
     } catch (error) {
-      return sendInternalError(res, error as Error);
+      return sendInternalError(
+        res,
+        error instanceof Error ? error.message : "Unknown error"
+      );
     }
   }
 
@@ -276,25 +322,28 @@ export class ProductController {
       // Get current product
       const [currentProduct] = await knex("products")
         .where("id", id)
-        .select("isAvailable");
+        .select("is_available");
 
       if (!currentProduct) {
         return sendNotFoundError(res, "Product not found");
       }
 
       // Toggle availability
-      const newAvailability = !currentProduct.isAvailable;
+      const newAvailability = !currentProduct.is_available;
 
       const [updatedProduct] = await knex("products")
         .where("id", id)
-        .update({ isAvailable: newAvailability })
+        .update({ is_available: newAvailability })
         .returning("*");
 
       return sendSuccess(res, {
         product: updatedProduct,
       });
     } catch (error) {
-      return sendInternalError(res, error as Error);
+      return sendInternalError(
+        res,
+        error instanceof Error ? error.message : "Unknown error"
+      );
     }
   }
 }

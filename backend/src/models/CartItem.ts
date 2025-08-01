@@ -11,7 +11,7 @@ export class CartItemModel implements CartItemType {
     this.id = `${Date.now()}-${Math.random()}`;
     this.productId = product.id.toString();
     this.quantity = quantity;
-    this.price = product.b2cPrice;
+    this.price = product.b2cPrice || product.b2c_price;
     this.product = product;
   }
 

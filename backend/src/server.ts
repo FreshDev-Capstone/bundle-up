@@ -2,18 +2,19 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import dotenv from "dotenv";
-import path from "path";
+import * as dotenv from "dotenv";
+import * as path from "path";
 import passport from "passport";
 
 // Import passport configuration
-import "./config/passport";
+import "./controllers/passport";
 
 // Import routes
 import userRoutes from "./routes/users";
 import sessionRoutes from "./routes/sessions";
 import productRoutes from "./routes/products";
 import authRoutes from "./routes/auth";
+import orderRoutes from "./routes/orders";
 
 // Import middleware
 import {
@@ -27,6 +28,7 @@ import {
 import { sendError } from "./utils/responseHelpers";
 
 // Load environment variables
+dotenv.config({ path: path.join(__dirname, ".env") });
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -74,6 +76,22 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
+// Path rewrite: map /assets/eggs/* to /assets/images/Eggs/* for static asset requests
+app.use("/assets/eggs", (req, res, next) => {
+  req.url = "/images/Eggs" + req.url;
+  next();
+});
+
+// Set CORS and Cross-Origin-Resource-Policy headers for static assets
+app.use("/assets", (req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Cross-Origin-Resource-Policy", "cross-origin");
+  next();
+});
+
+// Serve static files from shared/assets
+app.use("/assets", express.static(path.join(__dirname, "../../shared/assets")));
+
 // Passport middleware
 // app.use(passport.initialize());
 
@@ -94,6 +112,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/sessions", sessionRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/orders", orderRoutes);
 
 // 404 handler for undefined routes
 app.use("*", (req, res) => {
@@ -119,11 +138,12 @@ app.use(
 );
 
 // Start server
-app.listen(PORT, () => {
+app.listen(Number(PORT), "0.0.0.0", () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/health`);
   console.log(`🔗 API base URL: http://localhost:${PORT}/api`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
+  console.log(`📱 Mobile API URL: http://:${PORT}/api`);
 });
 
 export default app;

@@ -36,7 +36,7 @@ export const useProducts = () => {
   const getProductsByColor = (color: string) => {
     return products.filter(
       (product: Product) =>
-        product.eggColor?.toLowerCase() === color.toLowerCase()
+        product.product_color?.toLowerCase() === color.toLowerCase()
     );
   };
 

@@ -2,7 +2,6 @@ import React, { useRef, useEffect } from "react";
 import { View, Text, TextInput, Button, ScrollView } from "react-native";
 import { AuthFormProps } from "../../../../shared/types";
 import { useAuthForm } from "../../../../shared/hooks";
-import GoogleSignInButton from "../OAuth/GoogleSignInButton";
 import styles from "./AuthForm.styles";
 
 const AuthForm = React.memo(
@@ -133,19 +132,18 @@ const AuthForm = React.memo(
         overScrollMode="never" // Android: prevent over-scroll effects
       >
         <View style={styles.formContainer}>
-          {/* Google OAuth Button */}
-          <GoogleSignInButton
+          {/* Google OAuth Button - Temporarily disabled */}
+          {/* <GoogleSignInButton
             title={
               mode === "signup" ? "Sign Up with Google" : "Continue with Google"
             }
           />
 
-          {/* Divider */}
           <View style={styles.dividerContainer}>
             <View style={styles.divider} />
             <Text style={styles.dividerText}>OR</Text>
             <View style={styles.divider} />
-          </View>
+          </View> */}
 
           {config?.showCompanyName && mode === "signup" && (
             <>
@@ -154,6 +152,7 @@ const AuthForm = React.memo(
                   ref={companyNameRef}
                   style={styles.input}
                   placeholder="Company Name"
+                  placeholderTextColor="#666666"
                   value={values.companyName}
                   onChangeText={(v: string) => handleChange("companyName", v)}
                   onFocus={() => scrollToInput(companyNameRef)}
@@ -182,6 +181,7 @@ const AuthForm = React.memo(
                     ref={firstNameRef}
                     style={[styles.input, styles.nameInput]}
                     placeholder="First Name"
+                    placeholderTextColor="#666666"
                     value={values.firstName}
                     onChangeText={(v: string) => handleChange("firstName", v)}
                     onFocus={() => scrollToInput(firstNameRef)}
@@ -200,6 +200,7 @@ const AuthForm = React.memo(
                     ref={lastNameRef}
                     style={[styles.input, styles.nameInput]}
                     placeholder="Last Name"
+                    placeholderTextColor="#666666"
                     value={values.lastName}
                     onChangeText={(v: string) => handleChange("lastName", v)}
                     onFocus={() => scrollToInput(lastNameRef)}
@@ -234,6 +235,7 @@ const AuthForm = React.memo(
               ref={emailRef}
               style={styles.input}
               placeholder="Email"
+              placeholderTextColor="#666666"
               value={values.email}
               onChangeText={(v: string) => handleChange("email", v)}
               onFocus={() => scrollToInput(emailRef)}
@@ -255,6 +257,7 @@ const AuthForm = React.memo(
               ref={passwordRef}
               style={styles.input}
               placeholder="Password"
+              placeholderTextColor="#666666"
               value={values.password}
               onChangeText={(v: string) => handleChange("password", v)}
               onFocus={() => scrollToInput(passwordRef)}
@@ -278,6 +281,7 @@ const AuthForm = React.memo(
                   ref={confirmPasswordRef}
                   style={styles.input}
                   placeholder="Confirm Password"
+                  placeholderTextColor="#666666"
                   value={values.confirmPassword}
                   onChangeText={(v: string) =>
                     handleChange("confirmPassword", v)
@@ -308,7 +312,10 @@ const AuthForm = React.memo(
           >
             <Button
               title={mode === "login" ? "Login" : "Sign Up"}
-              onPress={handleSubmit}
+              onPress={() => {
+                console.log("Button pressed! Mode:", mode, "Loading:", loading);
+                handleSubmit();
+              }}
               disabled={loading}
             />
           </View>

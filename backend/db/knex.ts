@@ -1,5 +1,10 @@
 import knex from "knex";
+import * as dotenv from "dotenv";
+import * as path from "path";
 import { knexConfig } from "../src/config/database";
+
+// Load environment variables
+dotenv.config({ path: path.join(__dirname, "..", "src", ".env") });
 
 const db = knex(knexConfig);
 

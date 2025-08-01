@@ -1,5 +1,3 @@
-
-
 export function validateEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
@@ -140,9 +138,9 @@ export const validateProductData = (
   }
 
   if (
-    !data.eggCount ||
-    isNaN(Number(data.eggCount)) ||
-    Number(data.eggCount) < 0
+    !data.product_count ||
+    isNaN(Number(data.product_count)) ||
+    Number(data.product_count) < 0
   ) {
     errors.push("Egg count must be a non-negative number");
   }

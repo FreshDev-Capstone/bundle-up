@@ -1,17 +1,22 @@
 interface Product {
-  id: number;
+  id: string;
   name: string;
   description: string;
   category: string;
-  eggColor?: string;
-  eggCount: number;
-  imageUrl: string;
-  b2cPrice: number;
-  b2bPrice: number;
-  inventoryByCarton: number;
-  inventoryByBox: number;
-  isAvailable: boolean;
-  isActive: boolean;
+  product_color?: string;
+  product_count: number;
+  images: string[];
+  // API fields (snake_case)
+  b2c_price: number;
+  b2b_price: number;
+  inventory_by_carton: number;
+  inventory_by_box: number;
+  is_available: boolean;
+  is_active: boolean;
+  created_at: string;
+  // Frontend converted fields (camelCase)
+  b2cPrice?: number;
+  b2bPrice?: number;
 }
 
 export type { Product };

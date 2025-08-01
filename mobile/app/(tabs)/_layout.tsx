@@ -14,7 +14,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="products"
         options={{
-          title: "Products",
+          headerShown: false,
           tabBarLabel: "Products",
           tabBarIcon: ({ color, size }: { color: string; size: number }) => {
             const Icon = Package as any;
@@ -25,7 +25,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="cart"
         options={{
-          title: "Cart",
+          headerShown: false,
           tabBarLabel: "Cart",
           tabBarBadge: itemCount > 0 ? itemCount : undefined,
           tabBarIcon: ({ color, size }: { color: string; size: number }) => {
@@ -37,7 +37,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="reorder"
         options={{
-          title: "Reorder",
+          headerShown: false,
           tabBarLabel: "Reorder",
           tabBarIcon: ({ color, size }: { color: string; size: number }) => {
             const Icon = RefreshCw as any;
@@ -48,9 +48,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: isAuthenticated ? "Profile" : "",
-          headerShown: isAuthenticated,
-          tabBarLabel: "Profile",
+          title: isAuthenticated ? "Profile" : "Sign In",
+          headerShown: false,
+          tabBarLabel: isAuthenticated ? "Profile" : "Sign In",
           tabBarIcon: ({ color, size }: { color: string; size: number }) => {
             const Icon = User as any;
             return <Icon size={size} color={color} />;

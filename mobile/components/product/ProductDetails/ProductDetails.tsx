@@ -10,15 +10,20 @@ import {
 } from "react-native";
 import { Product } from "../../../../shared/types";
 import { useAuth } from "../../../context/AuthContext";
+import { getImageUrl } from "../../../utils/imageUtils";
 import styles from "./ProductDetails.styles";
 
 interface ProductDetailsProps {
   product?: Product;
+  onAddToCart?: (product: Product) => void;
 }
 
 const { width: screenWidth } = Dimensions.get("window");
 
-export default function ProductDetails({ product }: ProductDetailsProps) {
+export default function ProductDetails({
+  product,
+  onAddToCart,
+}: ProductDetailsProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const flatListRef = useRef<any>(null);
   const { user } = useAuth();
@@ -28,21 +33,21 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     if (!product) return "99.99";
 
     // If user is not logged in, show B2C price by default
-    if (!user) return product.b2cPrice.toFixed(2);
+    if (!user) return (product.b2cPrice || product.b2c_price).toFixed(2);
 
     // Show price based on user account type
     switch (user.accountType) {
       case "B2B":
-        return product.b2bPrice.toFixed(2);
+        return (product.b2bPrice || product.b2b_price).toFixed(2);
       case "B2C":
       case "ADMIN": // Admin can see B2C prices
       default:
-        return product.b2cPrice.toFixed(2);
+        return (product.b2cPrice || product.b2c_price).toFixed(2);
     }
   };
 
   const getPriceLabel = () => {
-    if (!user) return "Retail Price";
+    if (!user) return "Price";
 
     switch (user.accountType) {
       case "B2B":
@@ -56,21 +61,18 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     }
   };
 
-  // Generate array of images - use product's imageUrl if available, otherwise use placeholders
-  const productImages: string[] = product?.imageUrl
-    ? [
-        product.imageUrl,
-        // Add more sample images for carousel demo
-        "https://via.placeholder.com/400x400/E3E3E3/999999?text=Detail+View",
-        "https://via.placeholder.com/400x400/E3E3E3/999999?text=Side+View",
-        "https://via.placeholder.com/400x400/E3E3E3/999999?text=Package+View",
-      ]
-    : [
-        "https://via.placeholder.com/400x400/E3E3E3/999999?text=Product+Image+1",
-        "https://via.placeholder.com/400x400/E3E3E3/999999?text=Product+Image+2",
-        "https://via.placeholder.com/400x400/E3E3E3/999999?text=Product+Image+3",
-        "https://via.placeholder.com/400x400/E3E3E3/999999?text=Product+Image+4",
-      ];
+  // Use product.images for the carousel, only use placeholders if images is missing or empty
+  let productImages: string[] = [];
+  if (product && Array.isArray(product.images) && product.images.length > 0) {
+    productImages = product.images.map(getImageUrl);
+  } else {
+    productImages = [
+      "https://via.placeholder.com/400x400/E3E3E3/999999?text=Product+Image+1",
+      "https://via.placeholder.com/400x400/E3E3E3/999999?text=Product+Image+2",
+      "https://via.placeholder.com/400x400/E3E3E3/999999?text=Product+Image+3",
+      "https://via.placeholder.com/400x400/E3E3E3/999999?text=Product+Image+4",
+    ];
+  }
 
   const onScroll = (event: any) => {
     const contentOffset = event.nativeEvent.contentOffset.x;
@@ -189,20 +191,27 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               <View style={styles.priceItem}>
                 <Text style={styles.adminPriceLabel}>Retail (B2C)</Text>
                 <Text style={styles.priceValue}>
-                  ${product.b2cPrice.toFixed(2)}
+                  ${(product.b2cPrice || product.b2c_price).toFixed(2)}
                 </Text>
               </View>
               <View style={styles.priceItem}>
                 <Text style={styles.adminPriceLabel}>Wholesale (B2B)</Text>
                 <Text style={styles.priceValue}>
-                  ${product.b2bPrice.toFixed(2)}
+                  ${(product.b2bPrice || product.b2b_price).toFixed(2)}
                 </Text>
               </View>
             </View>
             <Text style={styles.marginInfo}>
-              Margin: ${(product.b2cPrice - product.b2bPrice).toFixed(2)}(
+              Margin: $
               {(
-                ((product.b2cPrice - product.b2bPrice) / product.b2bPrice) *
+                (product.b2cPrice || product.b2c_price) -
+                (product.b2bPrice || product.b2b_price)
+              ).toFixed(2)}
+              (
+              {(
+                (((product.b2cPrice || product.b2c_price) -
+                  (product.b2bPrice || product.b2b_price)) /
+                  (product.b2bPrice || product.b2b_price)) *
                 100
               ).toFixed(1)}
               %)
@@ -216,12 +225,18 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           </View>
         )}
 
-        {/* Remove the old admin price info since we now have a better version above */}
-
         <Text style={styles.productDescription}>
           {product?.description ||
             "This is a sample product description. Add detailed information about the product features, benefits, and specifications here."}
         </Text>
+
+        {/* Add to Cart Button */}
+        <TouchableOpacity
+          style={styles.addToCartButton}
+          onPress={() => product && onAddToCart?.(product)}
+        >
+          <Text style={styles.addToCartText}>Add to Cart</Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );

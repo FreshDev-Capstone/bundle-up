@@ -22,7 +22,9 @@ export const getPatchOptions = (body: Record<string, any>) => ({
   body: JSON.stringify(body),
 });
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000/api";
+import { API_BASE_URL } from "../config/apiConfig";
+
+const BASE_URL = `${API_BASE_URL}/api`;
 
 export const fetchHandler = async (url: string, options = {}) => {
   try {

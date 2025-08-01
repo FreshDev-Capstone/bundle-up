@@ -17,25 +17,41 @@ export class AuthService {
       );
 
       if (error) {
-        const msg = error.message?.toLowerCase().includes("credential")
-          ? "Email or password is incorrect"
-          : error.message || "Login failed";
-        return { success: false, error: msg };
+        let errorMessage = error.message || "Login failed";
+
+        // Handle specific HTTP status codes
+        if (error.message?.includes("401")) {
+          errorMessage = "Email or password is incorrect";
+        } else if (error.message?.includes("404")) {
+          errorMessage =
+            "Account not found. Please check your email or sign up.";
+        } else if (error.message?.includes("Network request failed")) {
+          errorMessage =
+            "Network connection failed. Please check your internet connection.";
+        }
+
+        return { success: false, error: errorMessage };
       }
 
-      if (data?.user && data?.tokens) {
+      // Handle the backend response structure
+      const responseData = data?.data || data;
+      const user = responseData?.user;
+      const tokens = responseData?.tokens;
+
+      if (user && tokens) {
         // Store tokens securely
-        await TokenStorage.storeTokens(
-          data.tokens.accessToken,
-          data.tokens.refreshToken
-        );
+        await TokenStorage.storeTokens(tokens.accessToken, tokens.refreshToken);
 
-        // Store user data
-        await TokenStorage.storeUserData(data.user);
+        // Add token to user object for easy access
+        const userWithToken = { ...user, token: tokens.accessToken };
 
-        return { success: true, user: data.user };
+        // Store user data with token
+        await TokenStorage.storeUserData(userWithToken);
+
+        return { success: true, user: userWithToken };
       }
 
+      console.log("Invalid response structure:", data);
       return { success: false, error: "Invalid response from server" };
     } catch (error) {
       console.error("Login error:", error);
@@ -45,31 +61,59 @@ export class AuthService {
 
   static async register(userData: RegisterData): Promise<AuthResult> {
     try {
+      console.log("AuthService.register called with:", {
+        ...userData,
+        password: "[HIDDEN]",
+      });
+
       const [data, error] = await fetchHandler(
         `/auth/register`,
         getPostOptions(userData)
       );
 
+      console.log("AuthService.register response:", { data, error });
+
       if (error) {
+        console.log("AuthService.register error:", error);
+        let errorMessage = error.message || "Registration failed";
+
+        // Handle specific HTTP status codes
+        if (error.message?.includes("409")) {
+          errorMessage =
+            "An account with this email already exists. Please try logging in instead.";
+        } else if (error.message?.includes("400")) {
+          errorMessage = "Please check your information and try again.";
+        } else if (error.message?.includes("Network request failed")) {
+          errorMessage =
+            "Network connection failed. Please check your internet connection.";
+        }
+
+        console.log("AuthService.register returning error:", errorMessage);
         return {
           success: false,
-          error: error.message || "Registration failed",
+          error: errorMessage,
         };
       }
 
-      if (data?.user && data?.tokens) {
+      // Handle the backend response structure
+      const responseData = data?.data || data;
+      const user = responseData?.user;
+      const tokens = responseData?.tokens;
+
+      if (user && tokens) {
         // Store tokens securely
-        await TokenStorage.storeTokens(
-          data.tokens.accessToken,
-          data.tokens.refreshToken
-        );
+        await TokenStorage.storeTokens(tokens.accessToken, tokens.refreshToken);
 
-        // Store user data
-        await TokenStorage.storeUserData(data.user);
+        // Add token to user object for easy access
+        const userWithToken = { ...user, token: tokens.accessToken };
 
-        return { success: true, user: data.user };
+        // Store user data with token
+        await TokenStorage.storeUserData(userWithToken);
+
+        return { success: true, user: userWithToken };
       }
 
+      console.log("Invalid response structure:", data);
       return { success: false, error: "Invalid response from server" };
     } catch (error) {
       console.error("Registration error:", error);
@@ -121,7 +165,15 @@ export class AuthService {
       const userData = await TokenStorage.getUserData();
       const hasTokens = await TokenStorage.hasTokens();
 
-      return hasTokens && userData ? userData : null;
+      if (hasTokens && userData) {
+        // Ensure the user has the current token
+        const accessToken = await TokenStorage.getAccessToken();
+        if (accessToken) {
+          return { ...userData, token: accessToken };
+        }
+        return userData;
+      }
+      return null;
     } catch (error) {
       console.error("Get stored user error:", error);
       return null;

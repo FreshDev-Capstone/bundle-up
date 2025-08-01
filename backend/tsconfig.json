@@ -7,11 +7,19 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "*": ["src/*", "node_modules/*"]
+    }
   },
-  "include": [
-    "src/**/*.ts",
-    "db/knexfile.ts"
-  ],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*.ts", "src/types/express.d.ts", "db/knexfile.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "../OLD/**/*",
+    "../old/**/*",
+    "**/OLD/**/*",
+    "**/old/**/*"
+  ]
 }
