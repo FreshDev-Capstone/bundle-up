@@ -9,7 +9,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string("category").notNullable();
     table.string("product_color");
     table.integer("product_count").notNullable();
-    table.json("images").nullable().defaultTo(null);
+    table.string("image_url");
     table.decimal("b2c_price", 10, 2).notNullable();
     table.decimal("b2b_price", 10, 2).notNullable();
     table.integer("inventory_by_carton").defaultTo(0);

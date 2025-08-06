@@ -33,13 +33,9 @@ export default function ProductsScreen() {
   const [showAddedNotification, setShowAddedNotification] = useState(false);
   const [addedProductName, setAddedProductName] = useState("");
 
-  // Get unique categories from products - normalize and filter out empty values
+  // Get unique categories from products
   const categories = Array.from(
-    new Set(
-      products
-        .map((product) => product.category?.trim())
-        .filter((category) => category && category.length > 0)
-    )
+    new Set(products.map((product) => product.category))
   ).sort();
 
   // Filter products based on search and category
@@ -48,11 +44,8 @@ export default function ProductsScreen() {
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const normalizedProductCategory = product.category?.trim().toLowerCase();
-    const normalizedSelectedCategory = selectedCategory?.trim().toLowerCase();
-    
     const matchesCategory =
-      !normalizedSelectedCategory || normalizedProductCategory === normalizedSelectedCategory;
+      !selectedCategory || product.category === selectedCategory;
 
     return matchesSearch && matchesCategory;
   });
@@ -90,48 +83,36 @@ export default function ProductsScreen() {
           !selectedCategory && styles.categoryChipActive,
         ]}
         onPress={() => setSelectedCategory(null)}
-        activeOpacity={0.7}
       >
         <Text
           style={[
             styles.categoryText,
             !selectedCategory && styles.categoryTextActive,
           ]}
-          numberOfLines={1}
-          ellipsizeMode="tail"
         >
           All
         </Text>
       </TouchableOpacity>
 
-      {categories.map((category) => {
-        const normalizedCategory = category?.trim();
-        const isActive =
-          selectedCategory?.trim().toLowerCase() === normalizedCategory?.toLowerCase();
-
-        return (
-          <TouchableOpacity
-            key={normalizedCategory.toLowerCase().replace(/\s+/g, "-")}
+      {categories.map((category) => (
+        <TouchableOpacity
+          key={category}
+          style={[
+            styles.categoryChip,
+            selectedCategory === category && styles.categoryChipActive,
+          ]}
+          onPress={() => setSelectedCategory(category)}
+        >
+          <Text
             style={[
-              styles.categoryChip,
-              isActive && styles.categoryChipActive,
+              styles.categoryText,
+              selectedCategory === category && styles.categoryTextActive,
             ]}
-            onPress={() => setSelectedCategory(normalizedCategory)}
-            activeOpacity={0.7}
           >
-            <Text
-              style={[
-                styles.categoryText,
-                isActive && styles.categoryTextActive,
-              ]}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {normalizedCategory}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
+            {category}
+          </Text>
+        </TouchableOpacity>
+      ))}
     </ScrollView>
   );
 
@@ -157,15 +138,11 @@ export default function ProductsScreen() {
       {/* Header with Company Logo and My Account */}
       <View style={styles.header}>
         <View style={styles.headerTop}>
-          {brand?.logo ? (
-            <Image source={{ uri: brand.logo }} style={styles.logoImage} />
-          ) : (
-            <Image
-              source={require("../../../shared/assets/images/SFI-Logo.png")}
-              style={styles.logoImage}
-              resizeMode="contain"
-            />
-          )}
+          <Image
+            source={require("../../../shared/assets/images/SFI-Logo.png")}
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
           <TouchableOpacity
             style={styles.accountButton}
             onPress={() => navigation.navigate("profile")}

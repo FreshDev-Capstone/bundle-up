@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import ProductCard from '../components/ProductCard';
+import React, { useState, useEffect } from "react";
+import ProductCard from "../components/ProductCard";
 
 interface Product {
   id: number;
@@ -24,7 +24,7 @@ const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [userType, setUserType] = useState<'B2C' | 'B2B' | 'ADMIN'>('B2C');
+  const [userType, setUserType] = useState<"B2C" | "B2B" | "ADMIN">("B2C");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
@@ -47,16 +47,18 @@ const ProductsPage: React.FC = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://cold-spoons-argue.loca.lt/api/products');
-      
+      const response = await fetch(
+        "https://cold-spoons-argue.loca.lt/api/products"
+      );
+
       if (!response.ok) {
         throw new Error(`Failed to fetch products: ${response.status}`);
       }
-      
+
       const data = await response.json();
       setProducts(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch products');
+      setError(err instanceof Error ? err.message : "Failed to fetch products");
     } finally {
       setLoading(false);
     }
@@ -83,7 +85,9 @@ const ProductsPage: React.FC = () => {
     return (
       <div className="error-container">
         <p className="error-text">Error: {error}</p>
-        <button onClick={fetchProducts} className="retry-button">Try Again</button>
+        <button onClick={fetchProducts} className="retry-button">
+          Try Again
+        </button>
       </div>
     );
   }
@@ -93,13 +97,15 @@ const ProductsPage: React.FC = () => {
       {/* Header */}
       <div className="page-header">
         <h1 className="page-title">Product Store</h1>
-        <p className="page-subtitle">Found {filteredProducts.length} products</p>
+        <p className="page-subtitle">
+          Found {filteredProducts.length} products
+        </p>
       </div>
 
       {/* Category Filters */}
       <div className="category-filters">
         <button
-          className={`category-button ${!selectedCategory ? 'active' : ''}`}
+          className={`category-button ${!selectedCategory ? "active" : ""}`}
           onClick={() => setSelectedCategory(null)}
         >
           All
@@ -107,7 +113,9 @@ const ProductsPage: React.FC = () => {
         {categories.map((category) => (
           <button
             key={category}
-            className={`category-button ${selectedCategory === category ? 'active' : ''}`}
+            className={`category-button ${
+              selectedCategory === category ? "active" : ""
+            }`}
             onClick={() => setSelectedCategory(category)}
           >
             {category}
@@ -118,30 +126,30 @@ const ProductsPage: React.FC = () => {
       {/* User Type Controls */}
       <div className="controls">
         <div className="user-type-selector">
-          <label className={userType === 'B2C' ? 'active' : ''}>
+          <label className={userType === "B2C" ? "active" : ""}>
             <input
               type="radio"
               value="B2C"
-              checked={userType === 'B2C'}
-              onChange={(e) => setUserType(e.target.value as 'B2C')}
+              checked={userType === "B2C"}
+              onChange={(e) => setUserType(e.target.value as "B2C")}
             />
             Consumer
           </label>
-          <label className={userType === 'B2B' ? 'active' : ''}>
+          <label className={userType === "B2B" ? "active" : ""}>
             <input
               type="radio"
               value="B2B"
-              checked={userType === 'B2B'}
-              onChange={(e) => setUserType(e.target.value as 'B2B')}
+              checked={userType === "B2B"}
+              onChange={(e) => setUserType(e.target.value as "B2B")}
             />
             Business
           </label>
-          <label className={userType === 'ADMIN' ? 'active' : ''}>
+          <label className={userType === "ADMIN" ? "active" : ""}>
             <input
               type="radio"
               value="ADMIN"
-              checked={userType === 'ADMIN'}
-              onChange={(e) => setUserType(e.target.value as 'ADMIN')}
+              checked={userType === "ADMIN"}
+              onChange={(e) => setUserType(e.target.value as "ADMIN")}
             />
             Admin
           </label>
@@ -150,10 +158,10 @@ const ProductsPage: React.FC = () => {
 
       {/* Products Grid */}
       <div className="products-grid">
-        {filteredProducts.map(product => (
-          <ProductCard 
-            key={product.id} 
-            product={product} 
+        {filteredProducts.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
             userType={userType}
             onPress={handleProductPress}
           />
@@ -166,7 +174,14 @@ const ProductsPage: React.FC = () => {
           <div className="modal-container" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <button onClick={handleCloseModal} className="close-button">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
@@ -176,15 +191,30 @@ const ProductsPage: React.FC = () => {
               <h2>{selectedProduct.name}</h2>
               <p>{selectedProduct.description}</p>
               <div className="modal-details">
-                <p><strong>Category:</strong> {selectedProduct.category}</p>
-                <p><strong>Type:</strong> {selectedProduct.type}</p>
-                {userType === 'ADMIN' ? (
+                <p>
+                  <strong>Category:</strong> {selectedProduct.category}
+                </p>
+                <p>
+                  <strong>Type:</strong> {selectedProduct.type}
+                </p>
+                {userType === "ADMIN" ? (
                   <div>
-                    <p><strong>Retail Price:</strong> ${selectedProduct.price.toFixed(2)}</p>
-                    <p><strong>Wholesale Price:</strong> ${selectedProduct.priceB2B.toFixed(2)}</p>
+                    <p>
+                      <strong>Retail Price:</strong> $
+                      {selectedProduct.price.toFixed(2)}
+                    </p>
+                    <p>
+                      <strong>Wholesale Price:</strong> $
+                      {selectedProduct.priceB2B.toFixed(2)}
+                    </p>
                   </div>
                 ) : (
-                  <p><strong>Price:</strong> ${userType === 'B2B' ? selectedProduct.priceB2B.toFixed(2) : selectedProduct.price.toFixed(2)}</p>
+                  <p>
+                    <strong>Price:</strong> $
+                    {userType === "B2B"
+                      ? selectedProduct.priceB2B.toFixed(2)
+                      : selectedProduct.price.toFixed(2)}
+                  </p>
                 )}
               </div>
             </div>

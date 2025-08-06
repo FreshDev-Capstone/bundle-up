@@ -5,7 +5,8 @@ interface Product {
   category: string;
   product_color?: string;
   product_count: number;
-  images: string[];
+  image_url: string[];
+  image_url: string;
   // API fields (snake_case)
   b2c_price: number;
   b2b_price: number;

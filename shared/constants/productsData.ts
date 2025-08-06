@@ -8,9 +8,9 @@ export const productsData = [
     category: "Commodity",
     product_color: "white",
     product_count: 12,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Commodity White Eggs/101-commodity.png",
-      "https://images.unsplash.com/photo-1587486913049-53fc88980cfc?w=400&h=300&fit=crop&auto=format",
+      "https://image_url.unsplash.com/photo-1587486913049-53fc88980cfc?w=400&h=300&fit=crop&auto=format",
     ]),
     b2c_price: 3.99,
     b2b_price: 2.99,
@@ -27,7 +27,7 @@ export const productsData = [
     category: "Commodity",
     product_color: "white",
     product_count: 18,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Commodity White Eggs/102-commodity.png",
     ]),
     b2c_price: 5.49,
@@ -45,7 +45,7 @@ export const productsData = [
     category: "Commodity",
     product_color: "white",
     product_count: 24,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Commodity White Eggs/103-commodity.png",
     ]),
     b2c_price: 6.99,
@@ -63,7 +63,7 @@ export const productsData = [
     category: "Commodity",
     product_color: "white",
     product_count: 30,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Commodity White Eggs/104-commodity.png",
     ]),
     b2c_price: 8.49,
@@ -81,7 +81,7 @@ export const productsData = [
     category: "Commodity",
     product_color: "white",
     product_count: 36,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Commodity White Eggs/105-commodity.png",
     ]),
     b2c_price: 9.99,
@@ -99,7 +99,7 @@ export const productsData = [
     category: "Commodity",
     product_color: "white",
     product_count: 48,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Commodity White Eggs/106-commodity.png",
     ]),
     b2c_price: 12.99,
@@ -117,7 +117,7 @@ export const productsData = [
     category: "Commodity",
     product_color: "white",
     product_count: 60,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Commodity White Eggs/109-commodity.png",
     ]),
     b2c_price: 15.99,
@@ -135,7 +135,7 @@ export const productsData = [
     category: "Commodity",
     product_color: "white",
     product_count: 72,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Commodity White Eggs/110-commodity.png",
     ]),
     b2c_price: 18.99,
@@ -154,7 +154,7 @@ export const productsData = [
     category: "Commodity",
     product_color: "brown",
     product_count: 12,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Commodity Brown Eggs/111-commodity.png",
     ]),
     b2c_price: 4.49,
@@ -172,7 +172,7 @@ export const productsData = [
     category: "Commodity",
     product_color: "brown",
     product_count: 18,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Commodity Brown Eggs/112-commodity.png",
     ]),
     b2c_price: 6.19,
@@ -190,7 +190,7 @@ export const productsData = [
     category: "Commodity",
     product_color: "brown",
     product_count: 24,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Commodity Brown Eggs/113-commodity.png",
     ]),
     b2c_price: 7.89,
@@ -208,7 +208,7 @@ export const productsData = [
     category: "Commodity",
     product_color: "brown",
     product_count: 30,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Commodity Brown Eggs/114-commodity.png",
     ]),
     b2c_price: 9.59,
@@ -226,7 +226,7 @@ export const productsData = [
     category: "Commodity",
     product_color: "brown",
     product_count: 36,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Commodity Brown Eggs/115-commodity.png",
     ]),
     b2c_price: 11.29,
@@ -245,7 +245,9 @@ export const productsData = [
     category: "Organic",
     product_color: "brown",
     product_count: 12,
-    images: JSON.stringify(["/assets/eggs/Organic Brown Eggs/121-organic.png"]),
+    image_url: JSON.stringify([
+      "/assets/eggs/Organic Brown Eggs/121-organic.png",
+    ]),
     b2c_price: 6.99,
     b2b_price: 5.29,
     inventory_by_carton: 80,
@@ -261,7 +263,9 @@ export const productsData = [
     category: "Organic",
     product_color: "brown",
     product_count: 18,
-    images: JSON.stringify(["/assets/eggs/Organic Brown Eggs/122-organic.png"]),
+    image_url: JSON.stringify([
+      "/assets/eggs/Organic Brown Eggs/122-organic.png",
+    ]),
     b2c_price: 9.99,
     b2b_price: 7.69,
     inventory_by_carton: 60,
@@ -277,7 +281,9 @@ export const productsData = [
     category: "Organic",
     product_color: "brown",
     product_count: 24,
-    images: JSON.stringify(["/assets/eggs/Organic Brown Eggs/123-organic.png"]),
+    image_url: JSON.stringify([
+      "/assets/eggs/Organic Brown Eggs/123-organic.png",
+    ]),
     b2c_price: 12.99,
     b2b_price: 9.99,
     inventory_by_carton: 50,
@@ -293,7 +299,9 @@ export const productsData = [
     category: "Organic",
     product_color: "brown",
     product_count: 30,
-    images: JSON.stringify(["/assets/eggs/Organic Brown Eggs/125-organic.png"]),
+    image_url: JSON.stringify([
+      "/assets/eggs/Organic Brown Eggs/125-organic.png",
+    ]),
     b2c_price: 15.99,
     b2b_price: 12.49,
     inventory_by_carton: 40,
@@ -309,7 +317,9 @@ export const productsData = [
     category: "Organic",
     product_color: "brown",
     product_count: 36,
-    images: JSON.stringify(["/assets/eggs/Organic Brown Eggs/126-organic.png"]),
+    image_url: JSON.stringify([
+      "/assets/eggs/Organic Brown Eggs/126-organic.png",
+    ]),
     b2c_price: 18.99,
     b2b_price: 14.99,
     inventory_by_carton: 30,
@@ -325,7 +335,9 @@ export const productsData = [
     category: "Organic",
     product_color: "brown",
     product_count: 48,
-    images: JSON.stringify(["/assets/eggs/Organic Brown Eggs/127-organic.png"]),
+    image_url: JSON.stringify([
+      "/assets/eggs/Organic Brown Eggs/127-organic.png",
+    ]),
     b2c_price: 23.99,
     b2b_price: 18.99,
     inventory_by_carton: 25,
@@ -342,7 +354,7 @@ export const productsData = [
     category: "Cage Free",
     product_color: "brown",
     product_count: 12,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Cage Free Brown Eggs/131-cage-free.png",
     ]),
     b2c_price: 5.49,
@@ -360,7 +372,7 @@ export const productsData = [
     category: "Cage Free",
     product_color: "brown",
     product_count: 18,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Cage Free Brown Eggs/132-cage-free.png",
     ]),
     b2c_price: 7.99,
@@ -378,7 +390,7 @@ export const productsData = [
     category: "Cage Free",
     product_color: "brown",
     product_count: 24,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Cage Free Brown Eggs/133-cage-free.png",
     ]),
     b2c_price: 10.49,
@@ -396,7 +408,7 @@ export const productsData = [
     category: "Cage Free",
     product_color: "brown",
     product_count: 30,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Cage Free Brown Eggs/134-cage-free.png",
     ]),
     b2c_price: 12.99,
@@ -414,7 +426,7 @@ export const productsData = [
     category: "Cage Free",
     product_color: "brown",
     product_count: 36,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Cage Free Brown Eggs/135-cage-free.png",
     ]),
     b2c_price: 15.49,
@@ -433,7 +445,7 @@ export const productsData = [
     category: "Cage Free",
     product_color: "white",
     product_count: 12,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Cage Free White Eggs/136-cage-free.png",
     ]),
     b2c_price: 5.19,
@@ -451,7 +463,7 @@ export const productsData = [
     category: "Cage Free",
     product_color: "white",
     product_count: 18,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Cage Free White Eggs/137-cage-free.png",
     ]),
     b2c_price: 7.69,
@@ -470,7 +482,7 @@ export const productsData = [
     category: "Specialty",
     product_color: "white",
     product_count: 12,
-    images: JSON.stringify(["/assets/eggs/Quail White Eggs/142-copy.png"]),
+    image_url: JSON.stringify(["/assets/eggs/Quail White Eggs/142-copy.png"]),
     b2c_price: 8.99,
     b2b_price: 6.99,
     inventory_by_carton: 30,
@@ -486,7 +498,7 @@ export const productsData = [
     category: "Specialty",
     product_color: "white",
     product_count: 12,
-    images: JSON.stringify(["/assets/eggs/Duck White Eggs/143-duck.png"]),
+    image_url: JSON.stringify(["/assets/eggs/Duck White Eggs/143-duck.png"]),
     b2c_price: 9.99,
     b2b_price: 7.79,
     inventory_by_carton: 25,
@@ -502,7 +514,7 @@ export const productsData = [
     category: "Specialty",
     product_color: "white",
     product_count: 12,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Hard Boiled Eggs/145-hard-boiled.png",
     ]),
     b2c_price: 7.99,
@@ -521,7 +533,7 @@ export const productsData = [
     category: "Pasture Raised",
     product_color: "brown",
     product_count: 12,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Pasture Raised Brown Eggs/146-pasture.png",
     ]),
     b2c_price: 8.99,
@@ -539,7 +551,7 @@ export const productsData = [
     category: "Pasture Raised",
     product_color: "brown",
     product_count: 18,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Pasture Raised Brown Eggs/147-pasture.png",
     ]),
     b2c_price: 12.99,
@@ -558,7 +570,7 @@ export const productsData = [
     category: "Heirloom",
     product_color: "blue",
     product_count: 12,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Heirloom Blue & Brown Eggs/148-heirloom-blue.png",
     ]),
     b2c_price: 11.99,
@@ -576,7 +588,7 @@ export const productsData = [
     category: "Heirloom",
     product_color: "brown",
     product_count: 12,
-    images: JSON.stringify([
+    image_url: JSON.stringify([
       "/assets/eggs/Heirloom Blue & Brown Eggs/149-heirloom-brown.png",
     ]),
     b2c_price: 10.99,

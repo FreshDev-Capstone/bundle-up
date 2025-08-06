@@ -108,8 +108,8 @@ const styles = StyleSheet.create({
   },
   categoryContent: {
     paddingRight: 16, // Add right padding for better scroll experience
-    flexDirection: 'row', // ensure horizontal layout
-    alignItems: 'center',
+    flexDirection: "row", // ensure horizontal layout
+    alignItems: "center",
   },
   categoryChip: {
     paddingHorizontal: 16,

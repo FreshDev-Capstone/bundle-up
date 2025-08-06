@@ -13,7 +13,7 @@ interface Product {
   category: string;
   product_color?: string;
   product_count: number;
-  images: string;
+  image_url: string;
   b2c_price: number;
   b2b_price: number;
   inventory_by_carton: number;

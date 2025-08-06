@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, Image, TouchableOpacity, View, FlatList } from "react-native";
+import { Text, Image, TouchableOpacity, View } from "react-native";
 import { Product } from "../../../../shared/types/product";
 import { CirclePlus } from "lucide-react-native";
 import { useAuth } from "../../../context/AuthContext";
@@ -70,116 +70,23 @@ export default function ProductCard({
     }
   };
 
-  // Parse and convert images array - handle both stringified and array cases
-  let images: string[] = [];
-  let rawImages: string[] = [];
-
-  if (Array.isArray(product.images)) {
-    rawImages = product.images;
-  } else if (typeof product.images === "string") {
-    try {
-      rawImages = JSON.parse(product.images);
-    } catch {
-      rawImages = [];
-    }
-  }
-
-  // Convert raw image paths to full URLs (like ProductDetails does)
-  if (rawImages && rawImages.length > 0) {
-    images = rawImages.map(getImageUrl);
-  }
-
-  // Debug logging for images
-  console.log(`[ProductCard] ${product.name} - Raw images:`, rawImages);
-  console.log(`[ProductCard] ${product.name} - Converted images:`, images);
-  console.log(
-    `[ProductCard] ${product.name} - First image URL:`,
-    images[0] || "No images"
-  );
-
-  // Carousel state
-  const [currentIndex, setCurrentIndex] = React.useState(0);
-
-  const handleScroll = (event: any) => {
-    const index = Math.round(
-      event.nativeEvent.contentOffset.x /
-        event.nativeEvent.layoutMeasurement.width
-    );
-    setCurrentIndex(index);
-  };
+  const imageUrl = getImageUrl(product.image_url);
 
   return (
     <TouchableOpacity style={styles.container} onPress={handlePress}>
-      {/* Image Carousel */}
-      <View style={styles.carouselContainer}>
-        {images.length > 0 ? (
-          <FlatList
-            data={images}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(_: string, idx: number) => idx.toString()}
-            renderItem={({ item, index }: { item: string; index: number }) => {
-              console.log(
-                `[ProductCard] Rendering image ${index} for ${product.name}:`,
-                item
-              );
-
-              return (
-                <Image
-                  source={{ uri: item }}
-                  style={styles.image}
-                  resizeMode="cover"
-                  onLoad={() => {
-                    console.log(
-                      `[ProductCard] Image ${index} loaded successfully for ${product.name}`
-                    );
-                  }}
-                  onError={(error: any) => {
-                    console.error(
-                      `[ProductCard] Failed to load image ${index} for ${product.name}:`,
-                      error
-                    );
-                    console.error(`[ProductCard] Image URL was:`, item);
-                  }}
-                />
-              );
-            }}
-            onScroll={handleScroll}
-            scrollEventThrottle={16}
-          />
-        ) : (
-          <View
-            style={[
-              styles.image,
-              {
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "#f0f0f0",
-              },
-            ]}
-          >
-            <Text style={{ color: "#666", fontSize: 12 }}>No Image</Text>
-          </View>
-        )}
-        {/* Carousel indicators */}
-        {images.length > 1 && (
-          <View style={styles.carouselIndicators}>
-            {images.map((_: string, idx: number) => (
-              <View
-                key={idx}
-                style={[
-                  styles.carouselDot,
-                  idx === currentIndex && styles.carouselDotActive,
-                ]}
-              />
-            ))}
-          </View>
-        )}
-        <TouchableOpacity style={styles.addButton} onPress={handleAddPress}>
-          <CirclePlus size={20} color="#FFFFFF" />
-        </TouchableOpacity>
-      </View>
+      <Image
+        source={{ uri: imageUrl }}
+        style={styles.image}
+        onError={(error: any) => {
+          console.error(
+            `[ProductCard] Failed to load image for ${product.name}:`,
+            error
+          );
+        }}
+      />
+      <TouchableOpacity style={styles.addButton} onPress={handleAddPress}>
+        <CirclePlus size={20} color="#FFFFFF" />
+      </TouchableOpacity>
 
       <View style={styles.content}>
         <Text style={styles.name} numberOfLines={2}>
