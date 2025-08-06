@@ -75,6 +75,32 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     lineHeight: 16,
   },
+  carouselContainer: {
+    position: "relative",
+    height: 160,
+  },
+  carouselIndicators: {
+    position: "absolute",
+    bottom: 8,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  carouselDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    marginHorizontal: 3,
+  },
+  carouselDotActive: {
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
 });
 
 export default styles;

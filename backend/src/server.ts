@@ -76,12 +76,6 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-// Path rewrite: map /assets/eggs/* to /assets/images/Eggs/* for static asset requests
-app.use("/assets/eggs", (req, res, next) => {
-  req.url = "/images/Eggs" + req.url;
-  next();
-});
-
 // Set CORS and Cross-Origin-Resource-Policy headers for static assets
 app.use("/assets", (req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");

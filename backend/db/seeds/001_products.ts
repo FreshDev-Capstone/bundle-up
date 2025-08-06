@@ -12,12 +12,12 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Commodity White Eggs - 12 Count",
       description:
         "Fresh commodity white eggs, 12 count carton. Perfect for everyday cooking and baking.",
-      category: "commodity",
+      category: "Commodity",
       product_color: "white",
       product_count: 12,
       images: JSON.stringify([
         "/assets/eggs/Commodity White Eggs/101-commodity.png",
-        "https://unsplash.com/photos/five-broil-eggs-g8xdO1Q1kIg",
+        "https://images.unsplash.com/photo-1587486913049-53fc88980cfc?w=400&h=300&fit=crop&auto=format",
       ]),
       b2c_price: 3.99,
       b2b_price: 2.99,
@@ -31,7 +31,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Commodity White Eggs - 18 Count",
       description:
         "Fresh commodity white eggs, 18 count carton. Great value for larger families.",
-      category: "commodity",
+      category: "Commodity",
       product_color: "white",
       product_count: 18,
       images: JSON.stringify([
@@ -49,7 +49,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Commodity White Eggs - 24 Count",
       description:
         "Fresh commodity white eggs, 24 count carton. Ideal for restaurants and food service.",
-      category: "commodity",
+      category: "Commodity",
       product_color: "white",
       product_count: 24,
       images: JSON.stringify([
@@ -67,7 +67,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Commodity White Eggs - 30 Count",
       description:
         "Fresh commodity white eggs, 30 count carton. Perfect for high-volume cooking.",
-      category: "commodity",
+      category: "Commodity",
       product_color: "white",
       product_count: 30,
       images: JSON.stringify([
@@ -85,7 +85,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Commodity White Eggs - 36 Count",
       description:
         "Fresh commodity white eggs, 36 count carton. Great for commercial kitchens.",
-      category: "commodity",
+      category: "Commodity",
       product_color: "white",
       product_count: 36,
       images: JSON.stringify([
@@ -103,7 +103,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Commodity White Eggs - 48 Count",
       description:
         "Fresh commodity white eggs, 48 count carton. Maximum value for bulk purchases.",
-      category: "commodity",
+      category: "Commodity",
       product_color: "white",
       product_count: 48,
       images: JSON.stringify([
@@ -121,7 +121,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Commodity White Eggs - 60 Count",
       description:
         "Fresh commodity white eggs, 60 count carton. Ultimate bulk option for commercial use.",
-      category: "commodity",
+      category: "Commodity",
       product_color: "white",
       product_count: 60,
       images: JSON.stringify([
@@ -139,7 +139,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Commodity White Eggs - 72 Count",
       description:
         "Fresh commodity white eggs, 72 count carton. Premium bulk option for large operations.",
-      category: "commodity",
+      category: "Commodity",
       product_color: "white",
       product_count: 72,
       images: JSON.stringify([
@@ -158,7 +158,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Commodity Brown Eggs - 12 Count",
       description:
         "Fresh commodity brown eggs, 12 count carton. Rich flavor and golden yolks.",
-      category: "commodity",
+      category: "Commodity",
       product_color: "brown",
       product_count: 12,
       images: JSON.stringify([
@@ -176,7 +176,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Commodity Brown Eggs - 18 Count",
       description:
         "Fresh commodity brown eggs, 18 count carton. Perfect for families who prefer brown eggs.",
-      category: "commodity",
+      category: "Commodity",
       product_color: "brown",
       product_count: 18,
       images: JSON.stringify([
@@ -194,7 +194,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Commodity Brown Eggs - 24 Count",
       description:
         "Fresh commodity brown eggs, 24 count carton. Great for restaurants and bakeries.",
-      category: "commodity",
+      category: "Commodity",
       product_color: "brown",
       product_count: 24,
       images: JSON.stringify([
@@ -212,7 +212,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Commodity Brown Eggs - 30 Count",
       description:
         "Fresh commodity brown eggs, 30 count carton. Ideal for high-volume commercial use.",
-      category: "commodity",
+      category: "Commodity",
       product_color: "brown",
       product_count: 30,
       images: JSON.stringify([
@@ -230,7 +230,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Commodity Brown Eggs - 36 Count",
       description:
         "Fresh commodity brown eggs, 36 count carton. Perfect for large commercial kitchens.",
-      category: "commodity",
+      category: "Commodity",
       product_color: "brown",
       product_count: 36,
       images: JSON.stringify([
@@ -249,7 +249,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Organic Brown Eggs - 12 Count",
       description:
         "Certified organic brown eggs, 12 count carton. Free-range, no antibiotics or hormones.",
-      category: "organic",
+      category: "Organic",
       product_color: "brown",
       product_count: 12,
       images: JSON.stringify([
@@ -267,7 +267,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Organic Brown Eggs - 18 Count",
       description:
         "Certified organic brown eggs, 18 count carton. Premium quality for health-conscious consumers.",
-      category: "organic",
+      category: "Organic",
       product_color: "brown",
       product_count: 18,
       images: JSON.stringify([
@@ -285,7 +285,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Organic Brown Eggs - 24 Count",
       description:
         "Certified organic brown eggs, 24 count carton. Perfect for organic restaurants and cafes.",
-      category: "organic",
+      category: "Organic",
       product_color: "brown",
       product_count: 24,
       images: JSON.stringify([
@@ -303,7 +303,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Organic Brown Eggs - 30 Count",
       description:
         "Certified organic brown eggs, 30 count carton. Ideal for organic food service operations.",
-      category: "organic",
+      category: "Organic",
       product_color: "brown",
       product_count: 30,
       images: JSON.stringify([
@@ -321,7 +321,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Organic Brown Eggs - 36 Count",
       description:
         "Certified organic brown eggs, 36 count carton. Premium bulk option for organic establishments.",
-      category: "organic",
+      category: "Organic",
       product_color: "brown",
       product_count: 36,
       images: JSON.stringify([
@@ -339,7 +339,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Organic Brown Eggs - 48 Count",
       description:
         "Certified organic brown eggs, 48 count carton. Maximum value for organic bulk purchases.",
-      category: "organic",
+      category: "Organic",
       product_color: "brown",
       product_count: 48,
       images: JSON.stringify([
@@ -358,7 +358,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Cage Free Brown Eggs - 12 Count",
       description:
         "Cage-free brown eggs, 12 count carton. Hens raised in spacious, humane conditions.",
-      category: "cage-free",
+      category: "Cage Free",
       product_color: "brown",
       product_count: 12,
       images: JSON.stringify([
@@ -376,7 +376,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Cage Free Brown Eggs - 18 Count",
       description:
         "Cage-free brown eggs, 18 count carton. Ethical choice for families and businesses.",
-      category: "cage-free",
+      category: "Cage Free",
       product_color: "brown",
       product_count: 18,
       images: JSON.stringify([
@@ -394,7 +394,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Cage Free Brown Eggs - 24 Count",
       description:
         "Cage-free brown eggs, 24 count carton. Perfect for restaurants with ethical sourcing policies.",
-      category: "cage-free",
+      category: "Cage Free",
       product_color: "brown",
       product_count: 24,
       images: JSON.stringify([
@@ -412,7 +412,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Cage Free Brown Eggs - 30 Count",
       description:
         "Cage-free brown eggs, 30 count carton. Ideal for food service with humane animal practices.",
-      category: "cage-free",
+      category: "Cage Free",
       product_color: "brown",
       product_count: 30,
       images: JSON.stringify([
@@ -430,7 +430,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Cage Free Brown Eggs - 36 Count",
       description:
         "Cage-free brown eggs, 36 count carton. Premium bulk option for ethical establishments.",
-      category: "cage-free",
+      category: "Cage Free",
       product_color: "brown",
       product_count: 36,
       images: JSON.stringify([
@@ -449,7 +449,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Cage Free White Eggs - 12 Count",
       description:
         "Cage-free white eggs, 12 count carton. Hens raised in spacious, humane conditions.",
-      category: "cage-free",
+      category: "Cage Free",
       product_color: "white",
       product_count: 12,
       images: JSON.stringify([
@@ -467,7 +467,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Cage Free White Eggs - 18 Count",
       description:
         "Cage-free white eggs, 18 count carton. Ethical choice for families and businesses.",
-      category: "cage-free",
+      category: "Cage Free",
       product_color: "white",
       product_count: 18,
       images: JSON.stringify([
@@ -486,7 +486,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Quail Eggs - 12 Count",
       description:
         "Delicate quail eggs, 12 count carton. Perfect for gourmet dishes and specialty cuisine.",
-      category: "specialty",
+      category: "Specialty",
       product_color: "white",
       product_count: 12,
       images: JSON.stringify(["/assets/eggs/Quail White Eggs/142-copy.png"]),
@@ -502,7 +502,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Duck Eggs - 12 Count",
       description:
         "Rich duck eggs, 12 count carton. Larger yolks and richer flavor than chicken eggs.",
-      category: "specialty",
+      category: "Specialty",
       product_color: "white",
       product_count: 12,
       images: JSON.stringify(["/assets/eggs/Duck White Eggs/143-duck.png"]),
@@ -518,7 +518,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Hard Boiled Eggs - 12 Count",
       description:
         "Pre-cooked hard boiled eggs, 12 count carton. Ready to eat, perfect for snacks and salads.",
-      category: "specialty",
+      category: "Specialty",
       product_color: "white",
       product_count: 12,
       images: JSON.stringify([
@@ -537,7 +537,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Pasture Raised Brown Eggs - 12 Count",
       description:
         "Pasture-raised brown eggs, 12 count carton. Hens forage on natural pasture for optimal nutrition.",
-      category: "pasture-raised",
+      category: "Pasture Raised",
       product_color: "brown",
       product_count: 12,
       images: JSON.stringify([
@@ -555,7 +555,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Pasture Raised Brown Eggs - 18 Count",
       description:
         "Pasture-raised brown eggs, 18 count carton. Premium quality with superior nutritional profile.",
-      category: "pasture-raised",
+      category: "Pasture Raised",
       product_color: "brown",
       product_count: 18,
       images: JSON.stringify([
@@ -574,7 +574,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Heirloom Blue Eggs - 12 Count",
       description:
         "Heirloom blue eggs, 12 count carton. Rare heritage breed with beautiful blue shells.",
-      category: "heirloom",
+      category: "Heirloom",
       product_color: "blue",
       product_count: 12,
       images: JSON.stringify([
@@ -592,7 +592,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "Heirloom Brown Eggs - 12 Count",
       description:
         "Heirloom brown eggs, 12 count carton. Heritage breed with rich flavor and golden yolks.",
-      category: "heirloom",
+      category: "Heirloom",
       product_color: "brown",
       product_count: 12,
       images: JSON.stringify([

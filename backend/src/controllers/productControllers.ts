@@ -13,7 +13,7 @@ interface Product {
   category: string;
   product_color?: string;
   product_count: number;
-  image_url: string;
+  images: string;
   b2c_price: number;
   b2b_price: number;
   inventory_by_carton: number;
@@ -114,8 +114,6 @@ export class ProductController {
       query = query.orderBy("name");
 
       const products = await query;
-
-      console.log(7);
 
       // Apply role-based pricing if specified
       let processedProducts = products;

@@ -93,23 +93,8 @@ export default function CartScreen() {
 
   const handleCheckout = async () => {
     if (!isAuthenticated) {
-      Alert.alert(
-        "Sign In Required",
-        "Please sign in to complete your purchase.",
-        [
-          {
-            text: "Cancel",
-            style: "cancel",
-          },
-          {
-            text: "Sign In",
-            onPress: () => {
-              // Navigate to profile tab for authentication
-              router.push("/(tabs)/profile");
-            },
-          },
-        ]
-      );
+      // Directly navigate to profile tab for authentication
+      router.push("/(tabs)/profile");
       return;
     }
 

@@ -96,41 +96,73 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 16,
     backgroundColor: "#FFFFFF",
+    zIndex: 10,
+    elevation: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   categoryContent: {
-    gap: 8,
+    paddingRight: 16, // Add right padding for better scroll experience
+    flexDirection: 'row', // ensure horizontal layout
+    alignItems: 'center',
   },
   categoryChip: {
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 20,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#EFEFEF", // Slightly darker for better contrast
     borderWidth: 1,
-    borderColor: "#E5E5E5",
+    borderColor: "#CCCCCC", // Slightly darker border
     minWidth: 80,
+    maxWidth: 120, // Prevent overly wide chips
     minHeight: 40,
     marginRight: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    // Force consistent layout
+    flexShrink: 0,
   },
   categoryChipActive: {
     backgroundColor: "#4CAF50",
     borderColor: "#4CAF50",
+    // Ensure active state overrides completely
+    shadowColor: "#4CAF50",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
   },
   categoryText: {
     fontSize: 14,
     color: "#333333",
     fontWeight: "500",
+    textAlign: "center",
+    // Ensure text is always centered
+    includeFontPadding: false,
   },
   categoryTextActive: {
     color: "#FFFFFF",
     fontWeight: "600",
+    // Force white color for active state
+    textShadowColor: "transparent",
   },
   resultsText: {
     fontSize: 14,
     color: "#666666",
     paddingHorizontal: 16,
-    paddingTop: 8,
+    paddingTop: 16,
     paddingBottom: 8,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#F8F9FA",
+    zIndex: 1,
+    elevation: 1,
   },
   listContainer: {
     padding: 8,

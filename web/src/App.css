@@ -81,6 +81,53 @@ body {
   accent-color: #0a7ea4; /* Colors.light.tint */
 }
 
+/* Category Filters - Matching mobile design */
+.category-filters {
+  display: flex;
+  gap: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  background-color: #FFFFFF;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.category-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.category-button {
+  padding: 10px 16px;
+  border-radius: 20px;
+  background-color: #F5F5F5;
+  border: 1px solid #E5E5E5;
+  color: #333333;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  min-width: 80px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.category-button:hover {
+  background-color: #E5E5E5;
+}
+
+.category-button.active {
+  background-color: #4CAF50;
+  border-color: #4CAF50;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
 /* Products Grid - Two columns like mobile FlatList numColumns={2} */
 .products-grid {
   display: grid;
@@ -347,6 +394,19 @@ body {
     flex-direction: column;
     gap: 12px;
     width: 100%;
+  }
+  
+  .category-filters {
+    padding: 12px;
+    margin-bottom: 12px;
+    gap: 6px;
+  }
+  
+  .category-button {
+    padding: 8px 12px;
+    font-size: 13px;
+    min-width: 70px;
+    min-height: 36px;
   }
   
   .page-title {

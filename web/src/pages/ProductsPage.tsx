@@ -26,10 +26,23 @@ const ProductsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [userType, setUserType] = useState<'B2C' | 'B2B' | 'ADMIN'>('B2C');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  // Get unique categories from products
+  const categories = Array.from(
+    new Set(products.map((product) => product.category))
+  ).sort();
+
+  // Filter products based on category
+  const filteredProducts = products.filter((product) => {
+    const matchesCategory =
+      !selectedCategory || product.category === selectedCategory;
+    return matchesCategory;
+  });
 
   const fetchProducts = async () => {
     try {
@@ -80,7 +93,26 @@ const ProductsPage: React.FC = () => {
       {/* Header */}
       <div className="page-header">
         <h1 className="page-title">Product Store</h1>
-        <p className="page-subtitle">Found {products.length} products</p>
+        <p className="page-subtitle">Found {filteredProducts.length} products</p>
+      </div>
+
+      {/* Category Filters */}
+      <div className="category-filters">
+        <button
+          className={`category-button ${!selectedCategory ? 'active' : ''}`}
+          onClick={() => setSelectedCategory(null)}
+        >
+          All
+        </button>
+        {categories.map((category) => (
+          <button
+            key={category}
+            className={`category-button ${selectedCategory === category ? 'active' : ''}`}
+            onClick={() => setSelectedCategory(category)}
+          >
+            {category}
+          </button>
+        ))}
       </div>
 
       {/* User Type Controls */}
@@ -118,7 +150,7 @@ const ProductsPage: React.FC = () => {
 
       {/* Products Grid */}
       <div className="products-grid">
-        {products.map(product => (
+        {filteredProducts.map(product => (
           <ProductCard 
             key={product.id} 
             product={product} 

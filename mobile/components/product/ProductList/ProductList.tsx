@@ -11,6 +11,7 @@ interface ProductListProps {
 
 export default function ProductList({ onProductPress }: ProductListProps) {
   const { products, loading } = useProducts();
+  console.log(products);
 
   return (
     <ScrollView style={styles.container}>
