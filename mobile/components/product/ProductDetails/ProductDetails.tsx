@@ -61,16 +61,13 @@ export default function ProductDetails({
     }
   };
 
-  // Use product.images for the carousel, only use placeholders if images is missing or empty
+  // Use product.image_url for the carousel, fallback to placeholder if missing
   let productImages: string[] = [];
-  if (product && Array.isArray(product.images) && product.images.length > 0) {
-    productImages = product.images.map(getImageUrl);
+  if (product && typeof product.image_url === "string") {
+    productImages = [getImageUrl(product.image_url)];
   } else {
     productImages = [
-      "https://via.placeholder.com/400x400/E3E3E3/999999?text=Product+Image+1",
-      "https://via.placeholder.com/400x400/E3E3E3/999999?text=Product+Image+2",
-      "https://via.placeholder.com/400x400/E3E3E3/999999?text=Product+Image+3",
-      "https://via.placeholder.com/400x400/E3E3E3/999999?text=Product+Image+4",
+      "https://via.placeholder.com/400x400/E3E3E3/999999?text=No+Image",
     ];
   }
 
@@ -127,7 +124,7 @@ export default function ProductDetails({
     <View style={styles.container}>
       {/* Main Image Carousel */}
       <View style={styles.carouselContainer}>
-        <FlatList
+        {/* <FlatList
           ref={flatListRef}
           data={productImages}
           renderItem={renderImageItem}
@@ -141,7 +138,11 @@ export default function ProductDetails({
             offset: screenWidth * index,
             index,
           })}
-        />
+        /> */}
+        {renderImageItem({
+          item: productImages[activeImageIndex],
+          index: activeImageIndex,
+        })}
 
         {/* Image Counter */}
         <View style={styles.imageCounter}>
