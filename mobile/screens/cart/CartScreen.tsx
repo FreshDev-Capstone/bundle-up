@@ -217,70 +217,70 @@ export default function CartScreen() {
           )}
 
           <View style={styles.quantityContainer}>
-            <TouchableOpacity
-              style={styles.quantityButton}
-              onPress={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-              disabled={updating === item.id}
-            >
-              <Text style={styles.quantityButtonText}>-</Text>
-            </TouchableOpacity>
-
-            <View style={styles.quantityInputContainer}>
-              <TextInput
-                style={[
-                  styles.quantityInput,
-                  isAtMaxQuantity && styles.quantityInputMax,
-                ]}
-                value={updating === item.id ? "..." : item.quantity.toString()}
-                onChangeText={(text: string) => {
-                  // Only allow numbers
-                  const numericText = text.replace(/[^0-9]/g, "");
-                  const newQuantity = parseInt(numericText) || 0;
-
-                  // Validate against inventory and minimum quantity
-                  if (newQuantity >= 0 && newQuantity <= availableInventory) {
-                    handleUpdateQuantity(item.id, newQuantity);
-                  }
-                }}
-                onBlur={() => {
-                  // Ensure quantity is at least 1 when user finishes editing
-                  if (item.quantity === 0) {
-                    handleUpdateQuantity(item.id, 1);
-                  }
-                }}
-                keyboardType="numeric"
-                placeholder={
-                  isAtMaxQuantity ? availableInventory.toString() : "0"
-                }
-                placeholderTextColor={isAtMaxQuantity ? "#FF6B6B" : "#999"}
-                editable={updating !== item.id}
-                maxLength={3}
-                selectTextOnFocus={true}
-              />
-              {availableInventory > 0 && (
-                <Text style={styles.quantityHint}>
-                  Max: {availableInventory}
-                </Text>
-              )}
-            </View>
-
-            <TouchableOpacity
-              style={[
-                styles.quantityButton,
-                isAtMaxQuantity && styles.quantityButtonDisabled,
-              ]}
-              onPress={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-              disabled={updating === item.id || isAtMaxQuantity}
-            >
-              <Text
-                style={[
-                  styles.quantityButtonText,
-                  isAtMaxQuantity && styles.quantityButtonTextDisabled,
-                ]}
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <TouchableOpacity
+                style={styles.quantityButton}
+                onPress={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                disabled={updating === item.id}
               >
-                +
-              </Text>
-            </TouchableOpacity>
+                <Text style={styles.quantityButtonText}>-</Text>
+              </TouchableOpacity>
+
+              <View style={styles.quantityInputContainer}>
+                <TextInput
+                  style={[
+                    styles.quantityInput,
+                    isAtMaxQuantity && styles.quantityInputMax,
+                  ]}
+                  value={
+                    updating === item.id ? "..." : item.quantity.toString()
+                  }
+                  onChangeText={(text: string) => {
+                    const numericText = text.replace(/[^0-9]/g, "");
+                    const newQuantity = parseInt(numericText) || 0;
+                    if (newQuantity >= 0 && newQuantity <= availableInventory) {
+                      handleUpdateQuantity(item.id, newQuantity);
+                    }
+                  }}
+                  onBlur={() => {
+                    if (item.quantity === 0) {
+                      handleUpdateQuantity(item.id, 1);
+                    }
+                  }}
+                  keyboardType="numeric"
+                  placeholder={
+                    isAtMaxQuantity ? availableInventory.toString() : "0"
+                  }
+                  placeholderTextColor={isAtMaxQuantity ? "#FF6B6B" : "#999"}
+                  editable={updating !== item.id}
+                  maxLength={3}
+                  selectTextOnFocus={true}
+                />
+                {availableInventory > 0 && (
+                  <Text style={styles.quantityHint}>
+                    Max: {availableInventory}
+                  </Text>
+                )}
+              </View>
+
+              <TouchableOpacity
+                style={[
+                  styles.quantityButton,
+                  isAtMaxQuantity && styles.quantityButtonDisabled,
+                ]}
+                onPress={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                disabled={updating === item.id || isAtMaxQuantity}
+              >
+                <Text
+                  style={[
+                    styles.quantityButtonText,
+                    isAtMaxQuantity && styles.quantityButtonTextDisabled,
+                  ]}
+                >
+                  +
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           <Text style={styles.itemTotal}>

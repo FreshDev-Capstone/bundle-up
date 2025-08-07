@@ -57,7 +57,7 @@ export default StyleSheet.create({
     flexDirection: "row",
     backgroundColor: "#FFFFFF",
     borderRadius: 16, // Keep modern rounded corners
-    padding: 16, // Back to original padding
+    padding: 10, // Back to original padding
     marginBottom: 12, // Reduce space between items
     alignItems: "center",
     shadowColor: "#000",
@@ -72,10 +72,10 @@ export default StyleSheet.create({
     borderColor: "#F5F5F5", // Keep subtle border
   },
   productImage: {
-    width: 60, // Back to original size
-    height: 60,
-    borderRadius: 12, // Keep more rounded
-    marginRight: 12, // Back to original spacing
+    width: 100, // Even larger image
+    height: 100,
+    borderRadius: 20, // More rounded for larger image
+    marginRight: 20, // More spacing for larger image
     backgroundColor: "#F8F9FA",
   },
   itemDetails: {
@@ -109,19 +109,19 @@ export default StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-    marginBottom: 6,
-    marginTop: 4,
-    backgroundColor: "#F8F9FA",
-    borderRadius: 8,
-    padding: 4,
+    backgroundColor: "#F3F4F6",
+    borderRadius: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 5,
     width: "100%",
-    minWidth: 120,
+    maxWidth: 260,
+    minWidth: 207,
     flexWrap: "nowrap",
   },
   quantityButton: {
     width: 32,
-    height: 32,
-    borderRadius: 16,
+    height: 32, // Match input height for better centering
+    borderRadius: 6,
     backgroundColor: "#10B981",
     alignItems: "center",
     justifyContent: "center",
@@ -133,7 +133,7 @@ export default StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 2,
     elevation: 2,
-    marginHorizontal: 2, // Add spacing between buttons and input
+    marginHorizontal: 2,
   },
   quantityButtonDisabled: {
     backgroundColor: "#E5E7EB",
@@ -141,18 +141,20 @@ export default StyleSheet.create({
     elevation: 0,
   },
   quantityButtonText: {
-    fontSize: 18, // Slightly smaller
-    fontWeight: "700", // Keep bolder
+    fontSize: 18,
+    fontWeight: "700",
     color: "#FFFFFF",
+    textAlign: "center",
+    lineHeight: 32, // Match button height for vertical centering
   },
   quantityButtonTextDisabled: {
     color: "#9CA3AF",
   },
   quantityInputContainer: {
-    flexDirection: "column",
+    flexDirection: "column", // Stack input and hint vertically
     alignItems: "center",
     justifyContent: "center",
-    marginHorizontal: 2, // Tight spacing
+    marginHorizontal: 2,
     minWidth: 48,
     flexShrink: 1,
   },
@@ -160,13 +162,14 @@ export default StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     color: "#1F2937",
-    minWidth: 40, // Slightly wider for better fit
+    minWidth: 120, // Wider for better usability
+    width: 64, // Wider for better usability
     height: 32,
     textAlign: "center",
     borderWidth: 2,
     borderColor: "#E5E7EB",
     borderRadius: 6,
-    paddingHorizontal: 4,
+    paddingHorizontal: 2,
     paddingVertical: 4,
     backgroundColor: "#FFFFFF",
   },
@@ -192,28 +195,31 @@ export default StyleSheet.create({
     alignSelf: "flex-start", // Don't stretch full width
   },
   removeButton: {
-    width: 32, // Smaller for compact layout
+    width: 32,
     height: 32,
-    borderRadius: 16,
-    backgroundColor: "#EF4444", // Modern red
+    borderRadius: 8,
+    backgroundColor: "#EF4444",
     alignItems: "center",
     justifyContent: "center",
-    marginLeft: 10, // Reduced spacing
+    marginLeft: 10,
     alignSelf: "flex-start",
-    marginTop: 0, // Align with top content
+    marginTop: 0,
     shadowColor: "#EF4444",
-    shadowOffset: {
-      width: 0,
-      height: 1, // Smaller shadow for compact look
-    },
-    shadowOpacity: 0.15, // Reduced shadow
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
     shadowRadius: 2,
     elevation: 2,
+    display: "flex",
   },
   removeButtonText: {
-    fontSize: 18, // Smaller X for compact layout
-    fontWeight: "700", // Keep bolder
+    fontSize: 20,
+    fontWeight: "700",
     color: "#FFFFFF",
+    textAlign: "center",
+    textAlignVertical: "center",
+    width: "100%",
+    height: "100%",
+    includeFontPadding: false,
   },
   footer: {
     padding: 16,
