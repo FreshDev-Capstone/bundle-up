@@ -108,28 +108,32 @@ export default StyleSheet.create({
   quantityContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 6, // Reduced space
-    marginTop: 4, // Reduced space
-    backgroundColor: "#F8F9FA", // Keep subtle background
-    borderRadius: 8, // Smaller radius for compact look
-    padding: 4, // Reduced padding
-    alignSelf: "flex-start", // Don't stretch full width
+    justifyContent: "flex-start",
+    marginBottom: 6,
+    marginTop: 4,
+    backgroundColor: "#F8F9FA",
+    borderRadius: 8,
+    padding: 4,
+    width: "100%",
+    minWidth: 120,
+    flexWrap: "nowrap",
   },
   quantityButton: {
-    width: 32, // Back to smaller size
+    width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#10B981", // Keep modern green
+    backgroundColor: "#10B981",
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#10B981",
     shadowOffset: {
       width: 0,
-      height: 1, // Smaller shadow for compact look
+      height: 1,
     },
-    shadowOpacity: 0.15, // Reduced shadow
+    shadowOpacity: 0.15,
     shadowRadius: 2,
     elevation: 2,
+    marginHorizontal: 2, // Add spacing between buttons and input
   },
   quantityButtonDisabled: {
     backgroundColor: "#E5E7EB",
@@ -145,21 +149,24 @@ export default StyleSheet.create({
     color: "#9CA3AF",
   },
   quantityInputContainer: {
+    flexDirection: "column",
     alignItems: "center",
-    marginHorizontal: 12, // Reduced spacing
-    minWidth: 20, // Smaller width
+    justifyContent: "center",
+    marginHorizontal: 2, // Tight spacing
+    minWidth: 48,
+    flexShrink: 1,
   },
   quantityInput: {
-    fontSize: 16, // Smaller text for compact layout
-    fontWeight: "700", // Keep bolder
-    color: "#1F2937", // Darker
-    minWidth: 36, // Smaller width
-    height: 32, // Match button height
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#1F2937",
+    minWidth: 40, // Slightly wider for better fit
+    height: 32,
     textAlign: "center",
-    borderWidth: 2, // Keep thicker border
+    borderWidth: 2,
     borderColor: "#E5E7EB",
-    borderRadius: 6, // Smaller radius for compact look
-    paddingHorizontal: 4, // Reduced padding
+    borderRadius: 6,
+    paddingHorizontal: 4,
     paddingVertical: 4,
     backgroundColor: "#FFFFFF",
   },
