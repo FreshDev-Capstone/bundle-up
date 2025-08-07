@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Product } from "../../shared/types/product";
 import { API_BASE_URL } from "../utils/constants";
+import { productsData } from "../../shared/constants/productsData";
 
 export const useProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -44,10 +45,20 @@ export const useProducts = () => {
         }
       } catch (err) {
         console.error("[useProducts] Error fetching products:", err);
-        console.log(err);
         setError(
           err instanceof Error ? err.message : "Failed to fetch products"
         );
+        // Fallback: use local productsData
+        if (productsData && Array.isArray(productsData)) {
+          // Convert local data to Product[] shape if needed
+          const localProducts = productsData.map((product: any) => ({
+            ...product,
+            id: product.product_id,
+            b2cPrice: product.b2c_price,
+            b2bPrice: product.b2b_price,
+          }));
+          setProducts(localProducts);
+        }
       } finally {
         setLoading(false);
       }

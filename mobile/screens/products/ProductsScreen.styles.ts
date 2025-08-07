@@ -115,16 +115,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 20,
-    backgroundColor: "#EFEFEF", // Slightly darker for better contrast
+    backgroundColor: "#EFEFEF",
     borderWidth: 1,
-    borderColor: "#CCCCCC", // Slightly darker border
+    borderColor: "#CCCCCC",
     minWidth: 80,
-    maxWidth: 120, // Prevent overly wide chips
+    maxWidth: 120, // Match other category chips
     minHeight: 40,
     marginRight: 8,
     alignItems: "center",
     justifyContent: "center",
-    // Force consistent layout
     flexShrink: 0,
   },
   categoryChipActive: {
@@ -145,8 +144,8 @@ const styles = StyleSheet.create({
     color: "#333333",
     fontWeight: "500",
     textAlign: "center",
-    // Ensure text is always centered
     includeFontPadding: false,
+    paddingHorizontal: 2, // Prevent text overflow for long names
   },
   categoryTextActive: {
     color: "#FFFFFF",

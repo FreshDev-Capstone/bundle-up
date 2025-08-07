@@ -108,6 +108,8 @@ export default function ProductsScreen() {
               styles.categoryText,
               selectedCategory === category && styles.categoryTextActive,
             ]}
+            numberOfLines={1}
+            ellipsizeMode="tail"
           >
             {category}
           </Text>

@@ -550,7 +550,6 @@ export const productsData = [
     product_color: "brown",
     product_count: 12,
     image_url: "/assets/eggs/Heirloom Blue & Brown Eggs/149-heirloom-brown.png",
-
     b2c_price: 10.99,
     b2b_price: 8.49,
     inventory_by_carton: 25,
