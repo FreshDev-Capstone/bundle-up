@@ -16,6 +16,7 @@ import { orderService } from "../../services/apiService";
 import { useRouter } from "expo-router";
 import styles from "./CartScreen.styles";
 import { ShoppingCart } from "lucide-react-native";
+import { getImageUrl } from "@/utils/imageUtils";
 
 export default function CartScreen() {
   const [updating, setUpdating] = useState<string | null>(null);
@@ -192,15 +193,14 @@ export default function CartScreen() {
   const renderCartItem = ({ item }: { item: CartItem }) => {
     const availableInventory = getAvailableInventory(item);
     const isAtMaxQuantity = item.quantity >= availableInventory;
+    const imageUrl =
+      item.product && item.product.image_url
+        ? getImageUrl(item.product.image_url)
+        : "https://via.placeholder.com/60x60";
 
     return (
       <View style={styles.cartItem}>
-        <Image
-          source={{
-            uri: item.product?.image_url || "https://via.placeholder.com/60x60",
-          }}
-          style={styles.productImage}
-        />
+        <Image source={{ uri: imageUrl }} style={styles.productImage} />
         <View style={styles.itemDetails}>
           <Text style={styles.productName} numberOfLines={2}>
             {item.product?.name || "Product"}
