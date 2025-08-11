@@ -1,21 +1,54 @@
 {
-  "name": "renaissance",
+  "name": "bundle-up",
   "version": "1.0.0",
-  "description": "My awesome app",
+  "description": "Bundle Up - Fresh Groceries Delivered",
   "main": "index.js",
   "scripts": {
-    "devf": "npm start --prefix frontend",
-    "frontend:install": "npm install --prefix frontend",
-    "devb": "npm run dev --prefix backend",
-    "backend:install": "npm install --prefix backend",
-    "install:all": "npm run frontend:install && npm run backend:install"
+    "dev:mobile": "npm start --prefix mobile",
+    "dev:web": "npm run dev --prefix web",
+    "dev:backend": "npm run dev --prefix backend",
+    "build:mobile": "npm run build --prefix mobile",
+    "build:web": "npm run build --prefix web",
+    "build:backend": "npm run build --prefix backend",
+    "preview:web": "npm run preview --prefix web",
+    "install:mobile": "npm install --prefix mobile",
+    "install:web": "npm install --prefix web",
+    "install:backend": "npm install --prefix backend",
+    "install:all": "npm run install:mobile && npm run install:web && npm run install:backend",
+    "start:mobile": "npm start --prefix mobile",
+    "start:web": "npm run preview --prefix web",
+    "start:backend": "npm start --prefix backend"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Ibra-Hud/renaissance.git"
+    "url": "git+https://github.com/FreshDev-Capstone/bundle-up.git"
   },
-  "keywords": [],
+  "workspaces": [
+    "mobile",
+    "web",
+    "shared",
+    "backend"
+  ],
+  "keywords": [
+    "react-native",
+    "react",
+    "vite",
+    "expo",
+    "groceries",
+    "delivery"
+  ],
   "author": "",
   "license": "MIT",
-  "homepage": "https://github.com/Ibra-Hud/renaissance#readme"
+  "homepage": "https://github.com/FreshDev-Capstone/bundle-up#readme",
+  "dependencies": {
+    "@types/compression": "^1.8.1",
+    "compression": "^1.8.0",
+    "node-fetch": "^3.3.2"
+  },
+  "resolutions": {
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "@types/react": "~19.0.10",
+    "@types/react-dom": "^19.0.6"
+  }
 }

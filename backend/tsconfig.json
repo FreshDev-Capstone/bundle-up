@@ -1,14 +1,25 @@
 // backend/tsconfig.json
 {
-    "compilerOptions": {
-      "target": "es2020",
-      "module": "commonjs",
-      "outDir": "./dist",
-      "strict": true,
-      "esModuleInterop": true,
-      "skipLibCheck": true,
-      "forceConsistentCasingInFileNames": true
-    },
-    "include": ["src/**/*.ts"],
-    "exclude": ["node_modules", "dist"]
-  }
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "*": ["src/*", "node_modules/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/types/express.d.ts", "db/knexfile.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "../OLD/**/*",
+    "../old/**/*",
+    "**/OLD/**/*",
+    "**/old/**/*"
+  ]
+}

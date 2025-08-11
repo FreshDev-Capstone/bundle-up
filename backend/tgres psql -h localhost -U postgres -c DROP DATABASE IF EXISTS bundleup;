@@ -1,0 +1,27 @@
+                                 Table "public.products"
+      Column       |           Type           | Collation | Nullable |      Default      
+-------------------+--------------------------+-----------+----------+-------------------
+ id                | integer                  |           | not null | 
+ name              | character varying(255)   |           | not null | 
+ description       | text                     |           | not null | 
+ category          | character varying(255)   |           | not null | 
+ eggColor          | character varying(255)   |           |          | 
+ eggCount          | integer                  |           | not null | 
+ imageUrl          | character varying(255)   |           | not null | 
+ b2cPrice          | numeric(10,2)            |           | not null | 
+ b2bPrice          | numeric(10,2)            |           | not null | 
+ inventoryByCarton | integer                  |           |          | 0
+ inventoryByBox    | integer                  |           |          | 0
+ isAvailable       | boolean                  |           |          | true
+ isActive          | boolean                  |           |          | true
+ created_at        | timestamp with time zone |           | not null | CURRENT_TIMESTAMP
+ updated_at        | timestamp with time zone |           | not null | CURRENT_TIMESTAMP
+Indexes:
+    "products_pkey" PRIMARY KEY, btree (id)
+    "products_category_index" btree (category)
+    "products_eggcolor_index" btree ("eggColor")
+    "products_eggcount_index" btree ("eggCount")
+    "products_isactive_index" btree ("isActive")
+    "products_isavailable_index" btree ("isAvailable")
+    "products_name_index" btree (name)
+

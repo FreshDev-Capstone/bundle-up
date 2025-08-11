@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "Bundle Up",
+    "slug": "bundle-up",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "bundle-up",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.freshDevCapstone.bundleup"
+    },
+    "android": {
+      "package": "com.freshDevCapstone.bundleup",
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "fonts": [
+      "./assets/fonts/Roboto-Regular.ttf",
+      "./assets/fonts/Roboto-Medium.ttf",
+      "./assets/fonts/Roboto-Bold.ttf",
+      "./assets/fonts/Roboto-Light.ttf"
+    ]
+  }
+}

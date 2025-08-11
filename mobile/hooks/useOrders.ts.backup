@@ -1,0 +1,113 @@
+import { useState, useEffect } from 'react';
+import { Order } from '../../shared/types/order';
+
+export const useOrders = () => {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        // TODO: Replace with actual API call
+        // const response = await fetch('/api/orders');
+        // const data = await response.json();
+        // setOrders(data);
+        
+        // Mock data for now
+        const mockOrders: Order[] = [
+          {
+            id: '1',
+            orderNumber: 'ORD-001',
+            userId: '1',
+            status: 'delivered',
+            items: [],
+            subtotal: 89.99,
+            tax: 7.20,
+            shipping: 2.80,
+            total: 99.99,
+            deliveryAddress: {
+              id: '1',
+              nickname: 'Home',
+              fullName: 'John Doe',
+              street: '123 Main St',
+              city: 'Anytown',
+              state: 'CA',
+              zipCode: '12345',
+              country: 'US',
+              isDefault: true,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+            paymentMethod: {
+              id: '1',
+              type: 'credit_card',
+              lastFour: '1234',
+              brand: 'visa',
+              expiryMonth: 12,
+              expiryYear: 2025,
+              isDefault: true,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: '2',
+            orderNumber: 'ORD-002',
+            userId: '1',
+            status: 'shipped',
+            items: [],
+            subtotal: 134.99,
+            tax: 10.80,
+            shipping: 4.20,
+            total: 149.99,
+            deliveryAddress: {
+              id: '1',
+              nickname: 'Home',
+              fullName: 'John Doe',
+              street: '123 Main St',
+              city: 'Anytown',
+              state: 'CA',
+              zipCode: '12345',
+              country: 'US',
+              isDefault: true,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+            paymentMethod: {
+              id: '1',
+              type: 'credit_card',
+              lastFour: '1234',
+              brand: 'visa',
+              expiryMonth: 12,
+              expiryYear: 2025,
+              isDefault: true,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+        ];
+        setOrders(mockOrders);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch orders');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  const refetch = () => {
+    setError(null);
+    setLoading(true);
+    // Re-fetch orders
+  };
+
+  return { orders, loading, error, refetch };
+};
