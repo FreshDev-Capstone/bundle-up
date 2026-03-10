@@ -1,0 +1,31 @@
+{
+  "name": "bundle-up",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Bundle Up – egg ecommerce platform monorepo (B2C · B2B · Admin)",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "clean": "turbo run clean",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
+    "db:migrate": "turbo run db:migrate --filter=@bundle-up/api",
+    "db:seed": "turbo run db:seed --filter=@bundle-up/api",
+    "db:rollback": "turbo run db:rollback --filter=@bundle-up/api"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5",
+    "turbo": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "packageManager": "npm@10.8.1"
+}

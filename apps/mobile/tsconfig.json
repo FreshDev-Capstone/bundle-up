@@ -1,0 +1,9 @@
+{
+  "extends": "@bundle-up/config-typescript/react-native.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "noUnusedLocals": false
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "App.tsx"],
+  "exclude": ["node_modules", "dist"]
+}
