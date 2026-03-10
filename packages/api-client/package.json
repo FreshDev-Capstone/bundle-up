@@ -1,0 +1,26 @@
+{
+  "name": "@bundle-up/api-client",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@bundle-up/shared-types": "*"
+  },
+  "devDependencies": {
+    "@bundle-up/config-typescript": "*",
+    "typescript": "^5.4.0"
+  }
+}

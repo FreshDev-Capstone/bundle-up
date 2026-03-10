@@ -1,0 +1,11 @@
+{
+  "extends": "@bundle-up/config-typescript/web.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
+}

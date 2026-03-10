@@ -1,0 +1,10 @@
+{
+  "extends": "@bundle-up/config-typescript/node.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "module": "CommonJS",
+    "moduleResolution": "Node"
+  },
+  "include": ["src/**/*.ts"]
+}

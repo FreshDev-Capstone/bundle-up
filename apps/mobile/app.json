@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "Bundle Up",
+    "slug": "bundle-up",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "bundleup",
+    "platforms": ["ios", "android"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.bundleup.app"
+    },
+    "android": {
+      "package": "com.bundleup.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#16a34a"
+      }
+    },
+    "extra": {
+      "apiUrl": "http://localhost:3001/api"
+    }
+  }
+}
