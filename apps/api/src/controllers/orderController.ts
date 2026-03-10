@@ -87,7 +87,17 @@ export async function listOrders(req: AuthenticatedRequest, res: Response): Prom
     : db('orders').where({ user_id: req.user.sub }).orderBy('created_at', 'desc');
 
   const orders = await query;
-  res.json({ success: true, data: orders });
+
+  res.json({
+    success: true,
+    data: {
+      data: orders,
+      total: orders.length,
+      page: 1,
+      per_page: orders.length,
+      total_pages: 1,
+    },
+  });
 }
 
 export async function getOrder(req: AuthenticatedRequest, res: Response): Promise<void> {

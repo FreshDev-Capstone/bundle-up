@@ -8,6 +8,7 @@ import cartRoutes from './routes/cart';
 import orderRoutes from './routes/orders';
 import addressRoutes from './routes/addresses';
 import { errorHandler } from './middleware/errorHandler';
+import { apiLimiter, authLimiter } from './middleware/rateLimiter';
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ const app = express();
 // ─── Middleware ───────────────────────────────────────────────────────────────
 app.use(cors({ origin: process.env['CORS_ORIGIN'] ?? '*' }));
 app.use(express.json());
+app.use(apiLimiter);
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
 app.get('/health', (_req, res) => {
@@ -23,7 +25,7 @@ app.get('/health', (_req, res) => {
 });
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);

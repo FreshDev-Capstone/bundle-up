@@ -7,6 +7,10 @@
  *  - inventory_by_case = cases in stock – original seed called this inventory_by_box
  *
  * REVIEW NOTES (prices preserved exactly as provided – flag any that look suspicious):
+ *
+ * These anomalies should be reviewed with the business owner before adjusting.
+ * Track corrections in a GitHub issue if any are determined to be data errors.
+ *
  *  - Product 103 (White Large 12ct): b2c $6.99 > Product 102 (White XL 12ct): b2c $5.49
  *    Unusual: Large priced higher than Extra Large. Preserved without change.
  *  - Product 104 (White Medium 12ct): b2c $8.49 > Product 103 (White Large 12ct): b2c $6.99

@@ -25,8 +25,19 @@ export function requireAuth(req: AuthenticatedRequest, res: Response, next: Next
 
   const token = authHeader.slice(7);
   try {
-    const payload = jwt.verify(token, JWT_SECRET as string) as unknown as AuthTokenPayload;
-    req.user = payload;
+    const decoded = jwt.verify(token, JWT_SECRET as string);
+    // Runtime validation of payload shape
+    if (
+      typeof decoded !== 'object' ||
+      decoded === null ||
+      typeof (decoded as Record<string, unknown>)['sub'] !== 'number' ||
+      typeof (decoded as Record<string, unknown>)['email'] !== 'string' ||
+      typeof (decoded as Record<string, unknown>)['role'] !== 'string'
+    ) {
+      res.status(401).json({ success: false, message: 'Invalid token payload' });
+      return;
+    }
+    req.user = decoded as unknown as AuthTokenPayload;
     next();
   } catch {
     res.status(401).json({ success: false, message: 'Invalid or expired token' });
