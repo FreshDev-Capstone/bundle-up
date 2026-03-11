@@ -63,8 +63,7 @@ export const productCatalog: ProductSeedRow[] = [
     legacy_product_id: 102,
     name: 'Commodity White Eggs - Grade A Extra Large - 12 Count',
     slug: 'commodity-white-eggs-grade-a-extra-large-12ct',
-    description:
-      'Fresh commodity white eggs, 12 count carton. Great value for larger families.',
+    description: 'Fresh commodity white eggs, 12 count carton. Great value for larger families.',
     category_slug: 'commodity',
     product_color: 'white',
     product_count: 12,
@@ -100,8 +99,7 @@ export const productCatalog: ProductSeedRow[] = [
     legacy_product_id: 104,
     name: 'Commodity White Eggs - Grade A Medium - 12 Count',
     slug: 'commodity-white-eggs-grade-a-medium-12ct',
-    description:
-      'Fresh commodity white eggs, 12 count carton. Perfect for high-volume cooking.',
+    description: 'Fresh commodity white eggs, 12 count carton. Perfect for high-volume cooking.',
     category_slug: 'commodity',
     product_color: 'white',
     product_count: 12,
@@ -119,8 +117,7 @@ export const productCatalog: ProductSeedRow[] = [
     legacy_product_id: 105,
     name: 'Commodity White Eggs - Grade A Large - 18 Count',
     slug: 'commodity-white-eggs-grade-a-large-18ct',
-    description:
-      'Fresh commodity white eggs, 18 count carton. Great for commercial kitchens.',
+    description: 'Fresh commodity white eggs, 18 count carton. Great for commercial kitchens.',
     category_slug: 'commodity',
     product_color: 'white',
     product_count: 18,
@@ -137,8 +134,7 @@ export const productCatalog: ProductSeedRow[] = [
     legacy_product_id: 106,
     name: 'Commodity White Eggs - Grade A Large - 6 Count',
     slug: 'commodity-white-eggs-grade-a-large-6ct',
-    description:
-      'Fresh commodity white eggs, 6 count carton. Maximum value for bulk purchases.',
+    description: 'Fresh commodity white eggs, 6 count carton. Maximum value for bulk purchases.',
     category_slug: 'commodity',
     product_color: 'white',
     product_count: 6,
@@ -194,8 +190,7 @@ export const productCatalog: ProductSeedRow[] = [
     legacy_product_id: 111,
     name: 'Commodity Brown Eggs - Grade A Jumbo - 12 Count',
     slug: 'commodity-brown-eggs-grade-a-jumbo-12ct',
-    description:
-      'Fresh commodity brown eggs, 12 count carton. Rich flavor and golden yolks.',
+    description: 'Fresh commodity brown eggs, 12 count carton. Rich flavor and golden yolks.',
     category_slug: 'commodity',
     product_color: 'brown',
     product_count: 12,
@@ -230,8 +225,7 @@ export const productCatalog: ProductSeedRow[] = [
     legacy_product_id: 113,
     name: 'Commodity Brown Eggs - Grade A Large - 12 Count',
     slug: 'commodity-brown-eggs-grade-a-large-12ct',
-    description:
-      'Fresh commodity brown eggs, 12 count carton. Great for restaurants and bakeries.',
+    description: 'Fresh commodity brown eggs, 12 count carton. Great for restaurants and bakeries.',
     category_slug: 'commodity',
     product_color: 'brown',
     product_count: 12,

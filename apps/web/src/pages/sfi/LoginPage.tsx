@@ -47,7 +47,9 @@ export function LoginPage() {
           {error && (
             <div className="mb-4 rounded bg-red-50 px-4 py-3 text-sm text-red-600">
               {error}
-              <button onClick={clearError} className="ml-2 underline">Dismiss</button>
+              <button onClick={clearError} className="ml-2 underline">
+                Dismiss
+              </button>
             </div>
           )}
 

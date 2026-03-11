@@ -36,7 +36,10 @@ export function ProductsScreen({ route, navigation }: Props) {
       // Guard against hanging mobile network requests so UI never spins forever.
       const timeoutMs = 10000;
       const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('Request timed out. Please check API connectivity.')), timeoutMs);
+        setTimeout(
+          () => reject(new Error('Request timed out. Please check API connectivity.')),
+          timeoutMs,
+        );
       });
 
       try {
@@ -75,7 +78,10 @@ export function ProductsScreen({ route, navigation }: Props) {
     return (
       <View style={styles.centered}>
         <Text style={styles.errorText}>{error}</Text>
-        <TouchableOpacity style={styles.retryButton} onPress={() => navigation.replace('Products', { category })}>
+        <TouchableOpacity
+          style={styles.retryButton}
+          onPress={() => navigation.replace('Products', { category })}
+        >
           <Text style={styles.retryButtonText}>Retry</Text>
         </TouchableOpacity>
       </View>
@@ -92,7 +98,9 @@ export function ProductsScreen({ route, navigation }: Props) {
       renderItem={({ item }) => (
         <TouchableOpacity
           style={styles.card}
-          onPress={() => navigation.navigate('ProductDetail', { slug: item.slug || String(item.id) })}
+          onPress={() =>
+            navigation.navigate('ProductDetail', { slug: item.slug || String(item.id) })
+          }
         >
           <View style={styles.imageContainer}>
             {resolveImageUrl(item.primary_image) ? (
@@ -105,7 +113,9 @@ export function ProductsScreen({ route, navigation }: Props) {
               <Text style={styles.imagePlaceholder}>🥚</Text>
             )}
           </View>
-          <Text style={styles.cardName} numberOfLines={2}>{item.name}</Text>
+          <Text style={styles.cardName} numberOfLines={2}>
+            {item.name}
+          </Text>
           <Text style={styles.cardPrice}>{formatPrice(item.b2c_unit_price)}</Text>
           <Text style={styles.cardUnit}>per carton</Text>
         </TouchableOpacity>

@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../RootNavigator';
 import { useAuthStore } from '../../stores/authStore';
@@ -41,7 +35,10 @@ export function HomeScreen({ navigation }: Props) {
         </TouchableOpacity>
 
         <View style={styles.quickActions}>
-          <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.navigate('Cart')}>
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={() => navigation.navigate('Cart')}
+          >
             <Text style={styles.secondaryButtonText}>View Cart</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -77,15 +74,24 @@ export function HomeScreen({ navigation }: Props) {
         <>
           <Text style={styles.sectionTitle}>Business Tools</Text>
           <View style={styles.categoryGrid}>
-            <TouchableOpacity style={styles.categoryCard} onPress={() => navigation.navigate('Products', {})}>
+            <TouchableOpacity
+              style={styles.categoryCard}
+              onPress={() => navigation.navigate('Products', {})}
+            >
               <Text style={styles.categoryEmoji}>📦</Text>
               <Text style={styles.categoryLabel}>Case Pricing</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.categoryCard} onPress={() => navigation.navigate('Cart')}>
+            <TouchableOpacity
+              style={styles.categoryCard}
+              onPress={() => navigation.navigate('Cart')}
+            >
               <Text style={styles.categoryEmoji}>🚚</Text>
               <Text style={styles.categoryLabel}>Bulk Ordering</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.categoryCard} onPress={() => navigation.navigate('Orders')}>
+            <TouchableOpacity
+              style={styles.categoryCard}
+              onPress={() => navigation.navigate('Orders')}
+            >
               <Text style={styles.categoryEmoji}>📋</Text>
               <Text style={styles.categoryLabel}>Invoice Details</Text>
             </TouchableOpacity>
@@ -124,7 +130,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   secondaryButtonText: { color: '#374151', fontWeight: '600', fontSize: 14 },
-  sectionTitle: { fontSize: 20, fontWeight: '700', color: '#111827', marginBottom: 12, marginTop: 8 },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 12,
+    marginTop: 8,
+  },
   categoryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   categoryCard: {
     width: '47%',

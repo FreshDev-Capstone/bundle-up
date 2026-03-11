@@ -7,26 +7,37 @@ export function NfiHomePage() {
   const isBusiness = user?.role === 'business';
 
   const featureCards = [
-    { icon: '📦', title: 'Case Pricing', desc: 'Wholesale rates per case across all egg varieties', to: '/nfi/products' },
-    { icon: '🚚', title: 'Bulk Ordering', desc: 'Order by the case with volume discounts', to: '/nfi/cart' },
-    { icon: '📋', title: 'Invoice Details', desc: 'Full invoice documentation for every order', to: '/nfi/orders' },
+    {
+      icon: '📦',
+      title: 'Case Pricing',
+      desc: 'Wholesale rates per case across all egg varieties',
+      to: '/nfi/products',
+    },
+    {
+      icon: '🚚',
+      title: 'Bulk Ordering',
+      desc: 'Order by the case with volume discounts',
+      to: '/nfi/cart',
+    },
+    {
+      icon: '📋',
+      title: 'Invoice Details',
+      desc: 'Full invoice documentation for every order',
+      to: '/nfi/orders',
+    },
   ].filter((feat) => (isBusiness ? true : feat.to !== '/nfi/orders'));
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16">
       <div className="text-center">
         <div className="text-6xl mb-4">🏭</div>
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Bundle Up for Business
-        </h1>
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">Bundle Up for Business</h1>
         <p className="text-lg text-gray-600 mb-2 max-w-2xl mx-auto">
-          Wholesale egg sourcing for food service, restaurants, and retailers.
-          Case pricing, flexible ordering, and dedicated support.
+          Wholesale egg sourcing for food service, restaurants, and retailers. Case pricing,
+          flexible ordering, and dedicated support.
         </p>
         {user && businessAccount && (
-          <p className="text-blue-600 font-medium mb-6">
-            Welcome, {businessAccount.company_name}
-          </p>
+          <p className="text-blue-600 font-medium mb-6">Welcome, {businessAccount.company_name}</p>
         )}
         <div className="flex justify-center gap-4">
           <Link

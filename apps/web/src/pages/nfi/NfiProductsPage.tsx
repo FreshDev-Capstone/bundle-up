@@ -27,7 +27,10 @@ function getProductLabels(product: Product): string[] {
 }
 
 function getVariantKey(product: Product): string {
-  const normalizedName = product.name.replace(/\s*-\s*\d+\s*count$/i, '').trim().toLowerCase();
+  const normalizedName = product.name
+    .replace(/\s*-\s*\d+\s*count$/i, '')
+    .trim()
+    .toLowerCase();
   return [
     normalizedName,
     product.product_color ?? '',
@@ -93,7 +96,10 @@ export function NfiProductsPage() {
 
       const timeoutMs = 10000;
       const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('Request timed out. Please check API connectivity.')), timeoutMs);
+        setTimeout(
+          () => reject(new Error('Request timed out. Please check API connectivity.')),
+          timeoutMs,
+        );
       });
 
       try {
@@ -132,7 +138,9 @@ export function NfiProductsPage() {
     }
 
     if (categorySlug === 'pasture-raised') {
-      return (p.category_slug ?? '') === 'pasture-raised' || product.farming_method === 'Pasture Raised';
+      return (
+        (p.category_slug ?? '') === 'pasture-raised' || product.farming_method === 'Pasture Raised'
+      );
     }
 
     return (p.category_slug ?? '') === categorySlug;
@@ -243,7 +251,9 @@ export function NfiProductsPage() {
       <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900">Wholesale Catalog</h1>
-          <p className="text-blue-600 text-sm mt-1">Case pricing shown. All products available in full cases.</p>
+          <p className="text-blue-600 text-sm mt-1">
+            Case pricing shown. All products available in full cases.
+          </p>
         </div>
 
         <form
@@ -358,7 +368,9 @@ export function NfiProductsPage() {
                         className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-5xl">🥚</div>
+                      <div className="w-full h-full flex items-center justify-center text-5xl">
+                        🥚
+                      </div>
                     )}
                   </div>
                   <div className="px-4 pt-4 pb-3">
@@ -376,7 +388,9 @@ export function NfiProductsPage() {
                         <span className="text-xs text-gray-500 uppercase">Eggs</span>
                       )}
                     </div>
-                    <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">{product.name}</h3>
+                    <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">
+                      {product.name}
+                    </h3>
                   </div>
                 </button>
 
@@ -384,7 +398,9 @@ export function NfiProductsPage() {
                 <div className="px-4 pb-4 pt-2">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-lg font-bold text-gray-900">{formatPrice(product.b2b_case_price)}</p>
+                      <p className="text-lg font-bold text-gray-900">
+                        {formatPrice(product.b2b_case_price)}
+                      </p>
                       <p className="text-xs text-gray-400">per case</p>
                     </div>
 
@@ -398,7 +414,9 @@ export function NfiProductsPage() {
                         >
                           -
                         </button>
-                        <span className="w-8 text-center text-sm font-medium">{cartItem.quantity}</span>
+                        <span className="w-8 text-center text-sm font-medium">
+                          {cartItem.quantity}
+                        </span>
                         <button
                           type="button"
                           onClick={() => handleUpdateQty(product, cartItem.quantity + 1)}
@@ -415,7 +433,11 @@ export function NfiProductsPage() {
                         disabled={isAdding || !product.is_available}
                         className="rounded-md bg-blue-600 px-3 py-2 text-xs font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
                       >
-                        {isAdding ? 'Adding…' : product.is_available ? 'Add to Cart' : 'Unavailable'}
+                        {isAdding
+                          ? 'Adding…'
+                          : product.is_available
+                            ? 'Add to Cart'
+                            : 'Unavailable'}
                       </button>
                     )}
                   </div>
@@ -431,7 +453,10 @@ export function NfiProductsPage() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
           onClick={() => setQuickViewProduct(null)}
         >
-          <div className="w-full max-w-2xl rounded-xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="w-full max-w-2xl rounded-xl bg-white shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between border-b px-5 py-3">
               <h2 className="text-lg font-semibold text-gray-900">Quick View</h2>
               <button
@@ -459,7 +484,9 @@ export function NfiProductsPage() {
               <div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{quickViewProduct.name}</h3>
                 <p className="text-sm text-gray-600 mb-3">{quickViewProduct.description}</p>
-                <p className="text-2xl font-bold text-gray-900">{formatPrice(quickViewProduct.b2b_case_price)}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {formatPrice(quickViewProduct.b2b_case_price)}
+                </p>
                 <p className="text-xs text-gray-500 mb-4">per case</p>
 
                 {quickViewVariants.length > 1 && (
@@ -490,7 +517,9 @@ export function NfiProductsPage() {
                 <div className="flex items-center gap-2 mb-4">
                   <button
                     type="button"
-                    onClick={() => setModalQtyFor(quickViewProduct.id, getModalQty(quickViewProduct.id) - 1)}
+                    onClick={() =>
+                      setModalQtyFor(quickViewProduct.id, getModalQty(quickViewProduct.id) - 1)
+                    }
                     className="h-8 w-8 rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100"
                   >
                     -
@@ -502,7 +531,9 @@ export function NfiProductsPage() {
                   />
                   <button
                     type="button"
-                    onClick={() => setModalQtyFor(quickViewProduct.id, getModalQty(quickViewProduct.id) + 1)}
+                    onClick={() =>
+                      setModalQtyFor(quickViewProduct.id, getModalQty(quickViewProduct.id) + 1)
+                    }
                     className="h-8 w-8 rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100"
                   >
                     +
@@ -518,7 +549,10 @@ export function NfiProductsPage() {
                   >
                     {addingById[quickViewProduct.id] ? 'Adding…' : 'Add to Cart'}
                   </button>
-                  <Link to={`/nfi/products/${quickViewProduct.slug}`} className="text-sm font-medium text-blue-700 hover:underline">
+                  <Link
+                    to={`/nfi/products/${quickViewProduct.slug}`}
+                    className="text-sm font-medium text-blue-700 hover:underline"
+                  >
                     Full details
                   </Link>
                 </div>

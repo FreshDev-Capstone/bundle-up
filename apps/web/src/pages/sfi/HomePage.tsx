@@ -10,12 +10,10 @@ export function HomePage() {
       {/* Hero */}
       <section className="text-center">
         <div className="text-6xl mb-4">🥚</div>
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Fresh Eggs, Delivered.
-        </h1>
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">Fresh Eggs, Delivered.</h1>
         <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-          Sunshine Farms brings you the finest eggs – from everyday commodity white
-          to premium pasture-raised and heirloom varieties. Shop retail or wholesale.
+          Sunshine Farms brings you the finest eggs – from everyday commodity white to premium
+          pasture-raised and heirloom varieties. Shop retail or wholesale.
         </p>
         <div className="flex justify-center gap-4">
           <Link

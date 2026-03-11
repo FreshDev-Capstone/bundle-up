@@ -162,39 +162,112 @@ export function CheckoutScreen({ navigation }: Props) {
           >
             <Text style={styles.addressLabel}>{address.label || 'Address'}</Text>
             <Text style={styles.addressText}>{address.street_line1}</Text>
-            {address.street_line2 ? <Text style={styles.addressText}>{address.street_line2}</Text> : null}
-            <Text style={styles.addressText}>{address.city}, {address.state} {address.zip}</Text>
+            {address.street_line2 ? (
+              <Text style={styles.addressText}>{address.street_line2}</Text>
+            ) : null}
+            <Text style={styles.addressText}>
+              {address.city}, {address.state} {address.zip}
+            </Text>
           </TouchableOpacity>
         ))
       )}
 
       <Text style={styles.sectionTitle}>Add New Address</Text>
-      <Text style={styles.helperText}>Label helps identify the address later (for example: Home, Office, Storefront).</Text>
-      <TextInput style={styles.input} placeholder="Label (Home, Office, etc.)" autoComplete="off" value={newAddress.label} onChangeText={(value) => setNewAddress((prev) => ({ ...prev, label: value }))} />
-      <TextInput style={styles.input} placeholder="Street Line 1" autoComplete="street-address" value={newAddress.street_line1} onChangeText={(value) => setNewAddress((prev) => ({ ...prev, street_line1: value }))} />
-      <TextInput style={styles.input} placeholder="Street Line 2" autoComplete="street-address" value={newAddress.street_line2} onChangeText={(value) => setNewAddress((prev) => ({ ...prev, street_line2: value }))} />
-      <TextInput style={styles.input} placeholder="City" autoComplete="off" value={newAddress.city} onChangeText={(value) => setNewAddress((prev) => ({ ...prev, city: value }))} />
-      <TextInput style={styles.input} placeholder="State" autoComplete="off" value={newAddress.state} onChangeText={(value) => setNewAddress((prev) => ({ ...prev, state: value }))} />
-      <TextInput style={styles.input} placeholder="ZIP" autoComplete="postal-code" value={newAddress.zip} onChangeText={(value) => setNewAddress((prev) => ({ ...prev, zip: value }))} />
-      <TextInput style={styles.input} placeholder="Country" autoComplete="off" value={newAddress.country} onChangeText={(value) => setNewAddress((prev) => ({ ...prev, country: value }))} />
+      <Text style={styles.helperText}>
+        Label helps identify the address later (for example: Home, Office, Storefront).
+      </Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Label (Home, Office, etc.)"
+        autoComplete="off"
+        value={newAddress.label}
+        onChangeText={(value) => setNewAddress((prev) => ({ ...prev, label: value }))}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Street Line 1"
+        autoComplete="street-address"
+        value={newAddress.street_line1}
+        onChangeText={(value) => setNewAddress((prev) => ({ ...prev, street_line1: value }))}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Street Line 2"
+        autoComplete="street-address"
+        value={newAddress.street_line2}
+        onChangeText={(value) => setNewAddress((prev) => ({ ...prev, street_line2: value }))}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="City"
+        autoComplete="off"
+        value={newAddress.city}
+        onChangeText={(value) => setNewAddress((prev) => ({ ...prev, city: value }))}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="State"
+        autoComplete="off"
+        value={newAddress.state}
+        onChangeText={(value) => setNewAddress((prev) => ({ ...prev, state: value }))}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="ZIP"
+        autoComplete="postal-code"
+        value={newAddress.zip}
+        onChangeText={(value) => setNewAddress((prev) => ({ ...prev, zip: value }))}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Country"
+        autoComplete="off"
+        value={newAddress.country}
+        onChangeText={(value) => setNewAddress((prev) => ({ ...prev, country: value }))}
+      />
 
-      <TouchableOpacity style={styles.secondaryButton} onPress={handleAddAddress} disabled={savingAddress}>
-        {savingAddress ? <ActivityIndicator color="#111827" /> : <Text style={styles.secondaryButtonText}>Save Address</Text>}
+      <TouchableOpacity
+        style={styles.secondaryButton}
+        onPress={handleAddAddress}
+        disabled={savingAddress}
+      >
+        {savingAddress ? (
+          <ActivityIndicator color="#111827" />
+        ) : (
+          <Text style={styles.secondaryButtonText}>Save Address</Text>
+        )}
       </TouchableOpacity>
 
       <Text style={styles.sectionTitle}>Order Summary</Text>
       {cart.items.map((item) => (
         <View key={item.id} style={styles.summaryRow}>
-          <Text style={styles.summaryName}>{(item as typeof item & { name?: string }).name} x {item.quantity}</Text>
-          <Text style={styles.summaryPrice}>{formatPrice(Number(item.unit_price) * item.quantity)}</Text>
+          <Text style={styles.summaryName}>
+            {(item as typeof item & { name?: string }).name} x {item.quantity}
+          </Text>
+          <Text style={styles.summaryPrice}>
+            {formatPrice(Number(item.unit_price) * item.quantity)}
+          </Text>
         </View>
       ))}
-      <View style={styles.totalRow}><Text style={styles.totalLabel}>Subtotal</Text><Text style={styles.totalValue}>{formatPrice(subtotal)}</Text></View>
-      <View style={styles.totalRow}><Text style={styles.totalLabel}>Tax</Text><Text style={styles.totalValue}>{formatPrice(tax)}</Text></View>
-      <View style={styles.totalRow}><Text style={styles.grandLabel}>Total</Text><Text style={styles.grandValue}>{formatPrice(total)}</Text></View>
+      <View style={styles.totalRow}>
+        <Text style={styles.totalLabel}>Subtotal</Text>
+        <Text style={styles.totalValue}>{formatPrice(subtotal)}</Text>
+      </View>
+      <View style={styles.totalRow}>
+        <Text style={styles.totalLabel}>Tax</Text>
+        <Text style={styles.totalValue}>{formatPrice(tax)}</Text>
+      </View>
+      <View style={styles.totalRow}>
+        <Text style={styles.grandLabel}>Total</Text>
+        <Text style={styles.grandValue}>{formatPrice(total)}</Text>
+      </View>
 
       <TouchableOpacity style={styles.button} onPress={handlePlaceOrder} disabled={placingOrder}>
-        {placingOrder ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Place Order</Text>}
+        {placingOrder ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Place Order</Text>
+        )}
       </TouchableOpacity>
     </ScrollView>
   );
@@ -204,12 +277,25 @@ const styles = StyleSheet.create({
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16 },
   container: { padding: 16, paddingBottom: 30 },
   title: { fontSize: 28, fontWeight: '700', color: '#111827', marginBottom: 14 },
-  sectionTitle: { fontSize: 18, fontWeight: '700', color: '#111827', marginTop: 16, marginBottom: 8 },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+    marginTop: 16,
+    marginBottom: 8,
+  },
   error: { backgroundColor: '#fef2f2', color: '#dc2626', padding: 10, borderRadius: 8 },
   emptyTitle: { fontSize: 20, color: '#374151', marginBottom: 12 },
   emptyNote: { color: '#6b7280', marginBottom: 6 },
   helperText: { color: '#6b7280', fontSize: 12, marginBottom: 8 },
-  addressCard: { borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 10, padding: 10, marginBottom: 8, backgroundColor: '#fff' },
+  addressCard: {
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 8,
+    backgroundColor: '#fff',
+  },
   addressCardSelected: { borderColor: '#16a34a' },
   addressLabel: { fontWeight: '700', color: '#111827' },
   addressText: { color: '#4b5563', fontSize: 13 },
@@ -223,9 +309,21 @@ const styles = StyleSheet.create({
     color: '#111827',
     backgroundColor: '#fff',
   },
-  button: { backgroundColor: '#16a34a', borderRadius: 8, paddingVertical: 14, alignItems: 'center', marginTop: 14 },
+  button: {
+    backgroundColor: '#16a34a',
+    borderRadius: 8,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 14,
+  },
   buttonText: { color: '#fff', fontWeight: '600', fontSize: 16 },
-  secondaryButton: { backgroundColor: '#f3f4f6', borderRadius: 8, paddingVertical: 12, alignItems: 'center', marginTop: 2 },
+  secondaryButton: {
+    backgroundColor: '#f3f4f6',
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: 2,
+  },
   secondaryButtonText: { color: '#374151', fontWeight: '600' },
   summaryRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5, gap: 12 },
   summaryName: { color: '#4b5563', fontSize: 13, flex: 1 },

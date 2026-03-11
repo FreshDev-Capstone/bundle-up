@@ -84,7 +84,9 @@ export function ProductDetailScreen({ route, navigation }: Props) {
 
       <Text style={styles.name}>{product.name}</Text>
       <Text style={styles.description}>{product.description}</Text>
-      <Text style={styles.price}>{formatPrice(isBusiness ? product.b2b_case_price : product.b2c_unit_price)}</Text>
+      <Text style={styles.price}>
+        {formatPrice(isBusiness ? product.b2b_case_price : product.b2c_unit_price)}
+      </Text>
       <Text style={styles.unit}>{isBusiness ? 'per case' : 'per carton'}</Text>
 
       <View style={styles.qtyRow}>
@@ -106,7 +108,9 @@ export function ProductDetailScreen({ route, navigation }: Props) {
         {adding ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.buttonText}>{product.is_available ? 'Add to Cart' : 'Out of Stock'}</Text>
+          <Text style={styles.buttonText}>
+            {product.is_available ? 'Add to Cart' : 'Out of Stock'}
+          </Text>
         )}
       </TouchableOpacity>
     </ScrollView>

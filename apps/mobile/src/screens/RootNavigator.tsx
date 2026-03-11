@@ -32,11 +32,19 @@ export function RootNavigator() {
     <Stack.Navigator>
       <Stack.Screen name="Home" component={HomeScreen} options={{ title: '🥚 Bundle Up' }} />
       <Stack.Screen name="Products" component={ProductsScreen} options={{ title: 'Products' }} />
-      <Stack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ title: 'Product Details' }} />
+      <Stack.Screen
+        name="ProductDetail"
+        component={ProductDetailScreen}
+        options={{ title: 'Product Details' }}
+      />
       <Stack.Screen name="Cart" component={CartScreen} options={{ title: 'Cart' }} />
       <Stack.Screen name="Checkout" component={CheckoutScreen} options={{ title: 'Checkout' }} />
       <Stack.Screen name="Orders" component={OrdersScreen} options={{ title: 'My Orders' }} />
-      <Stack.Screen name="OrderDetail" component={OrderDetailScreen} options={{ title: 'Order Details' }} />
+      <Stack.Screen
+        name="OrderDetail"
+        component={OrderDetailScreen}
+        options={{ title: 'Order Details' }}
+      />
       <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
       <Stack.Screen
         name="Login"

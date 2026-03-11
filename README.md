@@ -28,6 +28,31 @@ Powered by [Sunshine Farms](https://www.sunshinefarmsinc.com).
 
 ---
 
+## Features
+
+### Web (Vite + React)
+
+- **Three experiences in one app:** SFI (B2C retail), NFI (B2B wholesale), and Admin.
+- **Role-based pricing:** retail per-carton pricing for customers and case pricing for business users.
+- **Product browsing:** home category entry points, product catalog, and product detail pages.
+- **Quick view modal:** open a product from the catalog without leaving the page, including variant selection (by count) where applicable.
+- **Cart:** add items, adjust quantities (+/–), and remove items.
+- **Checkout:** save/select addresses and place orders from the cart.
+- **Orders:** order history and order details.
+- **Catalog filters:** search, category, in-stock only, and size filtering.
+- **Admin tools:** sign-in, product availability toggles, and order status management.
+
+### Mobile (Expo + React Native)
+
+- **Home + categories:** category shortcuts and quick actions (Cart, Orders, Profile).
+- **Product catalog:** browse products (optionally by category) and view product details.
+- **Role-aware pricing display:** business users see case pricing; customers see per-carton pricing.
+- **Cart + checkout:** update quantities, remove items, save/select delivery addresses, and place orders.
+- **Orders:** view order history and order details.
+- **Profile:** edit account info, manage saved addresses, change password, and reorder from a previous order.
+
+---
+
 ## Repository Structure
 
 ```

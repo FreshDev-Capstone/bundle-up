@@ -18,16 +18,19 @@ export function ProductDetailPage() {
   const [countVariants, setCountVariants] = useState<Product[]>([]);
 
   const { addItem } = useCartStore();
-    function variantKey(p: Product): string {
-      const normalizedName = p.name.replace(/\s*-\s*\d+\s*count$/i, '').trim().toLowerCase();
-      return [
-        normalizedName,
-        p.product_color ?? '',
-        p.product_size ?? '',
-        p.category_id,
-        p.farming_method ?? '',
-      ].join('::');
-    }
+  function variantKey(p: Product): string {
+    const normalizedName = p.name
+      .replace(/\s*-\s*\d+\s*count$/i, '')
+      .trim()
+      .toLowerCase();
+    return [
+      normalizedName,
+      p.product_color ?? '',
+      p.product_size ?? '',
+      p.category_id,
+      p.farming_method ?? '',
+    ].join('::');
+  }
 
   const { user } = useAuthStore();
   const isBusinessContext = location.pathname.startsWith('/nfi');
@@ -183,7 +186,11 @@ export function ProductDetailPage() {
                     <button
                       key={variant.id}
                       type="button"
-                      onClick={() => navigate(`${isBusinessContext ? '/nfi/products' : '/products'}/${variant.slug}`)}
+                      onClick={() =>
+                        navigate(
+                          `${isBusinessContext ? '/nfi/products' : '/products'}/${variant.slug}`,
+                        )
+                      }
                       className={`rounded-md border px-3 py-1.5 text-sm ${
                         selected
                           ? 'border-green-600 bg-green-50 text-green-700'

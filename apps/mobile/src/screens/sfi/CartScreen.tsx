@@ -92,7 +92,12 @@ const styles = StyleSheet.create({
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 },
   emptyEmoji: { fontSize: 64 },
   emptyTitle: { fontSize: 20, fontWeight: '600', color: '#374151' },
-  shopButton: { backgroundColor: '#16a34a', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 8 },
+  shopButton: {
+    backgroundColor: '#16a34a',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
   shopButtonText: { color: '#fff', fontWeight: '600' },
   item: {
     backgroundColor: '#fff',

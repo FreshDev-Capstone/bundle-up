@@ -44,7 +44,10 @@ export function OrdersScreen({ navigation }: Props) {
     return (
       <View style={styles.centered}>
         <Text style={styles.emptyText}>No orders yet.</Text>
-        <TouchableOpacity style={styles.linkButton} onPress={() => navigation.navigate('Products', {})}>
+        <TouchableOpacity
+          style={styles.linkButton}
+          onPress={() => navigation.navigate('Products', {})}
+        >
           <Text style={styles.linkButtonText}>Start shopping</Text>
         </TouchableOpacity>
       </View>
@@ -77,9 +80,20 @@ const styles = StyleSheet.create({
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   container: { padding: 16, gap: 10 },
   emptyText: { color: '#6b7280', fontSize: 16, marginBottom: 10 },
-  linkButton: { paddingVertical: 10, paddingHorizontal: 16, backgroundColor: '#f3f4f6', borderRadius: 8 },
+  linkButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    backgroundColor: '#f3f4f6',
+    borderRadius: 8,
+  },
   linkButtonText: { color: '#374151', fontWeight: '600' },
-  card: { borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 10, backgroundColor: '#fff', padding: 12 },
+  card: {
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    padding: 12,
+  },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   orderNo: { fontSize: 13, fontWeight: '700', color: '#111827' },
   status: { textTransform: 'capitalize', fontSize: 12, color: '#2563eb' },

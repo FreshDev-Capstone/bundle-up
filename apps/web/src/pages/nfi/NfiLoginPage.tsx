@@ -46,13 +46,29 @@ export function NfiLoginPage() {
           {error && (
             <div className="mb-4 rounded bg-red-50 px-4 py-3 text-sm text-red-600">
               {error}
-              <button onClick={clearError} className="ml-2 underline">Dismiss</button>
+              <button onClick={clearError} className="ml-2 underline">
+                Dismiss
+              </button>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <Input label="Email" type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            <Input label="Password" type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <Input
+              label="Email"
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <Input
+              label="Password"
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
             <Button type="submit" isLoading={isLoading} size="lg" className="mt-2">
               Sign In
             </Button>
@@ -60,11 +76,15 @@ export function NfiLoginPage() {
 
           <p className="mt-6 text-center text-sm text-gray-500">
             Don&apos;t have a business account?{' '}
-            <Link to="/nfi/register" className="text-blue-600 hover:underline">Apply here</Link>
+            <Link to="/nfi/register" className="text-blue-600 hover:underline">
+              Apply here
+            </Link>
           </p>
           <p className="mt-2 text-center text-sm text-gray-500">
             Retail customer?{' '}
-            <Link to="/login" className="text-green-600 hover:underline">Sign in here</Link>
+            <Link to="/login" className="text-green-600 hover:underline">
+              Sign in here
+            </Link>
           </p>
         </div>
       </div>

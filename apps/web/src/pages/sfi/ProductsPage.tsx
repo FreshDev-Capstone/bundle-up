@@ -27,7 +27,10 @@ function getProductLabels(product: Product): string[] {
 }
 
 function getVariantKey(product: Product): string {
-  const normalizedName = product.name.replace(/\s*-\s*\d+\s*count$/i, '').trim().toLowerCase();
+  const normalizedName = product.name
+    .replace(/\s*-\s*\d+\s*count$/i, '')
+    .trim()
+    .toLowerCase();
   return [
     normalizedName,
     product.product_color ?? '',
@@ -77,8 +80,8 @@ export function ProductsPage() {
   ];
 
   const headingText = filters.category
-    ? categoryOptions.find((opt) => opt.value === filters.category)?.label ??
-      filters.category.replace(/-/g, ' ')
+    ? (categoryOptions.find((opt) => opt.value === filters.category)?.label ??
+      filters.category.replace(/-/g, ' '))
     : 'All Products';
 
   useEffect(() => {
@@ -94,7 +97,10 @@ export function ProductsPage() {
 
       const timeoutMs = 10000;
       const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('Request timed out. Please check API connectivity.')), timeoutMs);
+        setTimeout(
+          () => reject(new Error('Request timed out. Please check API connectivity.')),
+          timeoutMs,
+        );
       });
 
       try {
@@ -133,7 +139,9 @@ export function ProductsPage() {
     }
 
     if (categorySlug === 'pasture-raised') {
-      return (p.category_slug ?? '') === 'pasture-raised' || product.farming_method === 'Pasture Raised';
+      return (
+        (p.category_slug ?? '') === 'pasture-raised' || product.farming_method === 'Pasture Raised'
+      );
     }
 
     return (p.category_slug ?? '') === categorySlug;
@@ -364,7 +372,9 @@ export function ProductsPage() {
                           className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-5xl">🥚</div>
+                        <div className="w-full h-full flex items-center justify-center text-5xl">
+                          🥚
+                        </div>
                       )}
                     </div>
                     <div className="px-4 pt-4 pb-3">
@@ -382,7 +392,9 @@ export function ProductsPage() {
                           <span className="text-xs text-gray-500 uppercase">Eggs</span>
                         )}
                       </div>
-                      <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">{product.name}</h3>
+                      <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">
+                        {product.name}
+                      </h3>
                     </div>
                   </button>
 
@@ -390,7 +402,9 @@ export function ProductsPage() {
                   <div className="px-4 pb-4 pt-2">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="text-lg font-bold text-gray-900">{formatPrice(product.b2c_unit_price)}</p>
+                        <p className="text-lg font-bold text-gray-900">
+                          {formatPrice(product.b2c_unit_price)}
+                        </p>
                         <p className="text-xs text-gray-400">per carton</p>
                       </div>
 
@@ -404,7 +418,9 @@ export function ProductsPage() {
                           >
                             -
                           </button>
-                          <span className="w-8 text-center text-sm font-medium">{cartItem.quantity}</span>
+                          <span className="w-8 text-center text-sm font-medium">
+                            {cartItem.quantity}
+                          </span>
                           <button
                             type="button"
                             onClick={() => handleUpdateQty(product, cartItem.quantity + 1)}
@@ -421,7 +437,11 @@ export function ProductsPage() {
                           disabled={isAdding || !product.is_available}
                           className="rounded-md bg-green-600 px-3 py-2 text-xs font-medium text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                          {isAdding ? 'Adding…' : product.is_available ? 'Add to Cart' : 'Unavailable'}
+                          {isAdding
+                            ? 'Adding…'
+                            : product.is_available
+                              ? 'Add to Cart'
+                              : 'Unavailable'}
                         </button>
                       )}
                     </div>
@@ -438,7 +458,10 @@ export function ProductsPage() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
           onClick={() => setQuickViewProduct(null)}
         >
-          <div className="w-full max-w-2xl rounded-xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="w-full max-w-2xl rounded-xl bg-white shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between border-b px-5 py-3">
               <h2 className="text-lg font-semibold text-gray-900">Quick View</h2>
               <button
@@ -466,7 +489,9 @@ export function ProductsPage() {
               <div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{quickViewProduct.name}</h3>
                 <p className="text-sm text-gray-600 mb-3">{quickViewProduct.description}</p>
-                <p className="text-2xl font-bold text-gray-900">{formatPrice(quickViewProduct.b2c_unit_price)}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {formatPrice(quickViewProduct.b2c_unit_price)}
+                </p>
                 <p className="text-xs text-gray-500 mb-4">per carton</p>
 
                 {quickViewVariants.length > 1 && (
@@ -497,7 +522,9 @@ export function ProductsPage() {
                 <div className="flex items-center gap-2 mb-4">
                   <button
                     type="button"
-                    onClick={() => setModalQtyFor(quickViewProduct.id, getModalQty(quickViewProduct.id) - 1)}
+                    onClick={() =>
+                      setModalQtyFor(quickViewProduct.id, getModalQty(quickViewProduct.id) - 1)
+                    }
                     className="h-8 w-8 rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100"
                   >
                     -
@@ -509,7 +536,9 @@ export function ProductsPage() {
                   />
                   <button
                     type="button"
-                    onClick={() => setModalQtyFor(quickViewProduct.id, getModalQty(quickViewProduct.id) + 1)}
+                    onClick={() =>
+                      setModalQtyFor(quickViewProduct.id, getModalQty(quickViewProduct.id) + 1)
+                    }
                     className="h-8 w-8 rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100"
                   >
                     +
@@ -525,7 +554,10 @@ export function ProductsPage() {
                   >
                     {addingById[quickViewProduct.id] ? 'Adding…' : 'Add to Cart'}
                   </button>
-                  <Link to={`/products/${quickViewProduct.slug}`} className="text-sm font-medium text-green-700 hover:underline">
+                  <Link
+                    to={`/products/${quickViewProduct.slug}`}
+                    className="text-sm font-medium text-green-700 hover:underline"
+                  >
                     Full details
                   </Link>
                 </div>
