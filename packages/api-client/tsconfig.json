@@ -2,9 +2,7 @@
   "extends": "@bundle-up/config-typescript/web.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "dist",
-    "module": "CommonJS",
-    "moduleResolution": "Node"
+    "outDir": "dist"
   },
   "include": ["src/**/*.ts"]
 }

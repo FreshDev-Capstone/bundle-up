@@ -11,6 +11,9 @@ import { LoginPage } from './pages/sfi/LoginPage';
 import { RegisterPage } from './pages/sfi/RegisterPage';
 import { CartPage } from './pages/sfi/CartPage';
 import { OrdersPage } from './pages/sfi/OrdersPage';
+import { ProfilePage } from './pages/sfi/ProfilePage';
+import { CheckoutPage } from './pages/sfi/CheckoutPage';
+import { OrderDetailPage } from './pages/sfi/OrderDetailPage';
 
 // NFI pages
 import { NfiHomePage } from './pages/nfi/NfiHomePage';
@@ -38,8 +41,11 @@ export default function App() {
 
           {/* Protected SFI routes */}
           <Route element={<ProtectedRoute redirectTo="/login" />}>
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/cart" element={<CartPage variant="sfi" />} />
+            <Route path="/checkout" element={<CheckoutPage variant="sfi" />} />
+            <Route path="/orders" element={<OrdersPage variant="sfi" />} />
+            <Route path="/orders/:id" element={<OrderDetailPage variant="sfi" />} />
+            <Route path="/profile" element={<ProfilePage variant="sfi" />} />
           </Route>
         </Route>
 
@@ -53,8 +59,11 @@ export default function App() {
 
           {/* Protected NFI routes */}
           <Route element={<ProtectedRoute redirectTo="/nfi/login" />}>
-            <Route path="cart" element={<CartPage />} />
-            <Route path="orders" element={<OrdersPage />} />
+            <Route path="cart" element={<CartPage variant="nfi" />} />
+            <Route path="checkout" element={<CheckoutPage variant="nfi" />} />
+            <Route path="orders" element={<OrdersPage variant="nfi" />} />
+            <Route path="orders/:id" element={<OrderDetailPage variant="nfi" />} />
+            <Route path="profile" element={<ProfilePage variant="nfi" />} />
           </Route>
         </Route>
 
@@ -62,9 +71,7 @@ export default function App() {
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route
           path="/admin"
-          element={
-            <ProtectedRoute requiredRole="admin" redirectTo="/admin/login" />
-          }
+          element={<ProtectedRoute requiredRole="admin" redirectTo="/admin/login" />}
         >
           <Route element={<Layout variant="admin" />}>
             <Route index element={<AdminDashboard />} />

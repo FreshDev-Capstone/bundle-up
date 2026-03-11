@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 
 import authRoutes from './routes/auth';
 import productRoutes from './routes/products';
@@ -11,6 +12,11 @@ import { errorHandler } from './middleware/errorHandler';
 import { apiLimiter, authLimiter } from './middleware/rateLimiter';
 
 dotenv.config();
+
+// When run via npm workspaces, cwd is apps/api, so root .env is two levels up.
+if (!process.env['JWT_SECRET']) {
+  dotenv.config({ path: path.resolve(process.cwd(), '../../.env') });
+}
 
 const app = express();
 

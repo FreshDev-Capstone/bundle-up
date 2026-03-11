@@ -29,6 +29,8 @@ interface AuthState {
     tax_id?: string;
     billing_email?: string;
   }) => Promise<void>;
+  refreshMe: () => Promise<void>;
+  applyMe: (data: { user: User; profile: UserProfile; business_account?: BusinessAccount }) => void;
   logout: () => void;
   clearError: () => void;
 }
@@ -108,6 +110,25 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
+      refreshMe: async () => {
+        const res = await apiClient.me();
+        if (res.success) {
+          set({
+            user: res.data.user,
+            profile: res.data.profile,
+            businessAccount: res.data.business_account ?? null,
+          });
+        }
+      },
+
+      applyMe: (data) => {
+        set({
+          user: data.user,
+          profile: data.profile,
+          businessAccount: data.business_account ?? null,
+        });
+      },
+
       logout: () => {
         apiClient.setToken(null);
         set({ token: null, user: null, profile: null, businessAccount: null });
@@ -117,6 +138,11 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'bundle-up-auth',
+      onRehydrateStorage: () => (state) => {
+        if (state?.token) {
+          apiClient.setToken(state.token);
+        }
+      },
     },
   ),
 );

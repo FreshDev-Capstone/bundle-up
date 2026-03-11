@@ -6,10 +6,8 @@ export interface AuthenticatedRequest extends Request {
   user?: AuthTokenPayload;
 }
 
-const JWT_SECRET = process.env['JWT_SECRET'];
-
-if (!JWT_SECRET) {
-  throw new Error('JWT_SECRET environment variable is required');
+function getJwtSecret(): string | null {
+  return process.env['JWT_SECRET'] ?? null;
 }
 
 /**
@@ -24,8 +22,14 @@ export function requireAuth(req: AuthenticatedRequest, res: Response, next: Next
   }
 
   const token = authHeader.slice(7);
+  const jwtSecret = getJwtSecret();
+  if (!jwtSecret) {
+    res.status(500).json({ success: false, message: 'Server auth is not configured' });
+    return;
+  }
+
   try {
-    const decoded = jwt.verify(token, JWT_SECRET as string);
+    const decoded = jwt.verify(token, jwtSecret);
     // Runtime validation of payload shape
     if (
       typeof decoded !== 'object' ||

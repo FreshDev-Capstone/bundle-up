@@ -1,7 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuthStore } from '../../stores/authStore';
 
 export function HomePage() {
+  const { user } = useAuthStore();
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-16">
       {/* Hero */}
@@ -21,12 +24,14 @@ export function HomePage() {
           >
             Shop Now
           </Link>
-          <Link
-            to="/nfi"
-            className="rounded-md border border-green-600 px-6 py-3 text-base font-medium text-green-600 hover:bg-green-50"
-          >
-            Business Orders (B2B)
-          </Link>
+          {user?.role === 'business' && (
+            <Link
+              to="/nfi"
+              className="rounded-md border border-green-600 px-6 py-3 text-base font-medium text-green-600 hover:bg-green-50"
+            >
+              Business Orders (B2B)
+            </Link>
+          )}
         </div>
       </section>
 
@@ -41,6 +46,7 @@ export function HomePage() {
             { label: 'Pasture Raised', slug: 'pasture-raised', emoji: '🌾' },
             { label: 'Heirloom', slug: 'heirloom', emoji: '🌈' },
             { label: 'Specialty', slug: 'specialty', emoji: '⭐' },
+            { label: 'Milk', slug: 'milk', emoji: '🥛' },
           ].map((cat) => (
             <Link
               key={cat.slug}

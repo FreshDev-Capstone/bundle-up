@@ -1,7 +1,12 @@
 import type { Knex } from 'knex';
 import dotenv from 'dotenv';
+import path from 'path';
 
 dotenv.config();
+
+if (!process.env['DATABASE_URL'] && !process.env['DATABASE_HOST']) {
+  dotenv.config({ path: path.resolve(__dirname, '../../../../.env') });
+}
 
 const config: { [key: string]: Knex.Config } = {
   development: {

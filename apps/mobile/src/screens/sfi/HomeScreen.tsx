@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../RootNavigator';
+import { useAuthStore } from '../../stores/authStore';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -21,6 +22,9 @@ const categories = [
 ];
 
 export function HomeScreen({ navigation }: Props) {
+  const { user } = useAuthStore();
+  const isBusiness = user?.role === 'business';
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.hero}>
@@ -35,6 +39,24 @@ export function HomeScreen({ navigation }: Props) {
         >
           <Text style={styles.ctaButtonText}>Shop Now</Text>
         </TouchableOpacity>
+
+        <View style={styles.quickActions}>
+          <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.navigate('Cart')}>
+            <Text style={styles.secondaryButtonText}>View Cart</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={() => (user ? navigation.navigate('Orders') : navigation.navigate('Login'))}
+          >
+            <Text style={styles.secondaryButtonText}>My Orders</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={() => (user ? navigation.navigate('Profile') : navigation.navigate('Login'))}
+          >
+            <Text style={styles.secondaryButtonText}>Profile</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <Text style={styles.sectionTitle}>Shop by Category</Text>
@@ -50,6 +72,26 @@ export function HomeScreen({ navigation }: Props) {
           </TouchableOpacity>
         ))}
       </View>
+
+      {isBusiness ? (
+        <>
+          <Text style={styles.sectionTitle}>Business Tools</Text>
+          <View style={styles.categoryGrid}>
+            <TouchableOpacity style={styles.categoryCard} onPress={() => navigation.navigate('Products', {})}>
+              <Text style={styles.categoryEmoji}>📦</Text>
+              <Text style={styles.categoryLabel}>Case Pricing</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.categoryCard} onPress={() => navigation.navigate('Cart')}>
+              <Text style={styles.categoryEmoji}>🚚</Text>
+              <Text style={styles.categoryLabel}>Bulk Ordering</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.categoryCard} onPress={() => navigation.navigate('Orders')}>
+              <Text style={styles.categoryEmoji}>📋</Text>
+              <Text style={styles.categoryLabel}>Invoice Details</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      ) : null}
     </ScrollView>
   );
 }
@@ -74,6 +116,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   ctaButtonText: { color: '#fff', fontWeight: '600', fontSize: 16 },
+  quickActions: { marginTop: 12, width: '100%', gap: 8 },
+  secondaryButton: {
+    backgroundColor: '#f3f4f6',
+    borderRadius: 8,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  secondaryButtonText: { color: '#374151', fontWeight: '600', fontSize: 14 },
   sectionTitle: { fontSize: 20, fontWeight: '700', color: '#111827', marginBottom: 12, marginTop: 8 },
   categoryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   categoryCard: {

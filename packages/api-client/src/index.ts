@@ -32,21 +32,28 @@ export class ApiClient {
     path: string,
     body?: unknown,
   ): Promise<ApiResponse<T>> {
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-    if (this.token) {
-      headers['Authorization'] = `Bearer ${this.token}`;
+    try {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (this.token) {
+        headers['Authorization'] = `Bearer ${this.token}`;
+      }
+
+      const res = await fetch(`${this.baseUrl}${path}`, {
+        method,
+        headers,
+        body: body !== undefined ? JSON.stringify(body) : undefined,
+      });
+
+      const data = (await res.json()) as ApiResponse<T>;
+      return data;
+    } catch (err) {
+      return {
+        success: false,
+        message: err instanceof Error ? err.message : 'Network error. Please try again.',
+      };
     }
-
-    const res = await fetch(`${this.baseUrl}${path}`, {
-      method,
-      headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
-    });
-
-    const data = (await res.json()) as ApiResponse<T>;
-    return data;
   }
 
   // ─── Auth ─────────────────────────────────────────────────────────────
@@ -65,6 +72,22 @@ export class ApiClient {
 
   me() {
     return this.request<AuthResponse>('GET', '/auth/me');
+  }
+
+  updateMe(body: {
+    email?: string;
+    first_name?: string;
+    last_name?: string;
+    phone?: string;
+    company_name?: string;
+    tax_id?: string;
+    billing_email?: string;
+  }) {
+    return this.request<Omit<AuthResponse, 'token'>>('PATCH', '/auth/me', body);
+  }
+
+  changePassword(body: { current_password: string; new_password: string }) {
+    return this.request<null>('POST', '/auth/change-password', body);
   }
 
   // ─── Products ─────────────────────────────────────────────────────────
@@ -122,6 +145,14 @@ export class ApiClient {
 
   createAddress(body: Omit<Address, 'id' | 'user_id' | 'created_at' | 'updated_at'>) {
     return this.request<Address>('POST', '/addresses', body);
+  }
+
+  updateAddress(id: number, body: Omit<Address, 'id' | 'user_id' | 'created_at' | 'updated_at'>) {
+    return this.request<Address>('PUT', `/addresses/${id}`, body);
+  }
+
+  deleteAddress(id: number) {
+    return this.request<null>('DELETE', `/addresses/${id}`);
   }
 }
 

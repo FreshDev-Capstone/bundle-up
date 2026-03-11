@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import { Input, Button } from '@bundle-up/ui';
 
@@ -10,6 +10,7 @@ import { Input, Button } from '@bundle-up/ui';
  */
 export function NfiLoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, isLoading, error, clearError } = useAuthStore();
 
   const [email, setEmail] = useState('');
@@ -19,7 +20,13 @@ export function NfiLoginPage() {
     e.preventDefault();
     await login(email, password);
     const user = useAuthStore.getState().user;
+    const from = (location.state as { from?: { pathname?: string; search?: string } } | null)?.from;
+    const fromPath = from?.pathname ? `${from.pathname}${from.search ?? ''}` : null;
     if (user) {
+      if (fromPath) {
+        navigate(fromPath, { replace: true });
+        return;
+      }
       if (user.role === 'admin') navigate('/admin');
       else if (user.role === 'business') navigate('/nfi');
       else navigate('/'); // consumer who signed in from NFI – route to SFI

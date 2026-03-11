@@ -4,9 +4,16 @@ import { formatPrice } from '@bundle-up/utils';
 import { Button } from '@bundle-up/ui';
 import { useCartStore, useCartItemCount } from '../../stores/cartStore';
 
-export function CartPage() {
+interface CartPageProps {
+  variant?: 'sfi' | 'nfi';
+}
+
+export function CartPage({ variant = 'sfi' }: CartPageProps) {
   const { cart, updateItem, removeItem, clearCart } = useCartStore();
   const itemCount = useCartItemCount(cart);
+
+  const productsRoute = variant === 'nfi' ? '/nfi/products' : '/products';
+  const checkoutRoute = variant === 'nfi' ? '/nfi/checkout' : '/checkout';
 
   if (!cart || itemCount === 0) {
     return (
@@ -15,7 +22,7 @@ export function CartPage() {
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
         <p className="text-gray-500 mb-6">Add some eggs to get started!</p>
         <Link
-          to="/products"
+          to={productsRoute}
           className="rounded-md bg-green-600 px-6 py-2 text-sm font-medium text-white hover:bg-green-700"
         >
           Shop Now
@@ -104,15 +111,12 @@ export function CartPage() {
 
         <div className="mt-6 flex flex-col gap-3">
           <Link
-            to="/checkout"
+            to={checkoutRoute}
             className="block rounded-md bg-green-600 px-6 py-3 text-center text-sm font-medium text-white hover:bg-green-700"
           >
             Proceed to Checkout
           </Link>
-          <button
-            onClick={() => clearCart()}
-            className="text-sm text-gray-400 hover:text-red-500"
-          >
+          <button onClick={() => clearCart()} className="text-sm text-gray-400 hover:text-red-500">
             Clear Cart
           </button>
         </div>

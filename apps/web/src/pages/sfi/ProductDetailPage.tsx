@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { apiClient } from '../../lib/apiClient';
 import { formatPrice } from '@bundle-up/utils';
 import type { Product } from '@bundle-up/shared-types';
@@ -10,13 +10,48 @@ import { useAuthStore } from '../../stores/authStore';
 export function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [qty, setQty] = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
+  const [countVariants, setCountVariants] = useState<Product[]>([]);
 
   const { addItem } = useCartStore();
+    function variantKey(p: Product): string {
+      const normalizedName = p.name.replace(/\s*-\s*\d+\s*count$/i, '').trim().toLowerCase();
+      return [
+        normalizedName,
+        p.product_color ?? '',
+        p.product_size ?? '',
+        p.category_id,
+        p.farming_method ?? '',
+      ].join('::');
+    }
+
   const { user } = useAuthStore();
+  const isBusinessContext = location.pathname.startsWith('/nfi');
+
+  const labels = React.useMemo(() => {
+    if (!product) return [] as string[];
+
+    const categoryName = (product as Product & { category_name?: string }).category_name;
+    const candidates = [categoryName, product.farming_method].filter((value): value is string =>
+      Boolean(value),
+    );
+
+    if (/\borganic\b/i.test(product.name) || /\borganic\b/i.test(product.slug)) {
+      candidates.push('Organic');
+    }
+
+    const unique: string[] = [];
+    for (const label of candidates) {
+      if (!unique.some((existing) => existing.toLowerCase() === label.toLowerCase())) {
+        unique.push(label);
+      }
+    }
+    return unique;
+  }, [product]);
 
   useEffect(() => {
     if (!slug) return;
@@ -26,9 +61,33 @@ export function ProductDetailPage() {
     });
   }, [slug]);
 
+  useEffect(() => {
+    if (!product) {
+      setCountVariants([]);
+      return;
+    }
+
+    const params: Record<string, string> = { per_page: '100' };
+    apiClient.getProducts(params).then((res) => {
+      if (!res.success) return;
+      const key = variantKey(product);
+      const variants = res.data.data
+        .filter((item) => variantKey(item) === key)
+        .sort((a, b) => Number(a.product_count ?? 0) - Number(b.product_count ?? 0));
+
+      if (variants.length > 1) {
+        setCountVariants(variants);
+      } else {
+        setCountVariants([]);
+      }
+    });
+  }, [product]);
+
   async function handleAddToCart() {
     if (!user) {
-      navigate('/login');
+      navigate(isBusinessContext ? '/nfi/login' : '/login', {
+        state: { from: { pathname: location.pathname, search: location.search } },
+      });
       return;
     }
     if (!product) return;
@@ -68,11 +127,17 @@ export function ProductDetailPage() {
         {/* Details */}
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <Badge variant="success">
-              {(product as Product & { category_name?: string }).category_name ?? 'Eggs'}
-            </Badge>
-            {product.farming_method && (
-              <Badge variant="info">{product.farming_method}</Badge>
+            {labels.length > 0 ? (
+              labels.map((label) => (
+                <Badge
+                  key={`${product.id}-${label}`}
+                  variant={label === 'Organic' ? 'success' : 'info'}
+                >
+                  {label}
+                </Badge>
+              ))
+            ) : (
+              <Badge variant="success">Eggs</Badge>
             )}
             {!product.is_available && <Badge variant="error">Out of Stock</Badge>}
           </div>
@@ -82,9 +147,9 @@ export function ProductDetailPage() {
 
           <div className="mb-6">
             <p className="text-3xl font-bold text-gray-900">
-              {formatPrice(product.b2c_unit_price)}
+              {formatPrice(isBusinessContext ? product.b2b_case_price : product.b2c_unit_price)}
             </p>
-            <p className="text-sm text-gray-500">per carton</p>
+            <p className="text-sm text-gray-500">{isBusinessContext ? 'per case' : 'per carton'}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-3 mb-6 text-sm">
@@ -107,6 +172,31 @@ export function ProductDetailPage() {
               </div>
             )}
           </div>
+
+          {countVariants.length > 0 && (
+            <div className="mb-6">
+              <p className="text-sm font-medium text-gray-700 mb-2">Choose Count</p>
+              <div className="flex flex-wrap gap-2">
+                {countVariants.map((variant) => {
+                  const selected = variant.id === product.id;
+                  return (
+                    <button
+                      key={variant.id}
+                      type="button"
+                      onClick={() => navigate(`${isBusinessContext ? '/nfi/products' : '/products'}/${variant.slug}`)}
+                      className={`rounded-md border px-3 py-1.5 text-sm ${
+                        selected
+                          ? 'border-green-600 bg-green-50 text-green-700'
+                          : 'border-gray-300 text-gray-700 hover:border-green-400'
+                      }`}
+                    >
+                      {variant.product_count} count
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           <div className="flex items-center gap-3 mb-4">
             <label className="text-sm font-medium text-gray-700">Quantity:</label>

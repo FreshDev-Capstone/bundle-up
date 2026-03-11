@@ -56,17 +56,15 @@ export async function createOrder(req: AuthenticatedRequest, res: Response): Pro
     })
     .returning('*');
 
-  const orderItems = items.map((item: {
-    product_id: number;
-    quantity: number;
-    unit_price: number;
-  }) => ({
-    order_id: order.id,
-    product_id: item.product_id,
-    quantity: item.quantity,
-    unit_price: Number(item.unit_price).toFixed(2),
-    line_total: (Number(item.unit_price) * item.quantity).toFixed(2),
-  }));
+  const orderItems = items.map(
+    (item: { product_id: number; quantity: number; unit_price: number }) => ({
+      order_id: order.id,
+      product_id: item.product_id,
+      quantity: item.quantity,
+      unit_price: Number(item.unit_price).toFixed(2),
+      line_total: (Number(item.unit_price) * item.quantity).toFixed(2),
+    }),
+  );
 
   await db('order_items').insert(orderItems);
 
@@ -82,9 +80,10 @@ export async function listOrders(req: AuthenticatedRequest, res: Response): Prom
     return;
   }
 
-  const query = req.user.role === 'admin'
-    ? db('orders').orderBy('created_at', 'desc')
-    : db('orders').where({ user_id: req.user.sub }).orderBy('created_at', 'desc');
+  const query =
+    req.user.role === 'admin'
+      ? db('orders').orderBy('created_at', 'desc')
+      : db('orders').where({ user_id: req.user.sub }).orderBy('created_at', 'desc');
 
   const orders = await query;
 
@@ -119,10 +118,50 @@ export async function getOrder(req: AuthenticatedRequest, res: Response): Promis
     return;
   }
 
-  const items = await db('order_items')
+  const rawItems = await db('order_items')
     .join('products', 'order_items.product_id', 'products.id')
-    .select('order_items.*', 'products.name', 'products.slug', 'products.primary_image')
+    .select(
+      'order_items.id',
+      'order_items.order_id',
+      'order_items.product_id',
+      'order_items.quantity',
+      'order_items.unit_price',
+      'order_items.line_total',
+      'order_items.created_at',
+      'products.name as _product_name',
+      'products.slug as _product_slug',
+      'products.primary_image as _product_primary_image',
+    )
     .where({ 'order_items.order_id': order.id });
+
+  const items = rawItems.map(
+    (row: {
+      id: number;
+      order_id: number;
+      product_id: number;
+      quantity: number;
+      unit_price: string;
+      line_total: string;
+      created_at: string;
+      _product_name: string;
+      _product_slug: string;
+      _product_primary_image: string | null;
+    }) => ({
+      id: row.id,
+      order_id: row.order_id,
+      product_id: row.product_id,
+      quantity: row.quantity,
+      unit_price: row.unit_price,
+      line_total: row.line_total,
+      created_at: row.created_at,
+      product: {
+        id: row.product_id,
+        name: row._product_name,
+        slug: row._product_slug,
+        primary_image: row._product_primary_image ?? null,
+      },
+    }),
+  );
 
   const shippingAddress = order.shipping_address_id
     ? await db('addresses').where({ id: order.shipping_address_id }).first()
@@ -142,7 +181,9 @@ export async function updateOrderStatus(req: AuthenticatedRequest, res: Response
   const { id } = req.params as { id: string };
   const { status } = req.body as { status: string };
 
-  const updated = await db('orders').where({ id: Number(id) }).update({ status });
+  const updated = await db('orders')
+    .where({ id: Number(id) })
+    .update({ status });
   if (!updated) {
     res.status(404).json({ success: false, message: 'Order not found' });
     return;

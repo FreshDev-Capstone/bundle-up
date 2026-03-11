@@ -652,4 +652,23 @@ export const productCatalog: ProductSeedRow[] = [
     is_available: true,
     is_active: true,
   },
+
+  // ─── Milk (Preview Category) ─────────────────────────────────────────────
+  {
+    legacy_product_id: 201,
+    name: 'Organic Whole Milk - 1 Gallon',
+    slug: 'organic-whole-milk-1-gallon',
+    description: 'Certified organic whole milk, 1 gallon. Preview product for category layout.',
+    category_slug: 'milk',
+    product_color: null,
+    product_count: null,
+    product_size: null,
+    farming_method: null,
+    b2c_unit_price: 7.49,
+    b2b_case_price: 5.99,
+    inventory_by_carton: 40,
+    inventory_by_case: 10,
+    is_available: true,
+    is_active: true,
+  },
 ];

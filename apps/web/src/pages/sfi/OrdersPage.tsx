@@ -5,6 +5,10 @@ import { formatPrice } from '@bundle-up/utils';
 import type { Order } from '@bundle-up/shared-types';
 import { Spinner, Badge } from '@bundle-up/ui';
 
+interface OrdersPageProps {
+  variant?: 'sfi' | 'nfi';
+}
+
 const statusVariants: Record<string, 'default' | 'success' | 'warning' | 'error' | 'info'> = {
   pending: 'warning',
   confirmed: 'info',
@@ -15,7 +19,7 @@ const statusVariants: Record<string, 'default' | 'success' | 'warning' | 'error'
   refunded: 'error',
 };
 
-export function OrdersPage() {
+export function OrdersPage({ variant = 'sfi' }: OrdersPageProps) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -26,7 +30,15 @@ export function OrdersPage() {
     });
   }, []);
 
-  if (loading) return <div className="flex justify-center py-20"><Spinner size="lg" /></div>;
+  const productsRoute = variant === 'nfi' ? '/nfi/products' : '/products';
+  const orderDetailBase = variant === 'nfi' ? '/nfi/orders' : '/orders';
+
+  if (loading)
+    return (
+      <div className="flex justify-center py-20">
+        <Spinner size="lg" />
+      </div>
+    );
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
@@ -35,23 +47,23 @@ export function OrdersPage() {
       {orders.length === 0 ? (
         <div className="text-center py-12 text-gray-500">
           <p className="mb-4">No orders yet.</p>
-          <Link to="/products" className="text-green-600 hover:underline">Start shopping</Link>
+          <Link to={productsRoute} className="text-green-600 hover:underline">
+            Start shopping
+          </Link>
         </div>
       ) : (
         <div className="space-y-4">
           {orders.map((order) => (
             <Link
               key={order.id}
-              to={`/orders/${order.id}`}
+              to={`${orderDetailBase}/${order.id}`}
               className="block rounded-lg border border-gray-200 bg-white p-5 hover:border-green-300 hover:shadow-sm transition-all"
             >
               <div className="flex items-center justify-between mb-2">
                 <span className="font-mono text-sm font-medium text-gray-900">
                   {order.order_number}
                 </span>
-                <Badge variant={statusVariants[order.status] ?? 'default'}>
-                  {order.status}
-                </Badge>
+                <Badge variant={statusVariants[order.status] ?? 'default'}>{order.status}</Badge>
               </div>
               <div className="flex items-center justify-between text-sm text-gray-500">
                 <span>{new Date(order.created_at).toLocaleDateString()}</span>

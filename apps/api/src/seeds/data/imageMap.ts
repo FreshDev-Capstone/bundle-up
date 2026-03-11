@@ -47,6 +47,9 @@ export const imageMapByLegacyId: Record<number, string> = {
   // Note: original seed had HTML entity &amp; in path; normalized below
   148: '/assets/eggs/Heirloom Blue & Brown Eggs/148-heirloom-blue.png',
   149: '/assets/eggs/Heirloom Blue & Brown Eggs/149-heirloom-brown.png',
+
+  // Milk (preview category)
+  201: '/assets/milk/Organic Milk/4-211x428.jpg',
 };
 
 /**

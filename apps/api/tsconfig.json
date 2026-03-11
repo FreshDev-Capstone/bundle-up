@@ -1,5 +1,5 @@
 {
-  "extends": "@bundle-up/config-typescript/node.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",

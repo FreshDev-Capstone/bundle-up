@@ -12,19 +12,19 @@ Powered by [Sunshine Farms](https://www.sunshinefarmsinc.com).
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Monorepo | Turborepo + npm workspaces |
-| Language | TypeScript everywhere |
-| Web frontend | Vite + React + Tailwind CSS |
-| Mobile | Expo + React Native |
-| State management | Zustand |
-| API | Express |
-| Database | PostgreSQL |
-| Query / migrations | Knex |
-| Validation | Zod |
-| Auth | JWT (RS/HS256) |
-| API client | Shared `@bundle-up/api-client` |
+| Layer              | Technology                     |
+| ------------------ | ------------------------------ |
+| Monorepo           | Turborepo + npm workspaces     |
+| Language           | TypeScript everywhere          |
+| Web frontend       | Vite + React + Tailwind CSS    |
+| Mobile             | Expo + React Native            |
+| State management   | Zustand                        |
+| API                | Express                        |
+| Database           | PostgreSQL                     |
+| Query / migrations | Knex                           |
+| Validation         | Zod                            |
+| Auth               | JWT (RS/HS256)                 |
+| API client         | Shared `@bundle-up/api-client` |
 
 ---
 
@@ -98,6 +98,7 @@ npm run dev
 ```
 
 This starts:
+
 - API at `http://localhost:3001`
 - Web at `http://localhost:3000`
 - Mobile (Expo) — run `npm run dev --filter=@bundle-up/mobile`
@@ -106,17 +107,17 @@ This starts:
 
 ## Available Scripts
 
-| Script | Description |
-|---|---|
-| `npm run dev` | Start all apps in dev mode |
-| `npm run build` | Build all apps and packages |
-| `npm run lint` | Lint all workspaces |
-| `npm run typecheck` | TypeScript typecheck all workspaces |
-| `npm run test` | Run all tests |
-| `npm run db:migrate` | Run pending database migrations |
-| `npm run db:seed` | Run seed data |
-| `npm run db:rollback` | Roll back latest migration |
-| `npm run format` | Format all files with Prettier |
+| Script                | Description                         |
+| --------------------- | ----------------------------------- |
+| `npm run dev`         | Start all apps in dev mode          |
+| `npm run build`       | Build all apps and packages         |
+| `npm run lint`        | Lint all workspaces                 |
+| `npm run typecheck`   | TypeScript typecheck all workspaces |
+| `npm run test`        | Run all tests                       |
+| `npm run db:migrate`  | Run pending database migrations     |
+| `npm run db:seed`     | Run seed data                       |
+| `npm run db:rollback` | Roll back latest migration          |
+| `npm run format`      | Format all files with Prettier      |
 
 ---
 
@@ -124,49 +125,49 @@ This starts:
 
 ### Auth (`/api/auth`)
 
-| Method | Route | Description |
-|---|---|---|
-| POST | `/auth/login` | Login (works for all roles) |
-| POST | `/auth/register/customer` | Register B2C account |
-| POST | `/auth/register/business` | Register B2B account |
-| GET | `/auth/me` | Get current user |
+| Method | Route                     | Description                 |
+| ------ | ------------------------- | --------------------------- |
+| POST   | `/auth/login`             | Login (works for all roles) |
+| POST   | `/auth/register/customer` | Register B2C account        |
+| POST   | `/auth/register/business` | Register B2B account        |
+| GET    | `/auth/me`                | Get current user            |
 
 ### Products (`/api/products`)
 
-| Method | Route | Description |
-|---|---|---|
-| GET | `/products` | List products (paginated, filterable) |
-| GET | `/products/:idOrSlug` | Get product detail |
-| GET | `/products/admin/all` | Admin: all products with inventory |
-| PATCH | `/products/:id/availability` | Admin: toggle availability |
+| Method | Route                        | Description                           |
+| ------ | ---------------------------- | ------------------------------------- |
+| GET    | `/products`                  | List products (paginated, filterable) |
+| GET    | `/products/:idOrSlug`        | Get product detail                    |
+| GET    | `/products/admin/all`        | Admin: all products with inventory    |
+| PATCH  | `/products/:id/availability` | Admin: toggle availability            |
 
 ### Cart (`/api/cart`)
 
-| Method | Route | Auth | Description |
-|---|---|---|---|
-| GET | `/cart` | ✅ | Get user cart |
-| POST | `/cart/items` | ✅ | Add item to cart |
-| PATCH | `/cart/items/:itemId` | ✅ | Update item quantity |
-| DELETE | `/cart/items/:itemId` | ✅ | Remove item |
-| DELETE | `/cart` | ✅ | Clear cart |
+| Method | Route                 | Auth | Description          |
+| ------ | --------------------- | ---- | -------------------- |
+| GET    | `/cart`               | ✅   | Get user cart        |
+| POST   | `/cart/items`         | ✅   | Add item to cart     |
+| PATCH  | `/cart/items/:itemId` | ✅   | Update item quantity |
+| DELETE | `/cart/items/:itemId` | ✅   | Remove item          |
+| DELETE | `/cart`               | ✅   | Clear cart           |
 
 ### Orders (`/api/orders`)
 
-| Method | Route | Auth | Description |
-|---|---|---|---|
-| GET | `/orders` | ✅ | List user orders (admin sees all) |
-| GET | `/orders/:id` | ✅ | Get order with invoice detail |
-| POST | `/orders` | ✅ | Create order from cart |
-| PATCH | `/orders/:id/status` | Admin | Update order status |
+| Method | Route                | Auth  | Description                       |
+| ------ | -------------------- | ----- | --------------------------------- |
+| GET    | `/orders`            | ✅    | List user orders (admin sees all) |
+| GET    | `/orders/:id`        | ✅    | Get order with invoice detail     |
+| POST   | `/orders`            | ✅    | Create order from cart            |
+| PATCH  | `/orders/:id/status` | Admin | Update order status               |
 
 ### Addresses (`/api/addresses`)
 
-| Method | Route | Auth |
-|---|---|---|
-| GET | `/addresses` | ✅ |
-| POST | `/addresses` | ✅ |
-| PUT | `/addresses/:id` | ✅ |
-| DELETE | `/addresses/:id` | ✅ |
+| Method | Route            | Auth |
+| ------ | ---------------- | ---- |
+| GET    | `/addresses`     | ✅   |
+| POST   | `/addresses`     | ✅   |
+| PUT    | `/addresses/:id` | ✅   |
+| DELETE | `/addresses/:id` | ✅   |
 
 ---
 
@@ -174,36 +175,36 @@ This starts:
 
 ### SFI (B2C — `/`)
 
-| Route | Page |
-|---|---|
-| `/` | Home |
-| `/products` | Product catalog (retail pricing) |
-| `/products/:slug` | Product detail |
-| `/login` | Sign in |
-| `/register` | Create account |
-| `/cart` | Cart |
-| `/orders` | Order history |
+| Route             | Page                             |
+| ----------------- | -------------------------------- |
+| `/`               | Home                             |
+| `/products`       | Product catalog (retail pricing) |
+| `/products/:slug` | Product detail                   |
+| `/login`          | Sign in                          |
+| `/register`       | Create account                   |
+| `/cart`           | Cart                             |
+| `/orders`         | Order history                    |
 
 ### NFI (B2B — `/nfi`)
 
-| Route | Page |
-|---|---|
-| `/nfi` | B2B Home |
-| `/nfi/products` | Wholesale catalog (case pricing) |
-| `/nfi/products/:slug` | Product detail |
-| `/nfi/login` | Business sign in |
-| `/nfi/register` | Apply for business account |
-| `/nfi/cart` | Cart |
-| `/nfi/orders` | Order history |
+| Route                 | Page                             |
+| --------------------- | -------------------------------- |
+| `/nfi`                | B2B Home                         |
+| `/nfi/products`       | Wholesale catalog (case pricing) |
+| `/nfi/products/:slug` | Product detail                   |
+| `/nfi/login`          | Business sign in                 |
+| `/nfi/register`       | Apply for business account       |
+| `/nfi/cart`           | Cart                             |
+| `/nfi/orders`         | Order history                    |
 
 ### Admin (`/admin`)
 
-| Route | Page |
-|---|---|
-| `/admin` | Dashboard |
+| Route             | Page               |
+| ----------------- | ------------------ |
+| `/admin`          | Dashboard          |
 | `/admin/products` | Product management |
-| `/admin/orders` | Order management |
-| `/admin/login` | Admin sign in |
+| `/admin/orders`   | Order management   |
+| `/admin/login`    | Admin sign in      |
 
 ---
 
@@ -218,6 +219,7 @@ Admin users are routed to `/admin` regardless of entry point.
 **Roles:** `customer` | `business` | `admin`
 
 **Pricing by role:**
+
 - `customer` → `b2c_unit_price` (retail per carton)
 - `business` → `b2b_case_price` (wholesale per case)
 
@@ -273,6 +275,7 @@ order_items
 The product catalog seed (`apps/api/src/seeds/data/productCatalog.ts`) preserves the exact assortment and pricing from the original dataset. Unusual pricing combinations are flagged with `⚠️ REVIEW` comments in the source.
 
 Known flags:
+
 - Product 103 (White Large 12ct): priced **higher** than Product 102 (White Extra Large 12ct) — preserved
 - Product 104 (White Medium 12ct): priced higher than Large — preserved
 - Product 106 (White Large 6ct): 6-count priced higher than 18-count and 30-count — preserved
@@ -304,8 +307,8 @@ All image paths are currently local static assets. To swap for cloud storage (e.
 
 ## Seed Credentials (Development Only)
 
-| Role | Email | Password |
-|---|---|---|
-| Admin | `admin@bundleup.com` | `password123` |
-| Customer | `customer@example.com` | `password123` |
+| Role     | Email                   | Password      |
+| -------- | ----------------------- | ------------- |
+| Admin    | `admin@bundleup.com`    | `password123` |
+| Customer | `customer@example.com`  | `password123` |
 | Business | `buyer@freshmarket.com` | `password123` |

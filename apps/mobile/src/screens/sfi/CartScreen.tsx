@@ -1,15 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../RootNavigator';
 import { useCartStore, useCartItemCount } from '../../stores/cartStore';
+import { useAuthStore } from '../../stores/authStore';
 import { formatPrice } from '@bundle-up/utils';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Cart'>;
 
 export function CartScreen({ navigation }: Props) {
-  const { cart, updateItem, removeItem } = useCartStore();
+  const { cart, updateItem, removeItem, fetchCart } = useCartStore();
+  const { user } = useAuthStore();
   const itemCount = useCartItemCount(cart);
+
+  useEffect(() => {
+    fetchCart();
+  }, [fetchCart]);
+
+  useEffect(() => {
+    if (!user) navigation.navigate('Login');
+  }, [navigation, user]);
 
   if (!cart || itemCount === 0) {
     return (
@@ -67,7 +77,10 @@ export function CartScreen({ navigation }: Props) {
         <Text style={styles.summaryAmount}>{formatPrice(subtotal)}</Text>
       </View>
 
-      <TouchableOpacity style={styles.checkoutButton}>
+      <TouchableOpacity
+        style={styles.checkoutButton}
+        onPress={() => navigation.navigate('Checkout')}
+      >
         <Text style={styles.checkoutButtonText}>Checkout</Text>
       </TouchableOpacity>
     </ScrollView>

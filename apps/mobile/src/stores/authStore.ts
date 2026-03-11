@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { User, UserProfile, BusinessAccount } from '@bundle-up/shared-types';
 import { apiClient } from '../lib/apiClient';
+import { useCartStore } from './cartStore';
 
 interface AuthState {
   token: string | null;
@@ -41,6 +42,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   logout: () => {
     apiClient.setToken(null);
+    useCartStore.getState().resetCart();
     set({ token: null, user: null, profile: null, businessAccount: null });
   },
 }));

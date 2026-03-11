@@ -12,6 +12,7 @@ export const categories = [
   },
   { name: 'Heirloom', slug: 'heirloom', description: 'Heritage breed eggs', sort_order: 5 },
   { name: 'Specialty', slug: 'specialty', description: 'Specialty egg varieties', sort_order: 6 },
+  { name: 'Milk', slug: 'milk', description: 'Dairy products', sort_order: 7 },
 ];
 
 export async function seedCategories(knex: Knex): Promise<Record<string, number>> {

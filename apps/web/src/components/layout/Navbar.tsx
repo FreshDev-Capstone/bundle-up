@@ -9,7 +9,7 @@ interface NavbarProps {
 
 export function Navbar({ variant = 'sfi' }: NavbarProps) {
   const { user, logout } = useAuthStore();
-  const { cart } = useCartStore();
+  const { cart, resetCart } = useCartStore();
   const navigate = useNavigate();
   const itemCount = useCartItemCount(cart);
 
@@ -19,8 +19,15 @@ export function Navbar({ variant = 'sfi' }: NavbarProps) {
 
   const homeHref = isAdmin ? '/admin' : isNfi ? '/nfi' : '/';
 
+  React.useEffect(() => {
+    if (!user) {
+      resetCart();
+    }
+  }, [user, resetCart]);
+
   function handleLogout() {
     logout();
+    resetCart();
     navigate(isAdmin ? '/admin/login' : isNfi ? '/nfi/login' : '/login');
   }
 
@@ -44,7 +51,10 @@ export function Navbar({ variant = 'sfi' }: NavbarProps) {
 
         <nav className="flex items-center gap-4">
           {!isAdmin && (
-            <Link to={isSfi ? '/products' : '/nfi/products'} className="text-sm text-gray-600 hover:text-green-700">
+            <Link
+              to={isSfi ? '/products' : '/nfi/products'}
+              className="text-sm text-gray-600 hover:text-green-700"
+            >
               Products
             </Link>
           )}
@@ -59,17 +69,31 @@ export function Navbar({ variant = 'sfi' }: NavbarProps) {
                   Orders
                 </Link>
               )}
+              {!isAdmin && (
+                <Link
+                  to={isSfi ? '/profile' : '/nfi/profile'}
+                  className="text-sm text-gray-600 hover:text-green-700"
+                >
+                  Profile
+                </Link>
+              )}
               {isAdmin && (
                 <>
-                  <Link to="/admin/products" className="text-sm text-gray-600 hover:text-purple-700">Products</Link>
-                  <Link to="/admin/orders" className="text-sm text-gray-600 hover:text-purple-700">Orders</Link>
-                  <Link to="/admin/users" className="text-sm text-gray-600 hover:text-purple-700">Users</Link>
+                  <Link
+                    to="/admin/products"
+                    className="text-sm text-gray-600 hover:text-purple-700"
+                  >
+                    Products
+                  </Link>
+                  <Link to="/admin/orders" className="text-sm text-gray-600 hover:text-purple-700">
+                    Orders
+                  </Link>
+                  <Link to="/admin/users" className="text-sm text-gray-600 hover:text-purple-700">
+                    Users
+                  </Link>
                 </>
               )}
-              <button
-                onClick={handleLogout}
-                className="text-sm text-gray-600 hover:text-red-600"
-              >
+              <button onClick={handleLogout} className="text-sm text-gray-600 hover:text-red-600">
                 Sign Out
               </button>
             </>

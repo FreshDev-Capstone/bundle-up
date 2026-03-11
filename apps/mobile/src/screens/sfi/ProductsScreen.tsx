@@ -11,29 +11,73 @@ import {
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../RootNavigator';
 import { apiClient } from '../../lib/apiClient';
+import { resolveImageUrl } from '../../lib/image';
 import { formatPrice } from '@bundle-up/utils';
 import type { Product } from '@bundle-up/shared-types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Products'>;
 
-export function ProductsScreen({ route }: Props) {
+export function ProductsScreen({ route, navigation }: Props) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const category = route.params?.category;
 
   useEffect(() => {
-    const params: Record<string, string> = {};
-    if (category) params['category'] = category;
-    apiClient.getProducts(params).then((res) => {
-      if (res.success) setProducts(res.data.data);
-      setLoading(false);
-    });
+    let mounted = true;
+
+    async function loadProducts() {
+      setLoading(true);
+      setError(null);
+
+      const params: Record<string, string> = {};
+      if (category) params['category'] = category;
+
+      // Guard against hanging mobile network requests so UI never spins forever.
+      const timeoutMs = 10000;
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Request timed out. Please check API connectivity.')), timeoutMs);
+      });
+
+      try {
+        const res = await Promise.race([apiClient.getProducts(params), timeoutPromise]);
+        if (!mounted) return;
+
+        if (res.success) {
+          setProducts(res.data.data);
+        } else {
+          setError(res.message || 'Failed to load products.');
+        }
+      } catch (err) {
+        if (!mounted) return;
+        setError(err instanceof Error ? err.message : 'Failed to load products.');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+
+    loadProducts();
+
+    return () => {
+      mounted = false;
+    };
   }, [category]);
 
   if (loading) {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color="#16a34a" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity style={styles.retryButton} onPress={() => navigation.replace('Products', { category })}>
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -46,11 +90,14 @@ export function ProductsScreen({ route }: Props) {
       contentContainerStyle={styles.list}
       columnWrapperStyle={styles.row}
       renderItem={({ item }) => (
-        <TouchableOpacity style={styles.card}>
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => navigation.navigate('ProductDetail', { slug: item.slug || String(item.id) })}
+        >
           <View style={styles.imageContainer}>
-            {item.primary_image ? (
+            {resolveImageUrl(item.primary_image) ? (
               <Image
-                source={{ uri: item.primary_image }}
+                source={{ uri: resolveImageUrl(item.primary_image)! }}
                 style={styles.image}
                 resizeMode="contain"
               />
@@ -69,6 +116,15 @@ export function ProductsScreen({ route }: Props) {
 
 const styles = StyleSheet.create({
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  errorText: { color: '#dc2626', fontSize: 14, paddingHorizontal: 24, textAlign: 'center' },
+  retryButton: {
+    marginTop: 12,
+    backgroundColor: '#16a34a',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+  },
+  retryButtonText: { color: '#fff', fontWeight: '600' },
   list: { padding: 12 },
   row: { gap: 10, marginBottom: 10 },
   card: {
