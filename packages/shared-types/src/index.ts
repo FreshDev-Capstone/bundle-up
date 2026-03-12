@@ -196,6 +196,21 @@ export interface PaginatedResponse<T> {
   total_pages: number;
 }
 
+// ─── Support Chat (Mock AI) ───────────────────────────────────────────────────
+
+export type SupportChatVariant = 'sfi' | 'nfi';
+
+export interface SupportChatRequest {
+  message: string;
+  context?: {
+    variant: SupportChatVariant;
+  };
+}
+
+export interface SupportChatResponse {
+  reply: string;
+}
+
 // ─── Auth API ─────────────────────────────────────────────────────────────────
 
 export interface LoginRequest {

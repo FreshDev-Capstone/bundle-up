@@ -11,6 +11,8 @@ import type {
   Order,
   OrderWithItems,
   Address,
+  SupportChatRequest,
+  SupportChatResponse,
 } from '@bundle-up/shared-types';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -153,6 +155,12 @@ export class ApiClient {
 
   deleteAddress(id: number) {
     return this.request<null>('DELETE', `/addresses/${id}`);
+  }
+
+  // ─── Support Chat (Mock AI) ─────────────────────────────────────────
+
+  supportChat(body: SupportChatRequest) {
+    return this.request<SupportChatResponse>('POST', '/support/chat', body);
   }
 }
 
