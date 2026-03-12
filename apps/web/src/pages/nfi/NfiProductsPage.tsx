@@ -6,6 +6,8 @@ import type { Product, PaginatedResponse } from '@bundle-up/shared-types';
 import { Spinner } from '@bundle-up/ui';
 import { useCartStore } from '../../stores/cartStore';
 import { useAuthStore } from '../../stores/authStore';
+import { useAuthModalStore } from '../../stores/authModalStore';
+import { setPendingAddToCart } from '../../lib/pendingCartAction';
 
 function getProductLabels(product: Product): string[] {
   const categoryName = (product as Product & { category_name?: string }).category_name;
@@ -46,6 +48,7 @@ export function NfiProductsPage() {
   const location = useLocation();
   const { addItem, updateItem, removeItem, cart } = useCartStore();
   const { user } = useAuthStore();
+  const { open: openAuthModal } = useAuthModalStore();
 
   const [data, setData] = useState<PaginatedResponse<Product> | null>(null);
   const [loading, setLoading] = useState(true);
@@ -190,9 +193,8 @@ export function NfiProductsPage() {
 
   async function handleAddToCart(product: Product) {
     if (!user) {
-      navigate('/nfi/login', {
-        state: { from: { pathname: location.pathname, search: location.search } },
-      });
+      setPendingAddToCart({ productId: product.id, quantity: 1 });
+      openAuthModal('nfi', 'login');
       return;
     }
     setAddingById((prev) => ({ ...prev, [product.id]: true }));
@@ -202,9 +204,8 @@ export function NfiProductsPage() {
 
   async function handleModalAddToCart(product: Product) {
     if (!user) {
-      navigate('/nfi/login', {
-        state: { from: { pathname: location.pathname, search: location.search } },
-      });
+      setPendingAddToCart({ productId: product.id, quantity: getModalQty(product.id) });
+      openAuthModal('nfi', 'login');
       return;
     }
     setAddingById((prev) => ({ ...prev, [product.id]: true }));

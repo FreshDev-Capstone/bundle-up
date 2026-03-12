@@ -17,6 +17,8 @@ export function Navbar({ variant = 'sfi' }: NavbarProps) {
   const isNfi = variant === 'nfi';
   const isAdmin = variant === 'admin';
 
+  const logoSrc = isNfi ? '/assets/logo/NFI.png' : '/assets/logo/SFI.png';
+
   const homeHref = isAdmin ? '/admin' : isNfi ? '/nfi' : '/';
 
   React.useEffect(() => {
@@ -35,7 +37,11 @@ export function Navbar({ variant = 'sfi' }: NavbarProps) {
     <header className="border-b border-gray-200 bg-white shadow-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
         <Link to={homeHref} className="flex items-center gap-2">
-          <span className="text-2xl">🥚</span>
+          <img
+            src={logoSrc}
+            alt={isNfi ? 'Bundle Up business logo' : 'Bundle Up logo'}
+            className="h-12 w-12 object-contain"
+          />
           <span className="text-lg font-bold text-green-700">Bundle Up</span>
           {isNfi && (
             <span className="ml-1 rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
@@ -52,6 +58,19 @@ export function Navbar({ variant = 'sfi' }: NavbarProps) {
         <nav className="flex items-center gap-4">
           {!isAdmin && (
             <Link
+              to={isNfi ? '/' : '/nfi'}
+              className={
+                isNfi
+                  ? 'text-sm text-gray-600 hover:text-green-700'
+                  : 'text-sm text-gray-600 hover:text-blue-700'
+              }
+            >
+              {isNfi ? 'Retail (B2C)' : 'Business (B2B)'}
+            </Link>
+          )}
+
+          {!isAdmin && (
+            <Link
               to={isSfi ? '/products' : '/nfi/products'}
               className="text-sm text-gray-600 hover:text-green-700"
             >
@@ -66,7 +85,7 @@ export function Navbar({ variant = 'sfi' }: NavbarProps) {
                   to={isSfi ? '/orders' : '/nfi/orders'}
                   className="text-sm text-gray-600 hover:text-green-700"
                 >
-                  Orders
+                  {isNfi ? 'Order History' : 'Orders'}
                 </Link>
               )}
               {!isAdmin && (

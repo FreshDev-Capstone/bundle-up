@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import { Input, Button } from '@bundle-up/ui';
+import { consumePendingAddToCart } from '../../lib/pendingCartAction';
+import { useCartStore } from '../../stores/cartStore';
 
 /**
  * SFI Login – B2C entry point.
@@ -24,6 +26,10 @@ export function LoginPage() {
     const from = (location.state as { from?: { pathname?: string; search?: string } } | null)?.from;
     const fromPath = from?.pathname ? `${from.pathname}${from.search ?? ''}` : null;
     if (user) {
+      const pending = consumePendingAddToCart();
+      if (pending) {
+        await useCartStore.getState().addItem(pending.productId, pending.quantity);
+      }
       if (fromPath) {
         navigate(fromPath, { replace: true });
         return;
@@ -38,9 +44,12 @@ export function LoginPage() {
     <div className="flex min-h-[80vh] items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <span className="text-5xl">🥚</span>
+          <img
+            src="/assets/logo/SFI.png"
+            alt="Bundle Up logo"
+            className="mx-auto h-20 w-20 object-contain"
+          />
           <h1 className="text-2xl font-bold text-gray-900 mt-4">Sign in to Bundle Up</h1>
-          <p className="text-gray-500 text-sm mt-1">Retail customers</p>
         </div>
 
         <div className="rounded-lg border border-gray-200 bg-white p-8 shadow-sm">

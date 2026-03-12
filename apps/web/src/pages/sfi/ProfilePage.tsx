@@ -8,12 +8,16 @@ import { useCartStore } from '../../stores/cartStore';
 import { formatPrice } from '@bundle-up/utils';
 
 type PaymentDraft = {
+  label: string;
   cardholder: string;
   brand: string;
   last4: string;
   expMonth: string;
   expYear: string;
+  is_default: boolean;
 };
+
+type PaymentMethod = PaymentDraft & { id: number };
 
 const emptyAddress = {
   label: '',
@@ -26,12 +30,14 @@ const emptyAddress = {
   is_default: false,
 };
 
-const defaultPayment: PaymentDraft = {
+const emptyPayment: PaymentDraft = {
+  label: '',
   cardholder: '',
   brand: '',
   last4: '',
   expMonth: '',
   expYear: '',
+  is_default: false,
 };
 
 interface ProfilePageProps {
@@ -54,7 +60,9 @@ export function ProfilePage({ variant = 'sfi' }: ProfilePageProps) {
     billing_email: '',
   });
 
-  const [paymentDraft, setPaymentDraft] = useState<PaymentDraft>(defaultPayment);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [paymentDraft, setPaymentDraft] = useState<PaymentDraft>(emptyPayment);
+  const [editingPaymentId, setEditingPaymentId] = useState<number | null>(null);
   const [passwordDraft, setPasswordDraft] = useState({
     current_password: '',
     new_password: '',
@@ -84,9 +92,57 @@ export function ProfilePage({ variant = 'sfi' }: ProfilePageProps) {
     const saved = localStorage.getItem(paymentStorageKey);
     if (saved) {
       try {
-        setPaymentDraft({ ...defaultPayment, ...JSON.parse(saved) });
+        const parsed = JSON.parse(saved) as unknown;
+
+        // New format: array of methods
+        if (Array.isArray(parsed)) {
+          const methods: PaymentMethod[] = parsed
+            .map((item) => item as Partial<PaymentMethod>)
+            .filter((item) => typeof item.id === 'number')
+            .map((item) => ({
+              id: item.id as number,
+              label: String(item.label ?? ''),
+              cardholder: String(item.cardholder ?? ''),
+              brand: String(item.brand ?? ''),
+              last4: String(item.last4 ?? ''),
+              expMonth: String(item.expMonth ?? ''),
+              expYear: String(item.expYear ?? ''),
+              is_default: Boolean(item.is_default),
+            }));
+
+          const hasDefault = methods.some((m) => m.is_default);
+          const normalized = hasDefault
+            ? methods
+            : methods.map((m, idx) => ({ ...m, is_default: idx === 0 }));
+
+          setPaymentMethods(normalized);
+          setPaymentDraft(emptyPayment);
+          setEditingPaymentId(null);
+          return;
+        }
+
+        // Old format: a single draft object. Migrate to a single default method.
+        if (parsed && typeof parsed === 'object') {
+          const legacy = parsed as Partial<PaymentDraft>;
+          const migrated: PaymentMethod = {
+            id: Date.now(),
+            label: legacy.label ? String(legacy.label) : 'Card',
+            cardholder: String(legacy.cardholder ?? ''),
+            brand: String(legacy.brand ?? ''),
+            last4: String(legacy.last4 ?? ''),
+            expMonth: String(legacy.expMonth ?? ''),
+            expYear: String(legacy.expYear ?? ''),
+            is_default: true,
+          };
+          setPaymentMethods([migrated]);
+          localStorage.setItem(paymentStorageKey, JSON.stringify([migrated]));
+          setPaymentDraft(emptyPayment);
+          setEditingPaymentId(null);
+        }
       } catch {
-        setPaymentDraft(defaultPayment);
+        setPaymentMethods([]);
+        setPaymentDraft(emptyPayment);
+        setEditingPaymentId(null);
       }
     }
   }, [paymentStorageKey]);
@@ -166,12 +222,82 @@ export function ProfilePage({ variant = 'sfi' }: ProfilePageProps) {
     setSavingAccount(false);
   }
 
+  function persistPaymentMethods(next: PaymentMethod[]) {
+    setPaymentMethods(next);
+    localStorage.setItem(paymentStorageKey, JSON.stringify(next));
+  }
+
   function handleSavePayment(e: React.FormEvent) {
     e.preventDefault();
     setSavingPayment(true);
-    localStorage.setItem(paymentStorageKey, JSON.stringify(paymentDraft));
+
+    const draft: PaymentDraft = {
+      label: paymentDraft.label.trim(),
+      cardholder: paymentDraft.cardholder.trim(),
+      brand: paymentDraft.brand.trim(),
+      last4: paymentDraft.last4.replace(/\D/g, '').slice(0, 4),
+      expMonth: paymentDraft.expMonth.replace(/\D/g, '').slice(0, 2),
+      expYear: paymentDraft.expYear.replace(/\D/g, '').slice(0, 4),
+      is_default: paymentDraft.is_default,
+    };
+
+    const nextId = editingPaymentId ?? Date.now();
+
+    const nextMethods = editingPaymentId
+      ? paymentMethods.map((m) => (m.id === editingPaymentId ? { ...m, ...draft } : m))
+      : [...paymentMethods, { id: nextId, ...draft }];
+
+    // Normalize default selection
+    let normalized = nextMethods;
+    if (draft.is_default) {
+      normalized = nextMethods.map((m) => ({ ...m, is_default: m.id === nextId }));
+    } else {
+      const hasDefault = nextMethods.some((m) => m.is_default);
+      if (!hasDefault && nextMethods.length > 0) {
+        normalized = nextMethods.map((m, idx) => ({ ...m, is_default: idx === 0 }));
+      }
+    }
+
+    persistPaymentMethods(normalized);
+    setPaymentDraft(emptyPayment);
+    setEditingPaymentId(null);
     setSavingPayment(false);
-    setMessage('Payment information saved locally for this browser.');
+    setMessage(editingPaymentId ? 'Payment method updated.' : 'Payment method saved.');
+  }
+
+  function startEditPayment(method: PaymentMethod) {
+    setEditingPaymentId(method.id);
+    setPaymentDraft({
+      label: method.label,
+      cardholder: method.cardholder,
+      brand: method.brand,
+      last4: method.last4,
+      expMonth: method.expMonth,
+      expYear: method.expYear,
+      is_default: method.is_default,
+    });
+  }
+
+  function handleDeletePayment(id: number) {
+    const remaining = paymentMethods.filter((m) => m.id !== id);
+    const hadDefaultRemoved = paymentMethods.some((m) => m.id === id && m.is_default);
+    const normalized =
+      hadDefaultRemoved && remaining.length > 0
+        ? remaining.map((m, idx) => ({ ...m, is_default: idx === 0 }))
+        : remaining;
+
+    persistPaymentMethods(normalized);
+    if (editingPaymentId === id) {
+      setEditingPaymentId(null);
+      setPaymentDraft(emptyPayment);
+    }
+    setMessage('Payment method deleted.');
+  }
+
+  function makeDefaultPayment(id: number) {
+    const next = paymentMethods.map((m) => ({ ...m, is_default: m.id === id }));
+    persistPaymentMethods(next);
+    setMessage('Default payment method updated.');
   }
 
   async function handleChangePassword(e: React.FormEvent) {
@@ -448,7 +574,23 @@ export function ProfilePage({ variant = 'sfi' }: ProfilePageProps) {
         <p className="text-xs text-gray-500 mb-4">
           Saved locally in this browser for development preview only.
         </p>
-        <form onSubmit={handleSavePayment} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex items-center justify-between mb-4">
+          <Badge variant="info">{paymentMethods.length} saved</Badge>
+        </div>
+
+        <form
+          onSubmit={handleSavePayment}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 border-b pb-6"
+        >
+          <label className="text-sm md:col-span-2">
+            <span className="text-gray-600">Label</span>
+            <input
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2"
+              placeholder="Primary card, Company card, etc."
+              value={paymentDraft.label}
+              onChange={(e) => setPaymentDraft((prev) => ({ ...prev, label: e.target.value }))}
+            />
+          </label>
           <label className="text-sm md:col-span-2">
             <span className="text-gray-600">Cardholder Name</span>
             <input
@@ -502,12 +644,90 @@ export function ProfilePage({ variant = 'sfi' }: ProfilePageProps) {
               }
             />
           </label>
+          <label className="text-sm flex items-end gap-2">
+            <input
+              type="checkbox"
+              checked={paymentDraft.is_default}
+              onChange={(e) =>
+                setPaymentDraft((prev) => ({ ...prev, is_default: e.target.checked }))
+              }
+            />
+            <span className="text-gray-600">Set as default</span>
+          </label>
           <div className="md:col-span-2">
             <Button type="submit" isLoading={savingPayment}>
-              Save Payment Info
+              {editingPaymentId ? 'Update Payment Method' : 'Save Payment Method'}
             </Button>
+            {editingPaymentId && (
+              <button
+                type="button"
+                className="ml-3 text-sm text-gray-500 hover:text-gray-700"
+                onClick={() => {
+                  setEditingPaymentId(null);
+                  setPaymentDraft(emptyPayment);
+                }}
+              >
+                Cancel Edit
+              </button>
+            )}
           </div>
         </form>
+
+        <div className="space-y-3">
+          {paymentMethods.length === 0 ? (
+            <p className="text-sm text-gray-500">No saved payment methods yet.</p>
+          ) : (
+            paymentMethods.map((method) => (
+              <div
+                key={method.id}
+                className="rounded-md border border-gray-200 p-4 flex items-start justify-between gap-4"
+              >
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="font-medium text-gray-900">{method.label || 'Card'}</p>
+                    {method.is_default && <Badge variant="success">Default</Badge>}
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    {method.brand ? `${method.brand} · ` : ''}•••• {method.last4 || '____'}
+                  </p>
+                  {(method.expMonth || method.expYear) && (
+                    <p className="text-sm text-gray-600">
+                      Expires {method.expMonth || 'MM'}/{method.expYear || 'YYYY'}
+                    </p>
+                  )}
+                  {method.cardholder && (
+                    <p className="text-sm text-gray-600">{method.cardholder}</p>
+                  )}
+                </div>
+                <div className="flex items-center gap-3">
+                  {!method.is_default && (
+                    <button
+                      type="button"
+                      className="text-sm text-green-700 hover:underline"
+                      onClick={() => makeDefaultPayment(method.id)}
+                    >
+                      Make Default
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="text-sm text-blue-600 hover:underline"
+                    onClick={() => startEditPayment(method)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    className="text-sm text-red-600 hover:underline"
+                    onClick={() => handleDeletePayment(method.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </section>
 
       <section className="rounded-lg border border-gray-200 bg-white p-6">

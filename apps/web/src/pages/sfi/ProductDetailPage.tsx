@@ -6,6 +6,8 @@ import type { Product } from '@bundle-up/shared-types';
 import { Button, Spinner, Badge } from '@bundle-up/ui';
 import { useCartStore } from '../../stores/cartStore';
 import { useAuthStore } from '../../stores/authStore';
+import { useAuthModalStore } from '../../stores/authModalStore';
+import { setPendingAddToCart } from '../../lib/pendingCartAction';
 
 export function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -34,6 +36,7 @@ export function ProductDetailPage() {
 
   const { user } = useAuthStore();
   const isBusinessContext = location.pathname.startsWith('/nfi');
+  const { open: openAuthModal } = useAuthModalStore();
 
   const labels = React.useMemo(() => {
     if (!product) return [] as string[];
@@ -88,9 +91,10 @@ export function ProductDetailPage() {
 
   async function handleAddToCart() {
     if (!user) {
-      navigate(isBusinessContext ? '/nfi/login' : '/login', {
-        state: { from: { pathname: location.pathname, search: location.search } },
-      });
+      if (product) {
+        setPendingAddToCart({ productId: product.id, quantity: qty });
+      }
+      openAuthModal(isBusinessContext ? 'nfi' : 'sfi', 'login');
       return;
     }
     if (!product) return;

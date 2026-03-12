@@ -8,29 +8,35 @@ export function NfiHomePage() {
 
   const featureCards = [
     {
-      icon: '📦',
-      title: 'Case Pricing',
-      desc: 'Wholesale rates per case across all egg varieties',
-      to: '/nfi/products',
-    },
-    {
       icon: '🚚',
-      title: 'Bulk Ordering',
-      desc: 'Order by the case with volume discounts',
+      title: 'Reorder',
+      desc: 'Reorder items from a previous order',
       to: '/nfi/cart',
     },
     {
       icon: '📋',
-      title: 'Invoice Details',
-      desc: 'Full invoice documentation for every order',
+      title: 'View Order History',
+      desc: 'Review past orders and invoice details',
       to: '/nfi/orders',
     },
-  ].filter((feat) => (isBusiness ? true : feat.to !== '/nfi/orders'));
+  ].filter((feat) => {
+    if (!isBusiness) return false;
+    return true;
+  });
+
+  const featureGridClassName =
+    featureCards.length <= 1
+      ? 'mt-20 grid grid-cols-1 gap-6 max-w-md mx-auto'
+      : 'mt-20 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto';
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16">
       <div className="text-center">
-        <div className="text-6xl mb-4">🏭</div>
+        <img
+          src="/assets/logo/NFI.png"
+          alt="Bundle Up business logo"
+          className="mx-auto h-24 w-24 object-contain mb-4"
+        />
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Bundle Up for Business</h1>
         <p className="text-lg text-gray-600 mb-2 max-w-2xl mx-auto">
           Wholesale egg sourcing for food service, restaurants, and retailers. Case pricing,
@@ -57,19 +63,21 @@ export function NfiHomePage() {
         </div>
       </div>
 
-      <section className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6">
-        {featureCards.map((feat) => (
-          <Link
-            key={feat.title}
-            to={feat.to}
-            className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:border-blue-300 hover:shadow-md transition-all"
-          >
-            <div className="text-3xl mb-3">{feat.icon}</div>
-            <h3 className="font-semibold text-gray-900 mb-1">{feat.title}</h3>
-            <p className="text-sm text-gray-500">{feat.desc}</p>
-          </Link>
-        ))}
-      </section>
+      {featureCards.length > 0 && (
+        <section className={featureGridClassName}>
+          {featureCards.map((feat) => (
+            <Link
+              key={feat.title}
+              to={feat.to}
+              className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:border-blue-300 hover:shadow-md transition-all"
+            >
+              <div className="text-3xl mb-3">{feat.icon}</div>
+              <h3 className="font-semibold text-gray-900 mb-1">{feat.title}</h3>
+              <p className="text-sm text-gray-500">{feat.desc}</p>
+            </Link>
+          ))}
+        </section>
+      )}
 
       <section className="mt-16">
         <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">Shop by Category</h2>

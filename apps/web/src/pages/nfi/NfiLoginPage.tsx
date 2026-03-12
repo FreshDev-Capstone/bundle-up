@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import { Input, Button } from '@bundle-up/ui';
+import { consumePendingAddToCart } from '../../lib/pendingCartAction';
+import { useCartStore } from '../../stores/cartStore';
 
 /**
  * NFI Login – B2B entry point.
@@ -23,6 +25,10 @@ export function NfiLoginPage() {
     const from = (location.state as { from?: { pathname?: string; search?: string } } | null)?.from;
     const fromPath = from?.pathname ? `${from.pathname}${from.search ?? ''}` : null;
     if (user) {
+      const pending = consumePendingAddToCart();
+      if (pending) {
+        await useCartStore.getState().addItem(pending.productId, pending.quantity);
+      }
       if (fromPath) {
         navigate(fromPath, { replace: true });
         return;
@@ -37,9 +43,12 @@ export function NfiLoginPage() {
     <div className="flex min-h-[80vh] items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <span className="text-5xl">🏭</span>
+          <img
+            src="/assets/logo/NFI.png"
+            alt="Bundle Up business logo"
+            className="mx-auto h-20 w-20 object-contain"
+          />
           <h1 className="text-2xl font-bold text-gray-900 mt-4">Business Sign In</h1>
-          <p className="text-gray-500 text-sm mt-1">Bundle Up for Business (NFI)</p>
         </div>
 
         <div className="rounded-lg border border-gray-200 bg-white p-8 shadow-sm">

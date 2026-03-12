@@ -11,11 +11,7 @@
       "bundleIdentifier": "com.bundleup.app"
     },
     "android": {
-      "package": "com.bundleup.app",
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#16a34a"
-      }
+      "package": "com.bundleup.app"
     },
     "extra": {
       "apiUrl": "http://localhost:3001/api"

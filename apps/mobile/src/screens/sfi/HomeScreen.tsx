@@ -13,6 +13,7 @@ const categories = [
   { label: 'Pasture Raised', slug: 'pasture-raised', emoji: '🌾' },
   { label: 'Heirloom', slug: 'heirloom', emoji: '🌈' },
   { label: 'Specialty', slug: 'specialty', emoji: '⭐' },
+  { label: 'Milk', slug: 'milk', emoji: '🥛' },
 ];
 
 export function HomeScreen({ navigation }: Props) {

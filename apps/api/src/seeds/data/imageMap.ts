@@ -49,7 +49,10 @@ export const imageMapByLegacyId: Record<number, string> = {
   149: '/assets/eggs/Heirloom Blue & Brown Eggs/149-heirloom-brown.png',
 
   // Milk (preview category)
-  201: '/assets/milk/Organic Milk/4-211x428.jpg',
+  201: '/assets/milk/Organic Milk/201-milk.jpg',
+  202: '/assets/milk/Organic Milk/202-milk.jpg',
+  203: '/assets/milk/Organic Milk/203-milk.jpg',
+  204: '/assets/milk/Organic Milk/204-milk.jpg',
 };
 
 /**

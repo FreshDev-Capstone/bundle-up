@@ -8,6 +8,12 @@ export async function seed(knex: Knex): Promise<void> {
   const categoryMap = await seedCategories(knex);
 
   // ─── Products ─────────────────────────────────────────────────────────────
+  // Re-seeding products requires clearing tables that reference products.
+  // This keeps local development reseeds predictable.
+  await knex('order_items').del();
+  await knex('orders').del();
+  await knex('cart_items').del();
+  await knex('carts').del();
   await knex('inventory').del();
   await knex('products').del();
 
@@ -41,7 +47,9 @@ export async function seed(knex: Knex): Promise<void> {
     };
   });
 
-  const insertedProducts = await knex('products').insert(productRows).returning(['id', 'legacy_product_id']);
+  const insertedProducts = await knex('products')
+    .insert(productRows)
+    .returning(['id', 'legacy_product_id']);
 
   // ─── Inventory ────────────────────────────────────────────────────────────
   const inventoryRows = insertedProducts.map((row) => {
@@ -58,5 +66,7 @@ export async function seed(knex: Knex): Promise<void> {
 
   await knex('inventory').insert(inventoryRows);
 
-  console.info(`✅ Seeded ${productRows.length} products and ${inventoryRows.length} inventory records`);
+  console.info(
+    `✅ Seeded ${productRows.length} products and ${inventoryRows.length} inventory records`,
+  );
 }
