@@ -88,10 +88,7 @@ export function AdminProductsPage() {
     if (!term) return products;
 
     return products.filter((p) => {
-      const haystack = [p.sku, p.name, p.category_name]
-        .filter(Boolean)
-        .join(' ')
-        .toLowerCase();
+      const haystack = [p.sku, p.name, p.category_name].filter(Boolean).join(' ').toLowerCase();
       return haystack.includes(term);
     });
   }, [products, search]);
@@ -274,7 +271,9 @@ export function AdminProductsPage() {
                 </>
               ) : (
                 <>
-                  <p className="text-sm font-medium text-gray-900">Editing: {editingProduct?.name}</p>
+                  <p className="text-sm font-medium text-gray-900">
+                    Editing: {editingProduct?.name}
+                  </p>
                   <p className="text-xs text-gray-500">SKU: {editingProduct?.sku}</p>
                 </>
               )}
@@ -385,7 +384,9 @@ export function AdminProductsPage() {
                 </div>
 
                 <div className="mt-3">
-                  <label className="block text-xs font-medium text-gray-600">Or paste image URL</label>
+                  <label className="block text-xs font-medium text-gray-600">
+                    Or paste image URL
+                  </label>
                   <input
                     className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
                     value={draft.primary_image ?? ''}

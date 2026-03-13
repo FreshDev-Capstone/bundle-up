@@ -53,11 +53,7 @@ export class ApiClient {
         method,
         headers,
         body:
-          body === undefined
-            ? undefined
-            : isFormData
-              ? (body as FormData)
-              : JSON.stringify(body),
+          body === undefined ? undefined : isFormData ? (body as FormData) : JSON.stringify(body),
       });
 
       const data = (await res.json()) as ApiResponse<T>;

@@ -93,9 +93,7 @@ export async function listProducts(req: Request, res: Response): Promise<void> {
         'products.*',
         'categories.name as category_name',
         'categories.slug as category_slug',
-        db.raw(
-          `CASE WHEN ${availabilitySql} THEN true ELSE false END as is_available`,
-        ),
+        db.raw(`CASE WHEN ${availabilitySql} THEN true ELSE false END as is_available`),
       ),
   );
 
@@ -169,10 +167,7 @@ export async function listProductsAdmin(req: Request, res: Response): Promise<vo
   res.json({ success: true, data: products });
 }
 
-export async function createProductAdmin(
-  req: AuthenticatedRequest,
-  res: Response,
-): Promise<void> {
+export async function createProductAdmin(req: AuthenticatedRequest, res: Response): Promise<void> {
   const body = req.body as {
     sku: string;
     name: string;

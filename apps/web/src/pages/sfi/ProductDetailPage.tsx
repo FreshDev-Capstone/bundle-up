@@ -74,9 +74,7 @@ export function ProductDetailPage() {
 
   useEffect(() => {
     if (!slug) return;
-    apiClient
-      .getProduct(slug, { channel: isBusinessContext ? 'b2b' : 'b2c' })
-      .then((res) => {
+    apiClient.getProduct(slug, { channel: isBusinessContext ? 'b2b' : 'b2c' }).then((res) => {
       if (res.success) setProduct(res.data);
       setLoading(false);
     });

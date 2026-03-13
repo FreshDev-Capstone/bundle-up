@@ -253,8 +253,8 @@ export function AdminUsersPage() {
                             <ul className="space-y-1">
                               {(recentOrdersByUser.get(u.id) ?? []).map((o) => (
                                 <li key={o.id} className="text-xs text-gray-700">
-                                  <span className="font-mono">{o.order_number}</span> • {o.status} • $
-                                  {Number(o.total).toFixed(2)}
+                                  <span className="font-mono">{o.order_number}</span> • {o.status} •
+                                  ${Number(o.total).toFixed(2)}
                                 </li>
                               ))}
                             </ul>
