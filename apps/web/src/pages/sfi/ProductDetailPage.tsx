@@ -59,6 +59,19 @@ export function ProductDetailPage() {
     return unique;
   }, [product]);
 
+  const unitPricePerEgg = React.useMemo(() => {
+    if (!product?.product_count || product.product_count <= 0) return null;
+
+    const eggsPerPackage = isBusinessContext
+      ? product.product_count * product.case_pack
+      : product.product_count;
+
+    if (eggsPerPackage <= 0) return null;
+
+    const packagePrice = isBusinessContext ? product.b2b_case_price : product.b2c_unit_price;
+    return packagePrice / eggsPerPackage;
+  }, [isBusinessContext, product]);
+
   useEffect(() => {
     if (!slug) return;
     apiClient.getProduct(slug).then((res) => {
@@ -157,6 +170,11 @@ export function ProductDetailPage() {
               {formatPrice(isBusinessContext ? product.b2b_case_price : product.b2c_unit_price)}
             </p>
             <p className="text-sm text-gray-500">{isBusinessContext ? 'per case' : 'per carton'}</p>
+            {unitPricePerEgg !== null && (
+              <p className="text-sm text-gray-500">
+                Unit price: {formatPrice(unitPricePerEgg)} / egg
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-3 mb-6 text-sm">

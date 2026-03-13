@@ -570,13 +570,13 @@ export function ProfilePage({ variant = 'sfi' }: ProfilePageProps) {
       </section>
 
       <section className="rounded-lg border border-gray-200 bg-white p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Payment Information</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-gray-900">Payment Methods</h2>
+          <Badge variant="info">{paymentMethods.length} saved</Badge>
+        </div>
         <p className="text-xs text-gray-500 mb-4">
           Saved locally in this browser for development preview only.
         </p>
-        <div className="flex items-center justify-between mb-4">
-          <Badge variant="info">{paymentMethods.length} saved</Badge>
-        </div>
 
         <form
           onSubmit={handleSavePayment}

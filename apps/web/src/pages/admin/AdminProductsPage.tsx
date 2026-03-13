@@ -1,25 +1,245 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { apiClient } from '../../lib/apiClient';
 import { formatPrice } from '@bundle-up/utils';
 import type { Product } from '@bundle-up/shared-types';
-import { Spinner, Badge } from '@bundle-up/ui';
+import { Spinner, Button } from '@bundle-up/ui';
+import { useAuthStore } from '../../stores/authStore';
+
+type AdminProductRow = Product & {
+  category_name?: string;
+  inventory_by_carton?: number;
+  inventory_by_case?: number;
+};
 
 export function AdminProductsPage() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const { token, user } = useAuthStore();
+  const [products, setProducts] = useState<AdminProductRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [draft, setDraft] = useState<{
+    name: string;
+    description: string;
+    b2c_unit_price: string;
+    b2b_case_price: string;
+    inventory_by_carton: string;
+    inventory_by_case: string;
+  } | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
-    apiClient.getProducts({ per_page: 100 }).then((res) => {
-      if (res.success) setProducts(res.data.data);
+    if (!token || user?.role !== 'admin') return;
+
+    setLoading(true);
+    setLoadError(null);
+    apiClient.getProductsAdmin().then((res) => {
+      if (res.success) {
+        setProducts(res.data);
+      } else {
+        setLoadError(res.message ?? 'Failed to load products');
+      }
       setLoading(false);
     });
-  }, []);
+  }, [token, user?.role]);
 
-  if (loading) return <div className="flex justify-center py-20"><Spinner size="lg" /></div>;
+  const editingProduct = useMemo(
+    () => (editingId ? (products.find((p) => p.id === editingId) ?? null) : null),
+    [editingId, products],
+  );
+
+  function startEdit(product: AdminProductRow) {
+    setSaveError(null);
+    setEditingId(product.id);
+    setDraft({
+      name: product.name,
+      description: product.description ?? '',
+      b2c_unit_price: String(product.b2c_unit_price ?? ''),
+      b2b_case_price: String(product.b2b_case_price ?? ''),
+      inventory_by_carton: String(product.inventory_by_carton ?? 0),
+      inventory_by_case: String(product.inventory_by_case ?? 0),
+    });
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setDraft(null);
+    setSaveError(null);
+  }
+
+  async function saveEdit() {
+    if (!editingProduct || !draft) return;
+    setSaving(true);
+    setSaveError(null);
+
+    const productRes = await apiClient.updateProductAdmin(editingProduct.id, {
+      name: draft.name,
+      description: draft.description.length ? draft.description : null,
+      b2c_unit_price: Number(draft.b2c_unit_price),
+      b2b_case_price: Number(draft.b2b_case_price),
+    });
+
+    if (!productRes.success) {
+      setSaveError(productRes.message ?? 'Failed to save product changes');
+      setSaving(false);
+      return;
+    }
+
+    const inventoryRes = await apiClient.updateProductInventoryAdmin(editingProduct.id, {
+      inventory_by_carton: Number(draft.inventory_by_carton),
+      inventory_by_case: Number(draft.inventory_by_case),
+    });
+
+    if (!inventoryRes.success) {
+      setSaveError(inventoryRes.message ?? 'Failed to save inventory changes');
+      setSaving(false);
+      return;
+    }
+
+    const nextRow = inventoryRes.data as unknown as AdminProductRow;
+    setProducts((prev) => prev.map((p) => (p.id === editingProduct.id ? { ...p, ...nextRow } : p)));
+    setSaving(false);
+    cancelEdit();
+  }
+
+  if (loading)
+    return (
+      <div className="flex justify-center py-20">
+        <Spinner size="lg" />
+      </div>
+    );
+
+  if (loadError) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <div className="mb-4">
+          <Link to="/admin" className="text-sm font-medium text-purple-700 hover:underline">
+            ← Back to Dashboard
+          </Link>
+        </div>
+        <p className="text-sm text-red-600">{loadError}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
+      <div className="mb-4">
+        <Link to="/admin" className="text-sm font-medium text-purple-700 hover:underline">
+          ← Back to Dashboard
+        </Link>
+      </div>
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Products</h1>
+
+      {editingProduct && draft && (
+        <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-medium text-gray-900">Editing: {editingProduct.name}</p>
+              <p className="text-xs text-gray-500">SKU: {editingProduct.sku}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="secondary" size="sm" onClick={cancelEdit} disabled={saving}>
+                Cancel
+              </Button>
+              <Button size="sm" onClick={saveEdit} isLoading={saving}>
+                Save
+              </Button>
+            </div>
+          </div>
+
+          {saveError && <p className="mt-3 text-sm text-red-600">{saveError}</p>}
+
+          <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700">Name</label>
+              <input
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+                value={draft.name}
+                onChange={(e) => setDraft((d) => (d ? { ...d, name: e.target.value } : d))}
+              />
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  B2C Price (per carton)
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  value={draft.b2c_unit_price}
+                  onChange={(e) =>
+                    setDraft((d) => (d ? { ...d, b2c_unit_price: e.target.value } : d))
+                  }
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Inventory (cartons)
+                </label>
+                <input
+                  type="number"
+                  step="1"
+                  min={0}
+                  className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  value={draft.inventory_by_carton}
+                  onChange={(e) =>
+                    setDraft((d) => (d ? { ...d, inventory_by_carton: e.target.value } : d))
+                  }
+                />
+                <p className="mt-1 text-xs text-gray-500">
+                  Availability updates automatically based on inventory.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">B2B Case Price</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  value={draft.b2b_case_price}
+                  onChange={(e) =>
+                    setDraft((d) => (d ? { ...d, b2b_case_price: e.target.value } : d))
+                  }
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Inventory (cases)</label>
+                <input
+                  type="number"
+                  step="1"
+                  min={0}
+                  className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  value={draft.inventory_by_case}
+                  onChange={(e) =>
+                    setDraft((d) => (d ? { ...d, inventory_by_case: e.target.value } : d))
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700">Description</label>
+              <textarea
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+                rows={4}
+                value={draft.description}
+                onChange={(e) => setDraft((d) => (d ? { ...d, description: e.target.value } : d))}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="overflow-auto rounded-lg border border-gray-200 bg-white">
         <table className="min-w-full text-sm">
           <thead className="bg-gray-50 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
@@ -27,25 +247,42 @@ export function AdminProductsPage() {
               <th className="px-4 py-3">SKU</th>
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Category</th>
+              <th className="px-4 py-3 text-right">Inv (carton)</th>
+              <th className="px-4 py-3 text-right">Inv (case)</th>
               <th className="px-4 py-3 text-right">B2C Price</th>
               <th className="px-4 py-3 text-right">B2B Case Price</th>
               <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
+            {products.length === 0 && (
+              <tr>
+                <td className="px-4 py-6 text-sm text-gray-500" colSpan={9}>
+                  No products found.
+                </td>
+              </tr>
+            )}
             {products.map((p) => (
               <tr key={p.id} className="hover:bg-gray-50">
                 <td className="px-4 py-3 font-mono text-xs text-gray-500">{p.sku}</td>
                 <td className="px-4 py-3 font-medium text-gray-900">{p.name}</td>
-                <td className="px-4 py-3 text-gray-500">
-                  {(p as Product & { category_name?: string }).category_name}
-                </td>
+                <td className="px-4 py-3 text-gray-500">{p.category_name}</td>
+                <td className="px-4 py-3 text-right text-gray-700">{p.inventory_by_carton ?? 0}</td>
+                <td className="px-4 py-3 text-right text-gray-700">{p.inventory_by_case ?? 0}</td>
                 <td className="px-4 py-3 text-right">{formatPrice(p.b2c_unit_price)}</td>
-                <td className="px-4 py-3 text-right text-blue-600">{formatPrice(p.b2b_case_price)}</td>
+                <td className="px-4 py-3 text-right text-blue-600">
+                  {formatPrice(p.b2b_case_price)}
+                </td>
                 <td className="px-4 py-3">
-                  <Badge variant={p.is_available ? 'success' : 'error'}>
+                  <Button variant={p.is_available ? 'secondary' : 'danger'} size="sm" disabled>
                     {p.is_available ? 'Available' : 'Unavailable'}
-                  </Badge>
+                  </Button>
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <Button variant="outline" size="sm" onClick={() => startEdit(p)}>
+                    Edit
+                  </Button>
                 </td>
               </tr>
             ))}

@@ -11,6 +11,8 @@ import type {
   Order,
   OrderWithItems,
   Address,
+  User,
+  UserRole,
   SupportChatRequest,
   SupportChatResponse,
 } from '@bundle-up/shared-types';
@@ -92,6 +94,22 @@ export class ApiClient {
     return this.request<null>('POST', '/auth/change-password', body);
   }
 
+  adminCreateAdminUser(body: { email: string; password: string }) {
+    return this.request<{ user: User }>('POST', '/auth/admin/users', body);
+  }
+
+  adminRequestPasswordReset(body: { email: string }) {
+    return this.request<{ reset_url: string; expires_at: string }>(
+      'POST',
+      '/auth/admin/password-resets',
+      body,
+    );
+  }
+
+  resetPassword(body: { token: string; new_password: string }) {
+    return this.request<null>('POST', '/auth/reset-password', body);
+  }
+
   // ─── Products ─────────────────────────────────────────────────────────
 
   getProducts(params?: Record<string, string | number | boolean>) {
@@ -101,6 +119,40 @@ export class ApiClient {
 
   getProduct(idOrSlug: string | number) {
     return this.request<Product>('GET', `/products/${idOrSlug}`);
+  }
+
+  getProductsAdmin() {
+    return this.request<Product[]>('GET', '/products/admin/all');
+  }
+
+  updateProductAdmin(
+    id: number,
+    body: Partial<{
+      name: string;
+      description: string | null;
+      category_id: number | null;
+      product_type: string | null;
+      product_color: string | null;
+      product_count: number | null;
+      product_size: string | null;
+      farming_method: string | null;
+      packaging_unit: 'carton' | 'case';
+      case_pack: number;
+      b2c_unit_price: number;
+      b2b_case_price: number;
+      primary_image: string | null;
+      is_available: boolean;
+      is_active: boolean;
+    }>,
+  ) {
+    return this.request<Product>('PATCH', `/products/${id}/admin`, body);
+  }
+
+  updateProductInventoryAdmin(
+    id: number,
+    body: { inventory_by_carton?: number; inventory_by_case?: number },
+  ) {
+    return this.request<Product>('PATCH', `/products/${id}/inventory`, body);
   }
 
   // ─── Cart ─────────────────────────────────────────────────────────────
@@ -137,6 +189,36 @@ export class ApiClient {
 
   getOrder(id: number) {
     return this.request<OrderWithItems>('GET', `/orders/${id}`);
+  }
+
+  updateOrderAdmin(id: number, body: { status?: string; tracking_number?: string | null }) {
+    return this.request<Order>('PATCH', `/orders/${id}/admin`, body);
+  }
+
+  // ─── Admin Users ───────────────────────────────────────────────────
+
+  getUsersAdmin() {
+    return this.request<
+      (User & {
+        first_name?: string | null;
+        last_name?: string | null;
+        phone?: string | null;
+        company_name?: string | null;
+        is_approved?: boolean | null;
+      })[]
+    >('GET', '/users/admin/all');
+  }
+
+  updateUserAdmin(id: number, body: { email?: string; role?: UserRole; is_active?: boolean }) {
+    return this.request<
+      User & {
+        first_name?: string | null;
+        last_name?: string | null;
+        phone?: string | null;
+        company_name?: string | null;
+        is_approved?: boolean | null;
+      }
+    >('PATCH', `/users/admin/${id}`, body);
   }
 
   // ─── Addresses ────────────────────────────────────────────────────────

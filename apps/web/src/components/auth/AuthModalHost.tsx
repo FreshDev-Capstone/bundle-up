@@ -85,7 +85,7 @@ export function AuthModalHost() {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm px-4"
+      className="fixed inset-0 z-40 flex items-center justify-center bg-black/30 backdrop-blur-sm px-4"
       onMouseDown={() => {
         clearError();
         close();
@@ -95,7 +95,7 @@ export function AuthModalHost() {
       aria-label={title}
     >
       <div
-        className="w-full max-w-lg rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
+        className="relative z-50 w-full max-w-lg rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="relative mb-4">

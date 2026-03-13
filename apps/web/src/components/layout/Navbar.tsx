@@ -17,6 +17,21 @@ export function Navbar({ variant = 'sfi' }: NavbarProps) {
   const isNfi = variant === 'nfi';
   const isAdmin = variant === 'admin';
 
+  const businessEntryHref = user?.role === 'business' ? '/nfi' : '/nfi/login';
+  const isBusinessUser = user?.role === 'business';
+
+  const productsHref = isAdmin
+    ? '/admin/products'
+    : isNfi && isBusinessUser
+      ? '/nfi/products'
+      : '/products';
+
+  const eggLabelsHref = isNfi && isBusinessUser ? '/nfi/info/labels' : '/info/labels';
+
+  const ordersHref = isNfi && isBusinessUser ? '/nfi/orders' : '/orders';
+  const profileHref = isNfi && isBusinessUser ? '/nfi/profile' : '/profile';
+  const cartHref = isNfi && isBusinessUser ? '/nfi/cart' : '/cart';
+
   const logoSrc = isNfi ? '/assets/logo/NFI.png' : '/assets/logo/SFI.png';
 
   const homeHref = isAdmin ? '/admin' : isNfi ? '/nfi' : '/';
@@ -30,11 +45,11 @@ export function Navbar({ variant = 'sfi' }: NavbarProps) {
   function handleLogout() {
     logout();
     resetCart();
-    navigate(isAdmin ? '/admin/login' : isNfi ? '/nfi/login' : '/login');
+    navigate(isAdmin ? '/login' : isNfi ? '/nfi/login' : '/login');
   }
 
   return (
-    <header className="border-b border-gray-200 bg-white shadow-sm">
+    <header className="sticky top-0 z-[45] border-b border-gray-200 bg-white shadow-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
         <Link to={homeHref} className="flex items-center gap-2">
           <img
@@ -56,9 +71,9 @@ export function Navbar({ variant = 'sfi' }: NavbarProps) {
         </Link>
 
         <nav className="flex items-center gap-4">
-          {!isAdmin && (
+          {!isAdmin && !user && (
             <Link
-              to={isNfi ? '/' : '/nfi'}
+              to={isNfi ? '/' : businessEntryHref}
               className={
                 isNfi
                   ? 'text-sm text-gray-600 hover:text-green-700'
@@ -70,34 +85,34 @@ export function Navbar({ variant = 'sfi' }: NavbarProps) {
           )}
 
           {!isAdmin && (
-            <Link
-              to={isSfi ? '/products' : '/nfi/products'}
-              className="text-sm text-gray-600 hover:text-green-700"
-            >
+            <Link to={productsHref} className="text-sm text-gray-600 hover:text-green-700">
               Products
+            </Link>
+          )}
+
+          {!isAdmin && (
+            <Link to={eggLabelsHref} className="text-sm text-gray-600 hover:text-green-700">
+              Egg Labels
             </Link>
           )}
 
           {user ? (
             <>
               {!isAdmin && (
-                <Link
-                  to={isSfi ? '/orders' : '/nfi/orders'}
-                  className="text-sm text-gray-600 hover:text-green-700"
-                >
+                <Link to={ordersHref} className="text-sm text-gray-600 hover:text-green-700">
                   {isNfi ? 'Order History' : 'Orders'}
                 </Link>
               )}
               {!isAdmin && (
-                <Link
-                  to={isSfi ? '/profile' : '/nfi/profile'}
-                  className="text-sm text-gray-600 hover:text-green-700"
-                >
+                <Link to={profileHref} className="text-sm text-gray-600 hover:text-green-700">
                   Profile
                 </Link>
               )}
               {isAdmin && (
                 <>
+                  <Link to="/admin" className="text-sm text-gray-600 hover:text-purple-700">
+                    Dashboard
+                  </Link>
                   <Link
                     to="/admin/products"
                     className="text-sm text-gray-600 hover:text-purple-700"
@@ -118,7 +133,7 @@ export function Navbar({ variant = 'sfi' }: NavbarProps) {
             </>
           ) : (
             <Link
-              to={isAdmin ? '/admin/login' : isNfi ? '/nfi/login' : '/login'}
+              to={isAdmin ? '/login' : isNfi ? '/nfi/login' : '/login'}
               className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700"
             >
               Sign In
@@ -127,7 +142,7 @@ export function Navbar({ variant = 'sfi' }: NavbarProps) {
 
           {(isSfi || isNfi) && (
             <Link
-              to={isSfi ? '/cart' : '/nfi/cart'}
+              to={cartHref}
               className="relative flex items-center gap-1 text-sm text-gray-600 hover:text-green-700"
             >
               🛒

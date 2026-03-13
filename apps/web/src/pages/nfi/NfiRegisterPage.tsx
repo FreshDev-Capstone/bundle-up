@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import { Input, Button } from '@bundle-up/ui';
 import { consumePendingAddToCart } from '../../lib/pendingCartAction';
@@ -7,7 +7,13 @@ import { useCartStore } from '../../stores/cartStore';
 
 export function NfiRegisterPage() {
   const navigate = useNavigate();
-  const { registerBusiness, isLoading, error, clearError } = useAuthStore();
+  const { user, registerBusiness, isLoading, error, clearError } = useAuthStore();
+
+  if (user) {
+    if (user.role === 'admin') return <Navigate to="/admin" replace />;
+    if (user.role === 'business') return <Navigate to="/nfi" replace />;
+    return <Navigate to="/" replace />;
+  }
 
   const [form, setForm] = useState({
     email: '',

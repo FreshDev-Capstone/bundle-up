@@ -152,6 +152,7 @@ export interface Order {
   shipping_address_id: number | null;
   billing_address_id: number | null;
   notes: string | null;
+  tracking_number?: string | null;
   created_at: string;
   updated_at: string;
 }

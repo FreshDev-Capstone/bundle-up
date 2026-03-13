@@ -9,6 +9,7 @@ import cartRoutes from './routes/cart';
 import orderRoutes from './routes/orders';
 import addressRoutes from './routes/addresses';
 import supportRoutes from './routes/support';
+import userRoutes from './routes/users';
 import { errorHandler } from './middleware/errorHandler';
 import { apiLimiter, authLimiter } from './middleware/rateLimiter';
 
@@ -38,6 +39,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/addresses', addressRoutes);
 app.use('/api/support', supportRoutes);
+app.use('/api/users', userRoutes);
 
 // ─── 404 ──────────────────────────────────────────────────────────────────────
 app.use((_req, res) => {

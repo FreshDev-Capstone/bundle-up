@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import type { AuthTokenPayload, UserRole } from '@bundle-up/shared-types';
+import db from '../config/db';
 
 export interface AuthenticatedRequest extends Request {
   user?: AuthTokenPayload;
@@ -14,7 +15,11 @@ function getJwtSecret(): string | null {
  * Verifies the JWT in the Authorization header and attaches the decoded
  * payload to `req.user`. Returns 401 if the token is missing or invalid.
  */
-export function requireAuth(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
+export async function requireAuth(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith('Bearer ')) {
     res.status(401).json({ success: false, message: 'Authentication required' });
@@ -41,7 +46,25 @@ export function requireAuth(req: AuthenticatedRequest, res: Response, next: Next
       res.status(401).json({ success: false, message: 'Invalid token payload' });
       return;
     }
-    req.user = decoded as unknown as AuthTokenPayload;
+    const payload = decoded as unknown as AuthTokenPayload;
+
+    const dbUser = await db('users')
+      .select('id', 'role', 'is_active')
+      .where({ id: payload.sub })
+      .first();
+
+    if (!dbUser) {
+      res.status(401).json({ success: false, message: 'Invalid token' });
+      return;
+    }
+
+    if (!dbUser.is_active) {
+      res.status(401).json({ success: false, message: 'Account is inactive' });
+      return;
+    }
+
+    // Trust the DB for current role in case access is revoked/downgraded.
+    req.user = { ...payload, role: dbUser.role };
     next();
   } catch {
     res.status(401).json({ success: false, message: 'Invalid or expired token' });

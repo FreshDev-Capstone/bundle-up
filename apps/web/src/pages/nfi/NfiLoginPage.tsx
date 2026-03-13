@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import { Input, Button } from '@bundle-up/ui';
 import { consumePendingAddToCart } from '../../lib/pendingCartAction';
 import { useCartStore } from '../../stores/cartStore';
 
-/**
- * NFI Login – B2B entry point.
- * NOTE: Login is NOT restricted to B2B users. A consumer or admin user who
- * lands here will be authenticated and routed based on their role.
- */
 export function NfiLoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, isLoading, error, clearError } = useAuthStore();
+  const { user, login, isLoading, error, clearError } = useAuthStore();
+
+  if (user) {
+    if (user.role === 'admin') return <Navigate to="/admin" replace />;
+    if (user.role === 'business') return <Navigate to="/nfi" replace />;
+    return <Navigate to="/" replace />;
+  }
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,7 +36,7 @@ export function NfiLoginPage() {
       }
       if (user.role === 'admin') navigate('/admin');
       else if (user.role === 'business') navigate('/nfi');
-      else navigate('/'); // consumer who signed in from NFI – route to SFI
+      else navigate('/');
     }
   }
 

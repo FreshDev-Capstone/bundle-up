@@ -36,6 +36,30 @@ export const changePasswordSchema = z.object({
   new_password: z.string().min(8, 'New password must be at least 8 characters'),
 });
 
+export const adminCreateAdminUserSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+export const adminRequestPasswordResetSchema = z.object({
+  email: z.string().email('Invalid email address'),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(20, 'Invalid token'),
+  new_password: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+export const adminUpdateUserSchema = z
+  .object({
+    email: z.string().email('Invalid email address').optional(),
+    role: z.enum(['customer', 'business', 'admin']).optional(),
+    is_active: z.boolean().optional(),
+  })
+  .refine((v) => Object.keys(v).length > 0, {
+    message: 'At least one field is required',
+  });
+
 // ─── Product ──────────────────────────────────────────────────────────────────
 
 export const productQuerySchema = z.object({
@@ -88,6 +112,10 @@ export type RegisterCustomerInput = z.infer<typeof registerCustomerSchema>;
 export type RegisterBusinessInput = z.infer<typeof registerBusinessSchema>;
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
+export type AdminCreateAdminUserInput = z.infer<typeof adminCreateAdminUserSchema>;
+export type AdminRequestPasswordResetInput = z.infer<typeof adminRequestPasswordResetSchema>;
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
+export type AdminUpdateUserInput = z.infer<typeof adminUpdateUserSchema>;
 export type ProductQueryInput = z.infer<typeof productQuerySchema>;
 export type AddToCartInput = z.infer<typeof addToCartSchema>;
 export type UpdateCartItemInput = z.infer<typeof updateCartItemSchema>;

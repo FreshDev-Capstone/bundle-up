@@ -30,7 +30,7 @@ export function SupportChatWidget() {
     {
       id: 'greeting',
       role: 'assistant',
-      text: "Hi! I’m Bundle Up Support. How can I help today?",
+      text: 'Hi! I’m Bundle Up Support. How can I help today?',
     },
   ]);
 
@@ -96,7 +96,9 @@ export function SupportChatWidget() {
                 key={m.id}
                 style={[styles.bubbleRow, m.role === 'user' ? styles.rowRight : styles.rowLeft]}
               >
-                <View style={[styles.bubble, m.role === 'user' ? styles.userBubble : styles.botBubble]}>
+                <View
+                  style={[styles.bubble, m.role === 'user' ? styles.userBubble : styles.botBubble]}
+                >
                   <Text style={m.role === 'user' ? styles.userText : styles.botText}>{m.text}</Text>
                 </View>
               </View>

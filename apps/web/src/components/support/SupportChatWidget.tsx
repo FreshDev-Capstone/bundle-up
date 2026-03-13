@@ -95,7 +95,9 @@ export function SupportChatWidget({ variant }: { variant: Variant }) {
           <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
             <div>
               <p className="text-sm font-semibold text-gray-900">Customer Support</p>
-              <p className="text-xs text-gray-500">{variant === 'nfi' ? 'Business (B2B)' : 'Retail (B2C)'}</p>
+              <p className="text-xs text-gray-500">
+                {variant === 'nfi' ? 'Business (B2B)' : 'Retail (B2C)'}
+              </p>
             </div>
             <button
               type="button"
@@ -111,11 +113,7 @@ export function SupportChatWidget({ variant }: { variant: Variant }) {
             {messages.map((m) => (
               <div
                 key={m.id}
-                className={
-                  m.role === 'user'
-                    ? 'flex justify-end'
-                    : 'flex justify-start'
-                }
+                className={m.role === 'user' ? 'flex justify-end' : 'flex justify-start'}
               >
                 <div
                   className={

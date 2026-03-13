@@ -9,6 +9,7 @@ import { ProductsPage } from './pages/sfi/ProductsPage';
 import { ProductDetailPage } from './pages/sfi/ProductDetailPage';
 import { LoginPage } from './pages/sfi/LoginPage';
 import { RegisterPage } from './pages/sfi/RegisterPage';
+import { ResetPasswordPage } from './pages/sfi/ResetPasswordPage';
 import { CartPage } from './pages/sfi/CartPage';
 import { OrdersPage } from './pages/sfi/OrdersPage';
 import { ProfilePage } from './pages/sfi/ProfilePage';
@@ -22,10 +23,12 @@ import { NfiRegisterPage } from './pages/nfi/NfiRegisterPage';
 import { NfiProductsPage } from './pages/nfi/NfiProductsPage';
 
 // Admin pages
-import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { AdminProductsPage } from './pages/admin/AdminProductsPage';
 import { AdminOrdersPage } from './pages/admin/AdminOrdersPage';
+import { AdminUsersPage } from './pages/admin/AdminUsersPage';
+
+import { EggLabelsInfoPage } from './pages/info/EggLabelsInfoPage';
 
 export default function App() {
   return (
@@ -36,8 +39,10 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/products/:slug" element={<ProductDetailPage />} />
+          <Route path="/info/labels" element={<EggLabelsInfoPage />} />
 
           {/* Protected SFI routes */}
           <Route element={<ProtectedRoute redirectTo="/login" />}>
@@ -51,14 +56,15 @@ export default function App() {
 
         {/* ─── NFI (B2B) ─────────────────────────────────────────────────── */}
         <Route path="/nfi" element={<Layout variant="nfi" />}>
-          <Route index element={<NfiHomePage />} />
           <Route path="login" element={<NfiLoginPage />} />
           <Route path="register" element={<NfiRegisterPage />} />
-          <Route path="products" element={<NfiProductsPage />} />
-          <Route path="products/:slug" element={<ProductDetailPage />} />
 
-          {/* Protected NFI routes */}
-          <Route element={<ProtectedRoute redirectTo="/nfi/login" />}>
+          {/* Business-only NFI routes */}
+          <Route element={<ProtectedRoute requiredRole="business" redirectTo="/nfi/login" />}>
+            <Route index element={<NfiHomePage />} />
+            <Route path="products" element={<NfiProductsPage />} />
+            <Route path="products/:slug" element={<ProductDetailPage />} />
+            <Route path="info/labels" element={<EggLabelsInfoPage />} />
             <Route path="cart" element={<CartPage variant="nfi" />} />
             <Route path="checkout" element={<CheckoutPage variant="nfi" />} />
             <Route path="orders" element={<OrdersPage variant="nfi" />} />
@@ -68,15 +74,13 @@ export default function App() {
         </Route>
 
         {/* ─── Admin ────────────────────────────────────────────────────── */}
-        <Route path="/admin/login" element={<AdminLoginPage />} />
-        <Route
-          path="/admin"
-          element={<ProtectedRoute requiredRole="admin" redirectTo="/admin/login" />}
-        >
+        <Route path="/admin/login" element={<Navigate to="/login" replace />} />
+        <Route path="/admin" element={<ProtectedRoute requiredRole="admin" redirectTo="/login" />}>
           <Route element={<Layout variant="admin" />}>
             <Route index element={<AdminDashboard />} />
             <Route path="products" element={<AdminProductsPage />} />
             <Route path="orders" element={<AdminOrdersPage />} />
+            <Route path="users" element={<AdminUsersPage />} />
           </Route>
         </Route>
 

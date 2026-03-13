@@ -1,9 +1,11 @@
 import type { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import db from '../config/db';
 import type { AuthenticatedRequest } from '../middleware/auth';
 import type { AuthTokenPayload } from '@bundle-up/shared-types';
+import { sendPasswordResetEmail } from '../lib/mailer';
 
 const JWT_EXPIRES_IN = process.env['JWT_EXPIRES_IN'] ?? '7d';
 
@@ -13,6 +15,14 @@ function signToken(payload: AuthTokenPayload): string {
     throw new Error('JWT_SECRET environment variable is required');
   }
   return jwt.sign(payload, jwtSecret, { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions);
+}
+
+function sha256(input: string): string {
+  return crypto.createHash('sha256').update(input).digest('hex');
+}
+
+function getWebBaseUrl(): string {
+  return process.env['WEB_BASE_URL'] ?? 'http://localhost:3000';
 }
 
 export async function login(req: Request, res: Response): Promise<void> {
@@ -261,4 +271,109 @@ export async function changePassword(req: AuthenticatedRequest, res: Response): 
   await db('users').where({ id: user.id }).update({ password_hash });
 
   res.json({ success: true, message: 'Password updated successfully' });
+}
+
+export async function adminCreateAdminUser(
+  req: AuthenticatedRequest,
+  res: Response,
+): Promise<void> {
+  if (!req.user || req.user.role !== 'admin') {
+    res.status(403).json({ success: false, message: 'Insufficient permissions' });
+    return;
+  }
+
+  const { email, password } = req.body as { email: string; password: string };
+
+  const existing = await db('users').where({ email }).first();
+  if (existing) {
+    res.status(409).json({ success: false, message: 'Email already registered' });
+    return;
+  }
+
+  const password_hash = await bcrypt.hash(password, 10);
+  const [user] = await db('users')
+    .insert({ email, password_hash, role: 'admin', is_active: true })
+    .returning(['id', 'email', 'role', 'is_active']);
+
+  await db('user_profiles').insert({
+    user_id: user.id,
+    first_name: 'Admin',
+    last_name: 'User',
+    phone: null,
+  });
+
+  res.status(201).json({ success: true, data: { user } });
+}
+
+export async function adminRequestPasswordReset(
+  req: AuthenticatedRequest,
+  res: Response,
+): Promise<void> {
+  if (!req.user || req.user.role !== 'admin') {
+    res.status(403).json({ success: false, message: 'Insufficient permissions' });
+    return;
+  }
+
+  const { email } = req.body as { email: string };
+  const user = await db('users').where({ email }).first();
+  if (!user) {
+    res.status(404).json({ success: false, message: 'User not found' });
+    return;
+  }
+
+  const rawToken = crypto.randomBytes(32).toString('base64url');
+  const tokenHash = sha256(rawToken);
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+
+  await db('password_resets').insert({
+    user_id: user.id,
+    token_hash: tokenHash,
+    expires_at: expiresAt,
+    used_at: null,
+  });
+
+  const reset_url = `${getWebBaseUrl()}/reset-password?token=${encodeURIComponent(rawToken)}`;
+
+  let email_sent = false;
+  try {
+    email_sent = await sendPasswordResetEmail(email, reset_url);
+  } catch {
+    email_sent = false;
+  }
+
+  // Always include the link in the response so admins can copy it
+  // even if SMTP is not configured.
+  res.status(201).json({
+    success: true,
+    data: { reset_url, expires_at: expiresAt.toISOString(), email_sent },
+  });
+}
+
+export async function resetPasswordWithToken(req: Request, res: Response): Promise<void> {
+  const { token, new_password } = req.body as { token: string; new_password: string };
+
+  const tokenHash = sha256(token);
+  const reset = await db('password_resets')
+    .where({ token_hash: tokenHash })
+    .andWhere('expires_at', '>', db.fn.now())
+    .whereNull('used_at')
+    .first();
+
+  if (!reset) {
+    res.status(400).json({ success: false, message: 'Invalid or expired reset link' });
+    return;
+  }
+
+  const password_hash = await bcrypt.hash(new_password, 10);
+
+  await db.transaction(async (trx) => {
+    await trx('users')
+      .where({ id: reset.user_id })
+      .update({ password_hash, updated_at: trx.fn.now() });
+    await trx('password_resets')
+      .where({ id: reset.id })
+      .update({ used_at: trx.fn.now(), updated_at: trx.fn.now() });
+  });
+
+  res.json({ success: true, message: 'Password reset successfully' });
 }

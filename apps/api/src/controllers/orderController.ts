@@ -1,7 +1,65 @@
 import type { Response } from 'express';
+import type { Knex } from 'knex';
 import db from '../config/db';
 import { generateOrderNumber } from '@bundle-up/utils';
 import type { AuthenticatedRequest } from '../middleware/auth';
+
+const INVENTORY_DEDUCT_STATUSES = new Set(['confirmed', 'processing', 'shipped', 'delivered']);
+
+async function ensureInventoryRow(trx: Knex.Transaction, productId: number) {
+  const existing = await trx('inventory').where({ product_id: productId }).first();
+  if (existing) return existing;
+  const [created] = await trx('inventory')
+    .insert({ product_id: productId, inventory_by_carton: 0, inventory_by_case: 0 })
+    .returning('*');
+  return created;
+}
+
+async function setProductAvailabilityFromInventory(trx: Knex.Transaction, productId: number) {
+  const inv = await trx('inventory').where({ product_id: productId }).first();
+  const isAvailable =
+    Number(inv?.inventory_by_carton ?? 0) > 0 || Number(inv?.inventory_by_case ?? 0) > 0;
+  await trx('products')
+    .where({ id: productId })
+    .update({ is_available: isAvailable, updated_at: trx.fn.now() });
+}
+
+async function deductInventoryForOrderIfNeeded(trx: Knex.Transaction, orderId: number) {
+  const order = await trx('orders')
+    .join('users', 'orders.user_id', 'users.id')
+    .select('orders.id', 'orders.status', 'orders.inventory_deducted', 'users.role as user_role')
+    .where('orders.id', orderId)
+    .first();
+
+  if (!order) return;
+  if (order.inventory_deducted) return;
+  if (!INVENTORY_DEDUCT_STATUSES.has(order.status)) return;
+
+  const items = await trx('order_items')
+    .select('product_id', 'quantity')
+    .where({ order_id: orderId });
+
+  for (const item of items as { product_id: number; quantity: number }[]) {
+    const inv = await ensureInventoryRow(trx, item.product_id);
+    if (order.user_role === 'business') {
+      const next = Math.max(0, Number(inv.inventory_by_case ?? 0) - Number(item.quantity));
+      await trx('inventory')
+        .where({ product_id: item.product_id })
+        .update({ inventory_by_case: next, updated_at: trx.fn.now() });
+    } else {
+      const next = Math.max(0, Number(inv.inventory_by_carton ?? 0) - Number(item.quantity));
+      await trx('inventory')
+        .where({ product_id: item.product_id })
+        .update({ inventory_by_carton: next, updated_at: trx.fn.now() });
+    }
+
+    await setProductAvailabilityFromInventory(trx, item.product_id);
+  }
+
+  await trx('orders')
+    .where({ id: orderId })
+    .update({ inventory_deducted: true, updated_at: trx.fn.now() });
+}
 
 export async function createOrder(req: AuthenticatedRequest, res: Response): Promise<void> {
   if (!req.user) {
@@ -80,12 +138,13 @@ export async function listOrders(req: AuthenticatedRequest, res: Response): Prom
     return;
   }
 
-  const query =
+  const orders =
     req.user.role === 'admin'
-      ? db('orders').orderBy('created_at', 'desc')
-      : db('orders').where({ user_id: req.user.sub }).orderBy('created_at', 'desc');
-
-  const orders = await query;
+      ? await db('orders')
+          .join('users', 'orders.user_id', 'users.id')
+          .select('orders.*', 'users.email as user_email', 'users.role as user_role')
+          .orderBy('orders.created_at', 'desc')
+      : await db('orders').where({ user_id: req.user.sub }).orderBy('created_at', 'desc');
 
   res.json({
     success: true,
@@ -107,7 +166,14 @@ export async function getOrder(req: AuthenticatedRequest, res: Response): Promis
 
   const { id } = req.params as { id: string };
 
-  const orderQuery = db('orders').where('orders.id', Number(id));
+  const baseQuery = db('orders').where('orders.id', Number(id));
+  const orderQuery =
+    req.user.role === 'admin'
+      ? baseQuery
+          .join('users', 'orders.user_id', 'users.id')
+          .select('orders.*', 'users.email as user_email', 'users.role as user_role')
+      : baseQuery;
+
   if (req.user.role !== 'admin') {
     orderQuery.andWhere('orders.user_id', req.user.sub);
   }
@@ -181,13 +247,79 @@ export async function updateOrderStatus(req: AuthenticatedRequest, res: Response
   const { id } = req.params as { id: string };
   const { status } = req.body as { status: string };
 
-  const updated = await db('orders')
-    .where({ id: Number(id) })
-    .update({ status });
+  const orderId = Number(id);
+  const updated = await db.transaction(async (trx) => {
+    const didUpdate = await trx('orders')
+      .where({ id: orderId })
+      .update({ status, updated_at: trx.fn.now() });
+    if (!didUpdate) return false;
+    await deductInventoryForOrderIfNeeded(trx, orderId);
+    return true;
+  });
+
   if (!updated) {
     res.status(404).json({ success: false, message: 'Order not found' });
     return;
   }
 
   res.json({ success: true, message: 'Order status updated' });
+}
+
+export async function updateOrderAdmin(req: AuthenticatedRequest, res: Response): Promise<void> {
+  const { id } = req.params as { id: string };
+  const { status, tracking_number } = req.body as {
+    status?: string;
+    tracking_number?: string | null;
+  };
+
+  const allowedStatuses = new Set([
+    'pending',
+    'confirmed',
+    'processing',
+    'shipped',
+    'delivered',
+    'cancelled',
+    'refunded',
+  ]);
+
+  const patch: Record<string, unknown> = {};
+  if (typeof status === 'string') {
+    if (!allowedStatuses.has(status)) {
+      res.status(400).json({ success: false, message: 'Invalid order status' });
+      return;
+    }
+    patch['status'] = status;
+  }
+
+  if (tracking_number === null || typeof tracking_number === 'string') {
+    patch['tracking_number'] = tracking_number;
+  }
+
+  if (Object.keys(patch).length === 0) {
+    res.status(400).json({ success: false, message: 'No valid fields provided' });
+    return;
+  }
+
+  const orderId = Number(id);
+  const updated = await db.transaction(async (trx) => {
+    const didUpdate = await trx('orders')
+      .where({ id: orderId })
+      .update({ ...patch, updated_at: trx.fn.now() });
+    if (!didUpdate) return false;
+    await deductInventoryForOrderIfNeeded(trx, orderId);
+    return true;
+  });
+
+  if (!updated) {
+    res.status(404).json({ success: false, message: 'Order not found' });
+    return;
+  }
+
+  const order = await db('orders')
+    .join('users', 'orders.user_id', 'users.id')
+    .select('orders.*', 'users.email as user_email', 'users.role as user_role')
+    .where('orders.id', orderId)
+    .first();
+
+  res.json({ success: true, data: order });
 }

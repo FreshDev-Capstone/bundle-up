@@ -205,12 +205,14 @@ export function NfiProductsPage() {
   async function handleModalAddToCart(product: Product) {
     if (!user) {
       setPendingAddToCart({ productId: product.id, quantity: getModalQty(product.id) });
+      setQuickViewProduct(null);
       openAuthModal('nfi', 'login');
       return;
     }
     setAddingById((prev) => ({ ...prev, [product.id]: true }));
     await addItem(product.id, getModalQty(product.id));
     setAddingById((prev) => ({ ...prev, [product.id]: false }));
+    setQuickViewProduct(null);
   }
 
   async function handleUpdateQty(product: Product, newQty: number) {
@@ -257,92 +259,94 @@ export function NfiProductsPage() {
           </p>
         </div>
 
-        <form
-          className="mb-8 flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 md:flex-row md:items-end"
-          onSubmit={(e) => {
-            e.preventDefault();
-            const next = new URLSearchParams();
-            const trimmedSearch = filters.search.trim();
-            if (filters.category) next.set('category', filters.category);
-            if (filters.size) next.set('size', filters.size);
-            if (trimmedSearch) next.set('search', trimmedSearch);
-            if (filters.inStock) next.set('in_stock', '1');
-            setSearchParams(next);
-          }}
-        >
-          <div className="flex-1">
-            <label className="block text-xs font-medium text-gray-700 mb-1">Search</label>
-            <input
-              name="search"
-              value={filters.search}
-              onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
-              placeholder="Search products"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-            />
-          </div>
+        <div className="sticky top-[72px] z-30 -mx-4 mb-8 border-b border-gray-200 bg-gray-50/95 px-4 py-4 backdrop-blur-sm">
+          <form
+            className="grid grid-cols-2 gap-3 rounded-lg border border-gray-200 bg-white p-4 md:grid-cols-12 md:items-end"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const next = new URLSearchParams();
+              const trimmedSearch = filters.search.trim();
+              if (filters.category) next.set('category', filters.category);
+              if (filters.size) next.set('size', filters.size);
+              if (trimmedSearch) next.set('search', trimmedSearch);
+              if (filters.inStock) next.set('in_stock', '1');
+              setSearchParams(next);
+            }}
+          >
+            <div className="col-span-2 md:col-span-4">
+              <label className="block text-xs font-medium text-gray-700 mb-1">Search</label>
+              <input
+                name="search"
+                value={filters.search}
+                onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
+                placeholder="Search products"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              />
+            </div>
 
-          <div className="md:w-56">
-            <label className="block text-xs font-medium text-gray-700 mb-1">Category</label>
-            <select
-              name="category"
-              value={filters.category}
-              onChange={(e) => setFilters((prev) => ({ ...prev, category: e.target.value }))}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-            >
-              {categoryOptions.map((opt) => (
-                <option key={opt.value || 'all'} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
+            <div className="col-span-1 md:col-span-3">
+              <label className="block text-xs font-medium text-gray-700 mb-1">Category</label>
+              <select
+                name="category"
+                value={filters.category}
+                onChange={(e) => setFilters((prev) => ({ ...prev, category: e.target.value }))}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              >
+                {categoryOptions.map((opt) => (
+                  <option key={opt.value || 'all'} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <div className="md:w-40">
-            <label className="block text-xs font-medium text-gray-700 mb-1">Size</label>
-            <select
-              name="size"
-              value={filters.size}
-              onChange={(e) => setFilters((prev) => ({ ...prev, size: e.target.value }))}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-            >
-              <option value="">All</option>
-              {sizeOptions.map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
-          </div>
+            <div className="col-span-1 md:col-span-2">
+              <label className="block text-xs font-medium text-gray-700 mb-1">Size</label>
+              <select
+                name="size"
+                value={filters.size}
+                onChange={(e) => setFilters((prev) => ({ ...prev, size: e.target.value }))}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              >
+                <option value="">All</option>
+                {sizeOptions.map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <label className="flex items-center gap-2 text-sm text-gray-700 md:pb-2">
-            <input
-              name="in_stock"
-              type="checkbox"
-              checked={filters.inStock}
-              onChange={(e) => setFilters((prev) => ({ ...prev, inStock: e.target.checked }))}
-            />
-            In stock only
-          </label>
+            <label className="col-span-2 flex items-center gap-2 text-sm text-gray-700 md:col-span-1 md:pb-2">
+              <input
+                name="in_stock"
+                type="checkbox"
+                checked={filters.inStock}
+                onChange={(e) => setFilters((prev) => ({ ...prev, inStock: e.target.checked }))}
+              />
+              In stock only
+            </label>
 
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-            >
-              Apply
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setFilters({ category: '', search: '', inStock: false, size: '' });
-                setSearchParams(new URLSearchParams());
-              }}
-              className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-              Clear
-            </button>
-          </div>
-        </form>
+            <div className="col-span-2 flex gap-2 md:col-span-2 md:justify-end">
+              <button
+                type="submit"
+                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              >
+                Apply
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setFilters({ category: '', search: '', inStock: false, size: '' });
+                  setSearchParams(new URLSearchParams());
+                }}
+                className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Clear
+              </button>
+            </div>
+          </form>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => {
@@ -403,6 +407,17 @@ export function NfiProductsPage() {
                         {formatPrice(product.b2b_case_price)}
                       </p>
                       <p className="text-xs text-gray-400">per case</p>
+                      {product.product_count &&
+                        product.product_count > 0 &&
+                        product.case_pack > 0 && (
+                          <p className="text-xs text-gray-400">
+                            Unit:{' '}
+                            {formatPrice(
+                              product.b2b_case_price / (product.case_pack * product.product_count),
+                            )}{' '}
+                            / egg
+                          </p>
+                        )}
                     </div>
 
                     {cartItem ? (
@@ -432,13 +447,17 @@ export function NfiProductsPage() {
                         type="button"
                         onClick={() => handleAddToCart(product)}
                         disabled={isAdding || !product.is_available}
-                        className="rounded-md bg-blue-600 px-3 py-2 text-xs font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                        className={
+                          product.is_available
+                            ? 'rounded-md bg-blue-600 px-3 py-2 text-xs font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60'
+                            : 'rounded-md bg-red-600 px-3 py-2 text-xs font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60'
+                        }
                       >
                         {isAdding
                           ? 'Adding…'
                           : product.is_available
                             ? 'Add to Cart'
-                            : 'Unavailable'}
+                            : 'Out of stock'}
                       </button>
                     )}
                   </div>
@@ -451,11 +470,11 @@ export function NfiProductsPage() {
 
       {quickViewProduct && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
+          className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
           onClick={() => setQuickViewProduct(null)}
         >
           <div
-            className="w-full max-w-2xl rounded-xl bg-white shadow-2xl"
+            className="relative z-50 w-full max-w-2xl rounded-xl bg-white shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b px-5 py-3">
@@ -489,6 +508,18 @@ export function NfiProductsPage() {
                   {formatPrice(quickViewProduct.b2b_case_price)}
                 </p>
                 <p className="text-xs text-gray-500 mb-4">per case</p>
+                {quickViewProduct.product_count &&
+                  quickViewProduct.product_count > 0 &&
+                  quickViewProduct.case_pack > 0 && (
+                    <p className="text-xs text-gray-500 mb-4">
+                      Unit:{' '}
+                      {formatPrice(
+                        quickViewProduct.b2b_case_price /
+                          (quickViewProduct.case_pack * quickViewProduct.product_count),
+                      )}{' '}
+                      / egg
+                    </p>
+                  )}
 
                 {quickViewVariants.length > 1 && (
                   <div className="mb-4">

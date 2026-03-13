@@ -4,6 +4,7 @@ import {
   listOrders,
   getOrder,
   updateOrderStatus,
+  updateOrderAdmin,
 } from '../controllers/orderController';
 import { requireAuth, requireAdmin } from '../middleware/auth';
 import { validate } from '../middleware/validate';
@@ -19,5 +20,6 @@ router.post('/', validate(createOrderSchema), createOrder);
 
 // Admin only
 router.patch('/:id/status', ...requireAdmin, updateOrderStatus);
+router.patch('/:id/admin', ...requireAdmin, updateOrderAdmin);
 
 export default router;
