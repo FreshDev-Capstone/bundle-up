@@ -74,11 +74,13 @@ export function ProductDetailPage() {
 
   useEffect(() => {
     if (!slug) return;
-    apiClient.getProduct(slug).then((res) => {
+    apiClient
+      .getProduct(slug, { channel: isBusinessContext ? 'b2b' : 'b2c' })
+      .then((res) => {
       if (res.success) setProduct(res.data);
       setLoading(false);
     });
-  }, [slug]);
+  }, [slug, isBusinessContext]);
 
   useEffect(() => {
     if (!product) {
@@ -87,6 +89,7 @@ export function ProductDetailPage() {
     }
 
     const params: Record<string, string> = { per_page: '100' };
+    params['channel'] = isBusinessContext ? 'b2b' : 'b2c';
     apiClient.getProducts(params).then((res) => {
       if (!res.success) return;
       const key = variantKey(product);

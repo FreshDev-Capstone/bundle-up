@@ -96,6 +96,7 @@ export function ProductsPage() {
 
       const params: Record<string, string> = {};
       params['per_page'] = '100';
+      params['channel'] = 'b2c';
       // Client-side filtering handles search/category/in-stock for seamless typing.
 
       const timeoutMs = 10000;

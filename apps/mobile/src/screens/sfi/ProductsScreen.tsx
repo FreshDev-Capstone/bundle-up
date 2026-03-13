@@ -31,6 +31,7 @@ export function ProductsScreen({ route, navigation }: Props) {
       setError(null);
 
       const params: Record<string, string> = {};
+        params['channel'] = 'b2c';
       if (category) params['category'] = category;
 
       // Guard against hanging mobile network requests so UI never spins forever.

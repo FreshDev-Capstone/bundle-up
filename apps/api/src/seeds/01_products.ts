@@ -23,8 +23,10 @@ export async function seed(knex: Knex): Promise<void> {
       throw new Error(`Unknown category slug: ${p.category_slug}`);
     }
 
-    // Generate a deterministic SKU from the legacy product ID
-    const sku = `EGG-${String(p.legacy_product_id).padStart(4, '0')}`;
+    const skuPrefix = p.category_slug === 'milk' ? 'MILK' : 'EGG';
+    const sku = `${skuPrefix}-${String(p.legacy_product_id).padStart(4, '0')}`;
+
+    const derivedAvailable = p.inventory_by_carton > 0 || p.inventory_by_case > 0;
 
     return {
       sku,
@@ -42,7 +44,7 @@ export async function seed(knex: Knex): Promise<void> {
       b2c_unit_price: p.b2c_unit_price,
       b2b_case_price: p.b2b_case_price,
       primary_image: resolveProductImage(p.legacy_product_id),
-      is_available: p.is_available,
+      is_available: derivedAvailable,
       is_active: p.is_active,
     };
   });

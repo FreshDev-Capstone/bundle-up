@@ -10,6 +10,7 @@ import orderRoutes from './routes/orders';
 import addressRoutes from './routes/addresses';
 import supportRoutes from './routes/support';
 import userRoutes from './routes/users';
+import uploadRoutes from './routes/uploads';
 import { errorHandler } from './middleware/errorHandler';
 import { apiLimiter, authLimiter } from './middleware/rateLimiter';
 
@@ -21,6 +22,9 @@ if (!process.env['JWT_SECRET']) {
 }
 
 const app = express();
+
+// Serve local uploads (development-friendly)
+app.use('/api/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
 app.use(cors({ origin: process.env['CORS_ORIGIN'] ?? '*' }));
@@ -40,6 +44,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/addresses', addressRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/uploads', uploadRoutes);
 
 // ─── 404 ──────────────────────────────────────────────────────────────────────
 app.use((_req, res) => {

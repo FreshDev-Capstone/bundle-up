@@ -183,8 +183,12 @@ export function AdminUsersPage() {
     setResetLink(res.data.reset_url);
   }
 
-  const renderTable = (rows: AdminUserRow[], opts?: { showActions?: boolean }) => {
+  const renderTable = (
+    rows: AdminUserRow[],
+    opts?: { showActions?: boolean; showRecentOrders?: boolean },
+  ) => {
     const showActions = opts?.showActions ?? false;
+    const showRecentOrders = opts?.showRecentOrders ?? true;
     return (
       <div className="overflow-auto rounded-lg border border-gray-200 bg-white">
         <table className="min-w-full text-sm">
@@ -195,7 +199,7 @@ export function AdminUsersPage() {
               <th className="px-4 py-3">Account</th>
               <th className="px-4 py-3">Company</th>
               <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Recent Orders</th>
+              {showRecentOrders && <th className="px-4 py-3">Recent Orders</th>}
               <th className="px-4 py-3">Created</th>
               {showActions && <th className="px-4 py-3">Actions</th>}
             </tr>
@@ -203,7 +207,10 @@ export function AdminUsersPage() {
           <tbody className="divide-y divide-gray-100">
             {rows.length === 0 && (
               <tr>
-                <td className="px-4 py-6 text-sm text-gray-500" colSpan={showActions ? 8 : 7}>
+                <td
+                  className="px-4 py-6 text-sm text-gray-500"
+                  colSpan={(showActions ? 1 : 0) + (showRecentOrders ? 1 : 0) + 6}
+                >
                   No users found.
                 </td>
               </tr>
@@ -232,37 +239,39 @@ export function AdminUsersPage() {
                     )}
                   </div>
                 </td>
-                <td className="px-4 py-3">
-                  <details>
-                    <summary className="cursor-pointer select-none text-sm font-medium text-purple-700 hover:underline">
-                      View recent
-                    </summary>
-                    <div className="mt-2 space-y-2">
-                      <div className="rounded-md border border-gray-200 bg-white p-3">
-                        {(recentOrdersByUser.get(u.id) ?? []).length === 0 ? (
-                          <p className="text-xs text-gray-500">No orders found.</p>
-                        ) : (
-                          <ul className="space-y-1">
-                            {(recentOrdersByUser.get(u.id) ?? []).map((o) => (
-                              <li key={o.id} className="text-xs text-gray-700">
-                                <span className="font-mono">{o.order_number}</span> • {o.status} • $
-                                {Number(o.total).toFixed(2)}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                        <div className="mt-2">
-                          <Link
-                            to={`/admin/orders?user_id=${u.id}`}
-                            className="text-xs font-medium text-purple-700 hover:underline"
-                          >
-                            View all orders
-                          </Link>
+                {showRecentOrders && (
+                  <td className="px-4 py-3">
+                    <details>
+                      <summary className="cursor-pointer select-none text-sm font-medium text-purple-700 hover:underline">
+                        View recent
+                      </summary>
+                      <div className="mt-2 space-y-2">
+                        <div className="rounded-md border border-gray-200 bg-white p-3">
+                          {(recentOrdersByUser.get(u.id) ?? []).length === 0 ? (
+                            <p className="text-xs text-gray-500">No orders found.</p>
+                          ) : (
+                            <ul className="space-y-1">
+                              {(recentOrdersByUser.get(u.id) ?? []).map((o) => (
+                                <li key={o.id} className="text-xs text-gray-700">
+                                  <span className="font-mono">{o.order_number}</span> • {o.status} • $
+                                  {Number(o.total).toFixed(2)}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                          <div className="mt-2">
+                            <Link
+                              to={`/admin/orders?user_id=${u.id}`}
+                              className="text-xs font-medium text-purple-700 hover:underline"
+                            >
+                              View all orders
+                            </Link>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </details>
-                </td>
+                    </details>
+                  </td>
+                )}
                 <td className="px-4 py-3 text-gray-500">
                   {new Date(u.created_at).toLocaleDateString()}
                 </td>
@@ -385,7 +394,7 @@ export function AdminUsersPage() {
             <p className="mb-3 text-xs text-gray-500">
               Deactivating an admin revokes access immediately.
             </p>
-            {renderTable(adminUsers, { showActions: true })}
+            {renderTable(adminUsers, { showActions: true, showRecentOrders: false })}
           </CardBody>
         </Card>
 

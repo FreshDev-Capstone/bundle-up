@@ -73,6 +73,18 @@ export const productQuerySchema = z.object({
   is_available: z.coerce.boolean().optional(),
 });
 
+export const adminCreateProductSchema = z.object({
+  sku: z.string().min(1, 'SKU is required').max(50),
+  name: z.string().min(1, 'Name is required').max(255),
+  category_slug: z.string().min(1, 'Category is required').max(100),
+  description: z.string().max(5000).nullable().optional(),
+  primary_image: z.string().max(500).url('Invalid image URL').nullable().optional(),
+  b2c_unit_price: z.coerce.number().min(0),
+  b2b_case_price: z.coerce.number().min(0),
+  inventory_by_carton: z.coerce.number().int().min(0).optional(),
+  inventory_by_case: z.coerce.number().int().min(0).optional(),
+});
+
 // ─── Cart ─────────────────────────────────────────────────────────────────────
 
 export const addToCartSchema = z.object({
@@ -116,6 +128,7 @@ export type AdminCreateAdminUserInput = z.infer<typeof adminCreateAdminUserSchem
 export type AdminRequestPasswordResetInput = z.infer<typeof adminRequestPasswordResetSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 export type AdminUpdateUserInput = z.infer<typeof adminUpdateUserSchema>;
+export type AdminCreateProductInput = z.infer<typeof adminCreateProductSchema>;
 export type ProductQueryInput = z.infer<typeof productQuerySchema>;
 export type AddToCartInput = z.infer<typeof addToCartSchema>;
 export type UpdateCartItemInput = z.infer<typeof updateCartItemSchema>;

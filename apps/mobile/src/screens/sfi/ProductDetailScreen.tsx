@@ -33,7 +33,7 @@ export function ProductDetailScreen({ route, navigation }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    apiClient.getProduct(slug).then((res) => {
+    apiClient.getProduct(slug, { channel: 'b2c' }).then((res) => {
       if (res.success) setProduct(res.data);
       else setError(res.message);
       setLoading(false);

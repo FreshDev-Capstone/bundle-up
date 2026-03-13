@@ -1,7 +1,34 @@
 import type { Request, Response } from 'express';
 import db from '../config/db';
-import { getPaginationMeta } from '@bundle-up/utils';
+import { getPaginationMeta, slugify } from '@bundle-up/utils';
 import type { AuthenticatedRequest } from '../middleware/auth';
+
+type ProductChannel = 'b2c' | 'b2b' | 'any';
+
+function normalizeProductChannel(value: unknown): ProductChannel {
+  if (value === 'b2b') return 'b2b';
+  if (value === 'any') return 'any';
+  return 'b2c';
+}
+
+function availabilitySqlForChannel(channel: ProductChannel): string {
+  if (channel === 'b2b') return 'COALESCE(inventory.inventory_by_case, 0) > 0';
+  if (channel === 'any')
+    return '(COALESCE(inventory.inventory_by_carton, 0) > 0 OR COALESCE(inventory.inventory_by_case, 0) > 0)';
+  return 'COALESCE(inventory.inventory_by_carton, 0) > 0';
+}
+
+async function generateUniqueProductSlug(base: string): Promise<string> {
+  const root = slugify(base);
+  let candidate = root;
+  let suffix = 2;
+  while (true) {
+    const exists = await db('products').select('id').where({ slug: candidate }).first();
+    if (!exists) return candidate;
+    candidate = `${root}-${suffix}`;
+    suffix += 1;
+  }
+}
 
 export async function listProducts(req: Request, res: Response): Promise<void> {
   const {
@@ -14,6 +41,9 @@ export async function listProducts(req: Request, res: Response): Promise<void> {
     search,
     is_available,
   } = req.query as Record<string, string>;
+
+  const channel = normalizeProductChannel((req.query as Record<string, unknown>).channel);
+  const availabilitySql = availabilitySqlForChannel(channel);
 
   const pageNum = Number(page);
   const perPageNum = Math.min(Number(per_page), 100);
@@ -42,8 +72,12 @@ export async function listProducts(req: Request, res: Response): Promise<void> {
     if (color) filtered = filtered.where('products.product_color', color);
     if (size) filtered = filtered.where('products.product_size', size);
     if (farming_method) filtered = filtered.where('products.farming_method', farming_method);
-    if (is_available === 'true') filtered = filtered.where('products.is_available', true);
-    if (is_available === 'false') filtered = filtered.where('products.is_available', false);
+    if (is_available === 'true') {
+      filtered = filtered.whereRaw(`(${availabilitySql})`);
+    }
+    if (is_available === 'false') {
+      filtered = filtered.whereRaw(`NOT (${availabilitySql})`);
+    }
     if (search) {
       filtered = filtered.whereILike('products.name', `%${search}%`);
     }
@@ -54,11 +88,21 @@ export async function listProducts(req: Request, res: Response): Promise<void> {
   const productsQuery = applyFilters(
     db('products')
       .join('categories', 'products.category_id', 'categories.id')
-      .select('products.*', 'categories.name as category_name', 'categories.slug as category_slug'),
+      .leftJoin('inventory', 'products.id', 'inventory.product_id')
+      .select(
+        'products.*',
+        'categories.name as category_name',
+        'categories.slug as category_slug',
+        db.raw(
+          `CASE WHEN ${availabilitySql} THEN true ELSE false END as is_available`,
+        ),
+      ),
   );
 
   const countQuery = applyFilters(
-    db('products').join('categories', 'products.category_id', 'categories.id'),
+    db('products')
+      .join('categories', 'products.category_id', 'categories.id')
+      .leftJoin('inventory', 'products.id', 'inventory.product_id'),
   );
 
   const countResult = await countQuery.countDistinct('products.id as count').first();
@@ -77,6 +121,7 @@ export async function listProducts(req: Request, res: Response): Promise<void> {
 
 export async function getProduct(req: Request, res: Response): Promise<void> {
   const { idOrSlug } = req.params as { idOrSlug: string };
+  const channel = normalizeProductChannel((req.query as Record<string, unknown>).channel);
 
   const isId = /^\d+$/.test(idOrSlug);
   const query = db('products')
@@ -95,7 +140,15 @@ export async function getProduct(req: Request, res: Response): Promise<void> {
 
   const inventory = await db('inventory').where({ product_id: product.id }).first();
 
-  res.json({ success: true, data: { ...product, inventory } });
+  const derivedAvailable =
+    channel === 'b2b'
+      ? Number(inventory?.inventory_by_case ?? 0) > 0
+      : channel === 'any'
+        ? Number(inventory?.inventory_by_carton ?? 0) > 0 ||
+          Number(inventory?.inventory_by_case ?? 0) > 0
+        : Number(inventory?.inventory_by_carton ?? 0) > 0;
+
+  res.json({ success: true, data: { ...product, is_available: derivedAvailable, inventory } });
 }
 
 export async function listProductsAdmin(req: Request, res: Response): Promise<void> {
@@ -107,10 +160,93 @@ export async function listProductsAdmin(req: Request, res: Response): Promise<vo
       'categories.name as category_name',
       'inventory.inventory_by_carton',
       'inventory.inventory_by_case',
+      db.raw(
+        'CASE WHEN COALESCE(inventory.inventory_by_carton, 0) > 0 OR COALESCE(inventory.inventory_by_case, 0) > 0 THEN true ELSE false END as is_available',
+      ),
     )
     .orderBy('products.id');
 
   res.json({ success: true, data: products });
+}
+
+export async function createProductAdmin(
+  req: AuthenticatedRequest,
+  res: Response,
+): Promise<void> {
+  const body = req.body as {
+    sku: string;
+    name: string;
+    description?: string | null;
+    category_slug: string;
+    b2c_unit_price: number;
+    b2b_case_price: number;
+    primary_image?: string | null;
+    inventory_by_carton?: number;
+    inventory_by_case?: number;
+  };
+
+  const sku = body.sku.trim();
+  const name = body.name.trim();
+
+  const existingSku = await db('products').select('id').where({ sku }).first();
+  if (existingSku) {
+    res.status(409).json({ success: false, message: 'SKU already exists' });
+    return;
+  }
+
+  const category = await db('categories')
+    .select('id', 'name', 'slug', 'is_active')
+    .where({ slug: body.category_slug })
+    .first();
+  if (!category || !category.is_active) {
+    res.status(400).json({ success: false, message: 'Invalid category' });
+    return;
+  }
+
+  const inventoryByCarton = Math.max(0, Number(body.inventory_by_carton ?? 0));
+  const inventoryByCase = Math.max(0, Number(body.inventory_by_case ?? 0));
+  const isAvailable = inventoryByCarton > 0 || inventoryByCase > 0;
+
+  const slug = await generateUniqueProductSlug(name);
+
+  const created = await db.transaction(async (trx) => {
+    const [product] = await trx('products')
+      .insert({
+        sku,
+        name,
+        slug,
+        description: body.description ?? null,
+        category_id: category.id,
+        b2c_unit_price: Number(body.b2c_unit_price),
+        b2b_case_price: Number(body.b2b_case_price),
+        primary_image: body.primary_image ?? null,
+        is_available: isAvailable,
+        is_active: true,
+      })
+      .returning('*');
+
+    await trx('inventory').insert({
+      product_id: product.id,
+      inventory_by_carton: inventoryByCarton,
+      inventory_by_case: inventoryByCase,
+    });
+
+    const row = await trx('products')
+      .join('categories', 'products.category_id', 'categories.id')
+      .leftJoin('inventory', 'products.id', 'inventory.product_id')
+      .select(
+        'products.*',
+        'categories.name as category_name',
+        'inventory.inventory_by_carton',
+        'inventory.inventory_by_case',
+      )
+      .where('products.id', product.id)
+      .first();
+
+    return row;
+  });
+
+  res.status(201).json({ success: true, data: created });
 }
 
 export async function updateProductAvailability(

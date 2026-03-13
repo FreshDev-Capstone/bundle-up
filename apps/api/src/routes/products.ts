@@ -3,11 +3,14 @@ import {
   listProducts,
   getProduct,
   listProductsAdmin,
+  createProductAdmin,
   updateProductAvailability,
   updateProductAdmin,
   updateProductInventoryAdmin,
 } from '../controllers/productController';
 import { requireAdmin } from '../middleware/auth';
+import { validate } from '../middleware/validate';
+import { adminCreateProductSchema } from '@bundle-up/validation';
 
 const router = Router();
 
@@ -16,6 +19,7 @@ router.get('/', listProducts);
 
 // Admin-only routes (must be defined before '/:idOrSlug')
 router.get('/admin/all', ...requireAdmin, listProductsAdmin);
+router.post('/admin', ...requireAdmin, validate(adminCreateProductSchema), createProductAdmin);
 router.patch('/:id/availability', ...requireAdmin, updateProductAvailability);
 router.patch('/:id/admin', ...requireAdmin, updateProductAdmin);
 router.patch('/:id/inventory', ...requireAdmin, updateProductInventoryAdmin);

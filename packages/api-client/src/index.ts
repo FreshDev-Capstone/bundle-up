@@ -37,9 +37,14 @@ export class ApiClient {
     body?: unknown,
   ): Promise<ApiResponse<T>> {
     try {
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
+      const isFormData =
+        typeof FormData !== 'undefined' && body !== undefined && body instanceof FormData;
+
+      const headers: Record<string, string> = isFormData
+        ? {}
+        : {
+            'Content-Type': 'application/json',
+          };
       if (this.token) {
         headers['Authorization'] = `Bearer ${this.token}`;
       }
@@ -47,7 +52,12 @@ export class ApiClient {
       const res = await fetch(`${this.baseUrl}${path}`, {
         method,
         headers,
-        body: body !== undefined ? JSON.stringify(body) : undefined,
+        body:
+          body === undefined
+            ? undefined
+            : isFormData
+              ? (body as FormData)
+              : JSON.stringify(body),
       });
 
       const data = (await res.json()) as ApiResponse<T>;
@@ -117,8 +127,33 @@ export class ApiClient {
     return this.request<PaginatedResponse<Product>>('GET', `/products${qs}`);
   }
 
-  getProduct(idOrSlug: string | number) {
-    return this.request<Product>('GET', `/products/${idOrSlug}`);
+  getProduct(idOrSlug: string | number, params?: Record<string, string | number | boolean>) {
+    const qs = params ? '?' + new URLSearchParams(params as Record<string, string>).toString() : '';
+    return this.request<Product>('GET', `/products/${idOrSlug}${qs}`);
+  }
+
+  uploadProductImage(form: FormData) {
+    return this.request<{ url: string }>('POST', '/uploads/product-image', form);
+  }
+
+  createProductAdmin(body: {
+    sku: string;
+    name: string;
+    category_slug: string;
+    description?: string | null;
+    primary_image?: string | null;
+    b2c_unit_price: number;
+    b2b_case_price: number;
+    inventory_by_carton?: number;
+    inventory_by_case?: number;
+  }) {
+    return this.request<
+      Product & {
+        category_name?: string;
+        inventory_by_carton?: number;
+        inventory_by_case?: number;
+      }
+    >('POST', '/products/admin', body);
   }
 
   getProductsAdmin() {
